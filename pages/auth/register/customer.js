@@ -92,7 +92,7 @@ export default function RegSeller() {
                   <p className="text-center">
                     Already have a Tokopedia account?{" "}
                     <Link
-                      href={"/auth/login/recruiter"}
+                      href={"/auth/login/customer"}
                       className={`${style.linkLogin}`}
                     >
                       Login

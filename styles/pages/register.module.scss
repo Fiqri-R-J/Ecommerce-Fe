@@ -1,0 +1,114 @@
+.main {
+  .register {
+    .col {
+      padding: 50px 0 0 0;
+
+      .icon {
+        display: flex;
+        justify-content: center;
+      }
+
+      .order {
+        padding: 30px 0;
+        display: flex;
+        justify-content: center;
+      }
+
+      .btn {
+        margin-bottom: 40px;
+        display: flex;
+        justify-content: center;
+        .btnCustomer {
+          font-size: 14px;
+          padding: 10px 27px;
+          color: #9B9B9B;
+          font-weight: 500;
+          border: 1px solid #9B9B9B;
+        }
+
+        .btnCustomer:hover {
+          background-color: white;
+        }
+
+        .btnSeller {
+          font-size: 14px;
+          padding: 10px 44px;
+          color: white;
+          font-weight: 500;
+          border: 1px solid #DB3022;
+          background-color: #DB3022;
+        }
+
+        .btnSeller:hover {
+          
+        }
+
+        .btnCustomerCS {
+          font-size: 14px;
+          padding: 10px 27px;
+          color: white;
+          font-weight: 500;
+          border: 1px solid #DB3022;
+          background-color: #DB3022;
+        }
+
+        .btnCustomerCS:hover {
+          
+        }
+
+        .btnSellerCS {
+          font-size: 14px;
+          padding: 10px 44px;
+          color: #9B9B9B;
+          font-weight: 500;
+          border: 1px solid #9B9B9B;
+        }
+
+        .btnSellerCS:hover {
+          background-color: white;
+        }
+      }
+
+      .form {
+        display: flex;
+        justify-content: center;
+        input {
+          width: 400px;
+          padding: 13px;
+          padding-left: 20px;
+          color: #858D96;
+          font-size: 14px;
+          border-color: #9B9B9B;
+          border-radius: 5px;
+        }
+        
+        input:focus {
+          box-shadow: 0px 4px 10px 3px rgba(0, 0, 0, 0.11);
+          border-color: #DB3022;
+        }
+      }
+
+      .btnRegister {
+        display: flex;
+        justify-content: center;
+        button {
+          width: 400px;
+          background-color: #DB3022;
+          border-radius: 50px;
+          color: white;
+          font-size: 14px;
+          padding: 10px;
+          border-color: #DB3022;
+        }
+        margin-top: 30px;
+      }
+
+      .register {
+        .linkLogin {
+          color: #DB3022;
+          text-decoration: none;
+        }
+      }
+    }
+  }
+}

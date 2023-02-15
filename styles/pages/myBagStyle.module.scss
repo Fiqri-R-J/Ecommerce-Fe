@@ -1,0 +1,87 @@
+.main {
+  .containerNavbar {
+    display: flex;
+    align-items: center;
+    background-color: white;
+  }
+
+  .bag {
+    padding: 40px 20px;
+    .subTitle {
+      font-weight: bold;
+    }
+
+    .listProduct {
+      .cardSelectAll{
+        border-radius: 7px;
+        background-color: white;
+        // height: 80px;
+
+        button {
+          background-color: white;
+          border: none;
+          color: #DB3022;
+        }
+
+        p {
+          color: #9B9B9B;
+        }
+      }
+
+      .product{
+        border-radius: 7px;
+        background-color: white;
+        height: 110px;
+
+        label {
+          img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 7px;
+          }
+        }
+
+        .productName {
+          h5 {
+            font-size: 16px;
+          }
+
+          p {
+            font-size: 14px;
+            color: #9B9B9B;
+          }
+        }
+        
+        .totalPrice {
+          h5 {
+            font-size: 20px;
+          }
+        }
+      }
+      
+      .cardCost {
+        border-radius: 7px;
+
+        h5 {
+          font-size: 18px;
+        }
+
+        p {
+          color: #9B9B9B;
+        }
+
+        .btnBuy {
+          width: 100%;
+          font-size: 14px;
+          padding: 8px 30px;
+          color: white;
+          font-weight: 500;
+          border: 1px solid #DB3022;
+          background-color: #DB3022;
+          border-radius: 40px;
+        }
+      }
+    }
+  }
+}

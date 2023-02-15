@@ -1,0 +1,55 @@
+.main {
+  .navbar {
+      .icon {
+        width: 100px;
+      }
+  
+      .search {
+        width: 500px;
+        border-radius: 40px;
+        font-size: 14px;
+        padding: 8px 20px;
+      }
+  
+      .search:focus {
+        box-shadow: 0px 4px 10px 3px rgba(0, 0, 0, 0.11);
+        border-color: #DB3022;
+      }
+  
+      .sort {
+        background: none;
+      }
+  
+      .auth {
+        .shopping {
+          margin-right: 30px;
+          margin-top: 5px;
+          width: 27px;
+          height: 30px;
+        }
+  
+        .btnSignup {
+          font-size: 14px;
+          padding: 8px 24px;
+          color: #9B9B9B;
+          font-weight: 500;
+          border: 1px solid #9B9B9B;
+          border-radius: 40px;
+        }
+  
+        .btnSignup:hover {
+          background-color: white;
+        }
+  
+        .btnLogin {
+          font-size: 14px;
+          padding: 8px 30px;
+          color: white;
+          font-weight: 500;
+          border: 1px solid #DB3022;
+          background-color: #DB3022;
+          border-radius: 40px;
+        }
+      }
+    }
+}

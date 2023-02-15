@@ -65,35 +65,239 @@ export default function navbar() {
                   aria-labelledby="staticBackdropLabel"
                   aria-hidden="true"
                 >
-                  <div className="modal-dialog z-3">
-                    <div
-                      className={`modal-content z-3 position-absolute ${style.modal}`}
-                    >
+                  <div className="modal-dialog modal-dialog-scrollable shadow-lg">
+                    <div className={`modal-content ${style.modal}`}>
                       <div className="modal-header">
-                        <h1
-                          className="modal-title fs-5"
-                          id="staticBackdropLabel"
-                        >
-                          Modal title
-                        </h1>
                         <button
                           type="button"
-                          className="btn-close"
+                          className="btn-close me-2"
                           data-bs-dismiss="modal"
                           aria-label="Close"
                         ></button>
+                        <h1
+                          className={`modal-title ${style.titleModal}`}
+                          id="staticBackdropLabel"
+                        >
+                          Filter
+                        </h1>
                       </div>
-                      <div className="modal-body"><h1>Maulana</h1></div>
-                      <div className="modal-footer">
+                      {/* BODY */}
+                      <div className="modal-body">
+                        {/* COLORS */}
+                        <div className=" border-bottom pb-4">
+                          <div className={`${style.colors}`}>
+                            <h5 className={`${style.titleColor}`}>Colors</h5>
+                            <div className={`${style.optionColor}`}>
+                              <button
+                                type="button"
+                                className={`btn rounded-circle`}
+                                style={{ backgroundColor: "black" }}
+                                // onClick={() => {
+                                //   setPaymentSelected("visa");
+                                // }}
+                              ></button>
+                              <button
+                                type="button"
+                                className={`btn rounded-circle shadow-sm border border-2`}
+                                style={{ backgroundColor: "white" }}
+                                // onClick={() => {
+                                //   setPaymentSelected("visa");
+                                // }}
+                              ></button>
+                              <button
+                                type="button"
+                                className={`btn rounded-circle`}
+                                style={{ backgroundColor: "#B82222" }}
+                                // onClick={() => {
+                                //   setPaymentSelected("visa");
+                                // }}
+                              ></button>
+                              <button
+                                type="button"
+                                className={`btn rounded-circle`}
+                                style={{ backgroundColor: "#BEA9A9" }}
+                                // onClick={() => {
+                                //   setPaymentSelected("visa");
+                                // }}
+                              ></button>
+                              <button
+                                type="button"
+                                className={`btn rounded-circle`}
+                                style={{ backgroundColor: "#E2BB8D" }}
+                                // onClick={() => {
+                                //   setPaymentSelected("visa");
+                                // }}
+                              ></button>
+                              <button
+                                type="button"
+                                className={`btn rounded-circle`}
+                                style={{ backgroundColor: "#151867" }}
+                                // onClick={() => {
+                                //   setPaymentSelected("visa");
+                                // }}
+                              ></button>
+                            </div>
+                          </div>
+                        </div>
+                        {/* SIZE */}
+                        <div className=" border-bottom py-4">
+                          <div className={`${style.sizes}`}>
+                            <h5 className={`${style.titleSizes}`}>Sizes</h5>
+                            <div className={`${style.optionSizes}`}>
+                              <button
+                                type="button"
+                                className={`btn rounded-3`}
+                                style={{ backgroundColor: "white" }}
+                                // onClick={() => {
+                                //   setPaymentSelected("visa");
+                                // }}
+                              >
+                                <p>XS</p>
+                              </button>
+                              <button
+                                type="button"
+                                className={`btn rounded-3`}
+                                style={{ backgroundColor: "white" }}
+                                // onClick={() => {
+                                //   setPaymentSelected("visa");
+                                // }}
+                              >
+                                S
+                              </button>
+                              <button
+                                type="button"
+                                className={`btn rounded-3`}
+                                style={{ backgroundColor: "white" }}
+                                // onClick={() => {
+                                //   setPaymentSelected("visa");
+                                // }}
+                              >
+                                M
+                              </button>
+                              <button
+                                type="button"
+                                className={`btn rounded-3`}
+                                style={{ backgroundColor: "white" }}
+                                // onClick={() => {
+                                //   setPaymentSelected("visa");
+                                // }}
+                              >
+                                L
+                              </button>
+                              <button
+                                type="button"
+                                className={`btn rounded-3`}
+                                style={{ backgroundColor: "white" }}
+                                // onClick={() => {
+                                //   setPaymentSelected("visa");
+                                // }}
+                              >
+                                <p style={{ marginLeft: "-1px" }}>XL</p>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        {/* CATEGORY */}
+                        <div className=" border-bottom pt-4">
+                          <div className={`${style.category}`}>
+                            <h5 className={`${style.titleCategory}`}>
+                              Category
+                            </h5>
+                            <div className={`${style.optionCategory}`}>
+                              <button
+                                type="button"
+                                className={`btn rounded-3`}
+                                style={{ backgroundColor: "white" }}
+                                // onClick={() => {
+                                //   setPaymentSelected("visa");
+                                // }}
+                              >
+                                <p>All</p>
+                              </button>
+                              <button
+                                type="button"
+                                className={`btn rounded-3`}
+                                style={{ backgroundColor: "white" }}
+                                // onClick={() => {
+                                //   setPaymentSelected("visa");
+                                // }}
+                              >
+                                <p>Women</p>
+                              </button>
+                              <button
+                                type="button"
+                                className={`btn rounded-3`}
+                                style={{ backgroundColor: "white" }}
+                                // onClick={() => {
+                                //   setPaymentSelected("visa");
+                                // }}
+                              >
+                                <p>Men</p>
+                              </button>
+                              <button
+                                type="button"
+                                className={`btn rounded-3`}
+                                style={{ backgroundColor: "white" }}
+                                // onClick={() => {
+                                //   setPaymentSelected("visa");
+                                // }}
+                              >
+                                <p>Boys</p>
+                              </button>
+                              <button
+                                type="button"
+                                className={`btn rounded-3`}
+                                style={{ backgroundColor: "white" }}
+                                // onClick={() => {
+                                //   setPaymentSelected("visa");
+                                // }}
+                              >
+                                <p>Girls</p>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        {/* BRAND */}
+                        <div className="py-4">
+                          <div className={`${style.brand}`}>
+                            <h5 className={`${style.titleBrand}`}>Brand</h5>
+                            <div className={`${style.optionBrand}`}>
+                              <select
+                                className="form-select"
+                                aria-label="Default select example"
+                                // onChange={(e) => {
+                                //   fetchBySort(e.target.value);
+                                // }}
+                              >
+                                <option selected disabled>
+                                  Brand
+                                </option>
+                                <option value="name_asc">
+                                  Adidas Originals
+                                </option>
+                                <option value="name_desc">Jack & Jones</option>
+                                <option value="release_asc">s.Oliver</option>
+                                <option value="release_desc">Gucci</option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      {/* FOOTER AND BUTTON */}
+                      <div className={`modal-footer ${style.btnFooter}`}>
                         <button
                           type="button"
-                          className="btn btn-secondary"
+                          className={`btn btn-outline-primary ${style.btnDiscard}`}
                           data-bs-dismiss="modal"
                         >
-                          Close
+                          Discard
                         </button>
-                        <button type="button" className="btn btn-primary">
-                          Understood
+                        <button
+                          type="button"
+                          className={`btn btn-secondary ${style.btnApply}`}
+                          data-bs-dismiss="modal"
+                        >
+                          Apply
                         </button>
                       </div>
                     </div>

@@ -1,55 +1,158 @@
 .main {
   .navbar {
-      .icon {
-        width: 100px;
+    .icon {
+      width: 100px;
+    }
+
+    .search {
+      width: 500px;
+      border-radius: 40px;
+      font-size: 14px;
+      padding: 8px 20px;
+    }
+
+    .search:focus {
+      box-shadow: 0px 4px 10px 3px rgba(0, 0, 0, 0.11);
+      border-color: #DB3022;
+    }
+
+    .sort {
+      background: none;
+      width: 40px;
+      margin-top: 3px;
+      margin-left: 3px;
+    }
+
+    .auth {
+      .shopping {
+        margin-right: 30px;
+        margin-top: 5px;
+        width: 27px;
+        height: 30px;
       }
-  
-      .search {
-        width: 500px;
-        border-radius: 40px;
+
+      .btnSignup {
         font-size: 14px;
-        padding: 8px 20px;
+        padding: 8px 24px;
+        color: #9B9B9B;
+        font-weight: 500;
+        border: 1px solid #9B9B9B;
+        border-radius: 40px;
       }
-  
-      .search:focus {
-        box-shadow: 0px 4px 10px 3px rgba(0, 0, 0, 0.11);
-        border-color: #DB3022;
+
+      .btnSignup:hover {
+        background-color: white;
       }
-  
-      .sort {
-        background: none;
+
+      .btnLogin {
+        font-size: 14px;
+        padding: 8px 30px;
+        color: white;
+        font-weight: 500;
+        border: 1px solid #DB3022;
+        background-color: #DB3022;
+        border-radius: 40px;
       }
-  
-      .auth {
-        .shopping {
-          margin-right: 30px;
-          margin-top: 5px;
-          width: 27px;
-          height: 30px;
+    }
+
+    .modal {
+      .titleModal {
+        font-size: 25px;
+        margin-right: 370px;
+      }
+
+      .colors {
+        .optionColor {
+          margin-top: 10px;
+          padding: 10px;
+          button {
+            width: 40px;
+            height: 40px;
+            margin-right: 25px;
+          }
         }
-  
-        .btnSignup {
-          font-size: 14px;
-          padding: 8px 24px;
-          color: #9B9B9B;
-          font-weight: 500;
-          border: 1px solid #9B9B9B;
-          border-radius: 40px;
+      }
+
+      .sizes {
+        .optionSizes {
+          margin-top: 10px;
+          padding: 10px;
+          button {
+            width: 40px;
+            height: 40px;
+            margin-right: 25px;
+            border: 1px solid #9B9B9B;
+
+            p {
+              margin-left: -2px;
+            }
+          }
         }
-  
-        .btnSignup:hover {
+      }
+
+      .category {
+        .optionCategory {
+          margin-top: 10px;
+          padding: 10px;
+        
+          button {
+            width: 100px;
+            height: 40px;
+            margin-right: 25px;
+            margin-bottom: 20px;
+            border: 1px solid #9B9B9B;
+          }
+        }
+      }
+
+      .brand {
+        .optionBrand {
+          margin-top: 10px;
+          padding: 10px;
+        
+          select {
+            padding: 8px 10px;
+            background-color: white;
+            color: #4E4B66;
+            font-size: 14px;
+            border-color: #DEDEDE;
+            border-radius: 10px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+          }
+
+          select:focus {
+            box-shadow: 0px 4px 10px 3px rgba(0, 0, 0, 0.11);
+            border-color: #DB3022;
+          }
+        }
+      }
+
+      .btnFooter {
+        .btnDiscard {
+          padding: 8px 70px;
+          border-color: #222222;
+          color: #222222;
+          border-radius: 40px;font-size: 15px;
+        }
+
+        .btnDiscard:hover {
           background-color: white;
         }
-  
-        .btnLogin {
-          font-size: 14px;
-          padding: 8px 30px;
-          color: white;
-          font-weight: 500;
-          border: 1px solid #DB3022;
+
+        .btnApply {
+          margin-left: 20px;
+          margin-right: 30px;
+          padding: 8px 75px;
           background-color: #DB3022;
+          border-color: #DB3022;
           border-radius: 40px;
+          font-size: 15px;
         }
       }
     }
+  }
 }

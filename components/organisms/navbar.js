@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
 import React from "react";
 import style from "../../styles/pages/navbarStyle.module.scss";
@@ -64,8 +65,10 @@ export default function navbar() {
                   aria-labelledby="staticBackdropLabel"
                   aria-hidden="true"
                 >
-                  <div className="modal-dialog">
-                    <div className="modal-content">
+                  <div className="modal-dialog z-3">
+                    <div
+                      className={`modal-content z-3 position-absolute ${style.modal}`}
+                    >
                       <div className="modal-header">
                         <h1
                           className="modal-title fs-5"
@@ -80,7 +83,7 @@ export default function navbar() {
                           aria-label="Close"
                         ></button>
                       </div>
-                      <div className="modal-body">...</div>
+                      <div className="modal-body"><h1>Maulana</h1></div>
                       <div className="modal-footer">
                         <button
                           type="button"

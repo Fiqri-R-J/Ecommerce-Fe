@@ -307,13 +307,15 @@ export default function navbar() {
             </ul>
             {/* BUTTON SHOPPING LOGIN AND REGISTER */}
             <form className={`d-flex ${style.auth}`} role="search">
-              <img
-                className={style.shopping}
-                src="/images/shopping.webp"
-                alt="icon-navbar"
-              />
+              <Link href={"/bag/my-bag"}>
+                <img
+                  className={style.shopping}
+                  src="/images/shopping.webp"
+                  alt="icon-navbar"
+                />
+              </Link>
               <Link
-                href={"/auth/login/customer"}
+                href={"/auth/login"}
                 type="button"
                 className={`btn btn-primary me-3 ${style.btnLogin}`}
               >

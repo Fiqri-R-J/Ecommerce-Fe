@@ -1,7 +1,7 @@
 .main {
   .register {
     .col {
-      padding: 70px 0 0 0;
+      padding: 110px 0 0 0;
 
       .icon {
         display: flex;
@@ -12,58 +12,6 @@
         padding: 30px 0;
         display: flex;
         justify-content: center;
-      }
-
-      .btn {
-        margin-bottom: 40px;
-        display: flex;
-        justify-content: center;
-
-        .btnCustomer {
-          font-size: 14px;
-          padding: 10px 27px;
-          color: #9B9B9B;
-          font-weight: 500;
-          border: 1px solid #9B9B9B;
-        }
-
-        .btnCustomer:hover {
-          background-color: white;
-        }
-
-        .btnSeller {
-          font-size: 14px;
-          padding: 10px 44px;
-          color: white;
-          font-weight: 500;
-          border: 1px solid #DB3022;
-          background-color: #DB3022;
-        }
-
-        .btnSeller:hover {}
-
-        .btnCustomerCS {
-          font-size: 14px;
-          padding: 10px 27px;
-          color: white;
-          font-weight: 500;
-          border: 1px solid #DB3022;
-          background-color: #DB3022;
-        }
-
-        .btnCustomerCS:hover {}
-
-        .btnSellerCS {
-          font-size: 14px;
-          padding: 10px 44px;
-          color: #9B9B9B;
-          font-weight: 500;
-          border: 1px solid #9B9B9B;
-        }
-
-        .btnSellerCS:hover {
-          background-color: white;
-        }
       }
 
       .form {

@@ -24,26 +24,6 @@ export default function RegSeller() {
                 <div className={`${style.order}`}>
                   <h5>Please login with your account</h5>
                 </div>
-                <div className={`${style.btn}`}>
-                  <div
-                    className="btn-group"
-                    role="group"
-                    aria-label="Basic radio toggle button group"
-                  >
-                    <button
-                      type="button"
-                      className={`btn btn-outline-primary rounded-start ${style.btnCustomerCS}`}
-                    >
-                      Customer
-                    </button>
-                    <Link
-                      href={"/auth/login/seller"}
-                      className={`btn rounded-end ${style.btnSellerCS}`}
-                    >
-                      Seller
-                    </Link>
-                  </div>
-                </div>
                 <div className={`${style.form}`}>
                   <form>
                     <div className="mb-3">

@@ -1,0 +1,34 @@
+.main {
+  padding: 0;
+
+  .footer {
+    background-color: #DB3022;
+    padding: 40px;
+
+    .container {
+      padding: 0;
+
+      .foot {
+        border-bottom: 2px solid white;
+        padding: 0 0 35px 0;
+      }
+    }
+
+    img {
+      width: 120px;
+      margin-bottom: 25px;
+    }
+
+    p {
+      width: 300px;
+      line-height: 30px;
+      color: white;
+    }
+
+    .copyright {
+      p {
+        color: white;
+      }
+    }
+  }
+}

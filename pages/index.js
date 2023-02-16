@@ -7,6 +7,7 @@ import style from "@/styles/pages/homeStyle.module.scss";
 import Link from "next/link";
 import Navbar from "@/components/organisms/navbar";
 import CardProduct from "@/components/molecules/cardProduct";
+import Footer from "@/components/organisms/footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -167,6 +168,10 @@ export default function Home() {
             </div>
           </section>
           {/* END OF POPULAR */}
+
+          {/* FOOTER */}
+          <Footer />
+          {/* END OF FOOTER */}
         </div>
       </main>
     </>

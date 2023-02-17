@@ -1,9 +1,79 @@
 /* eslint-disable @next/next/no-img-element */
+import React from "react";
 import Head from "next/head";
 import style from "@/styles/pages/register.module.scss";
 import Link from "next/link";
+import axios from "axios";
+import { setCookie, getCookie } from "cookies-next";
+import { useRouter } from "next/router";
 
 export default function RegSeller() {
+  const router = useRouter();
+  const [username, setUsername] = React.useState("");
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [phone_number, setPhoneNumber] = React.useState("");
+  const [store_name, setStoreName] = React.useState("");
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [error, setError] = React.useState(null);
+  const [success, setSuccess] = React.useState(false);
+
+  const handleSubmit = async () => {
+    try {
+      setIsLoading(true);
+
+      const connect = await axios.post("/api/regSeller", {
+        username,
+        email,
+        password,
+        phone_number,
+        store_name,
+      });
+
+      setIsLoading(false);
+      setError(null);
+      setSuccess(true);
+      router.push("/auth/login");
+    } catch (error) {
+      console.log(error?.response?.data?.message?.message);
+      // error?.response?.data?.message?.username?.message
+      if (error?.response?.data?.message?.username?.message) {
+        setError(
+          error?.response?.data?.message?.username?.message ??
+            "Something wrong in our server"
+        );
+      } else if (error?.response?.data?.message?.email?.message) {
+        setError(
+          error?.response?.data?.message?.email?.message ??
+            "Something wrong in our server"
+        );
+      } else if (error?.response?.data?.message?.password?.message) {
+        setError(
+          error?.response?.data?.message?.password?.message ??
+            "Something wrong in our server"
+        );
+      } else if (error?.response?.data?.message?.phone_number?.message) {
+        setError(
+          error?.response?.data?.message?.phone_number?.message ??
+            "Something wrong in our server"
+        );
+      } else if (error?.response?.data?.message?.store_name?.message) {
+        setError(
+          error?.response?.data?.message?.store_name?.message ??
+            "Something wrong in our server"
+        );
+      } else if (error?.response?.data?.message?.message) {
+        setError(
+          error?.response?.data?.message?.message ??
+            "Something wrong in our server"
+        );
+      } else {
+        setError("Something wrong in our server");
+      }
+      setIsLoading(false);
+    }
+  };
+
   return (
     <>
       <Head>
@@ -44,6 +114,44 @@ export default function RegSeller() {
                     </button>
                   </div>
                 </div>
+                {/* ALERT ERROR HANDLING */}
+                <div className={style.errorHandling}>
+                  <div className={`alert-error ${style.error}`}>
+                    {error ? (
+                      <div
+                        class="alert alert-danger text-center mb-3"
+                        role="alert"
+                        style={{
+                          fontSize: "14px",
+                          border: "0",
+                          borderRadius: "15px",
+                          marginBottom: "-15px",
+                        }}
+                      >
+                        {error}
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+                {/* ALERT SUCCESS HANDLING */}
+                <div className={style.errorHandling}>
+                  <div className={`alert-error ${style.error}`}>
+                    {!error && success ? (
+                      <div
+                        class="alert alert-success"
+                        role="alert"
+                        style={{
+                          fontSize: "16px",
+                          border: "0",
+                          borderRadius: "15px",
+                          padding: "13px 0 5px 0",
+                        }}
+                      >
+                        <p className="text-center">Register successful</p>
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
                 <div className={`${style.form}`}>
                   <form>
                     <div className="mb-3">
@@ -53,7 +161,7 @@ export default function RegSeller() {
                         id="name"
                         aria-describedby="emailHelp"
                         placeholder="Name"
-                        // onChange={(e) => setFullname(e.target.value)}
+                        onChange={(e) => setUsername(e.target.value)}
                       />
                     </div>
                     <div className="mb-3">
@@ -63,7 +171,7 @@ export default function RegSeller() {
                         id="email"
                         aria-describedby="emailHelp"
                         placeholder="Email"
-                        // onChange={(e) => setEmail(e.target.value)}
+                        onChange={(e) => setEmail(e.target.value)}
                       />
                     </div>
                     <div className="mb-3">
@@ -73,7 +181,7 @@ export default function RegSeller() {
                         id="perusahaan"
                         aria-describedby="emailHelp"
                         placeholder="Phone number"
-                        // onChange={(e) => setCompany(e.target.value)}
+                        onChange={(e) => setPhoneNumber(e.target.value)}
                       />
                     </div>
                     <div className="mb-3">
@@ -83,7 +191,7 @@ export default function RegSeller() {
                         id="Jabatan"
                         aria-describedby="emailHelp"
                         placeholder="Store name"
-                        // onChange={(e) => setPosition(e.target.value)}
+                        onChange={(e) => setStoreName(e.target.value)}
                       />
                     </div>
                     <div className="mb-3">
@@ -93,7 +201,7 @@ export default function RegSeller() {
                         id="phone"
                         aria-describedby="emailHelp"
                         placeholder="Password"
-                        // onChange={(e) => setPhone_number(e.target.value)}
+                        onChange={(e) => setPassword(e.target.value)}
                       />
                     </div>
                   </form>
@@ -102,10 +210,10 @@ export default function RegSeller() {
                   <button
                     className="btn btn-warning"
                     type="button"
-                    // onClick={handleSubmit}
-                    // disabled={isLoading}
+                    onClick={handleSubmit}
+                    disabled={isLoading}
                   >
-                    Sign Up
+                    {isLoading ? "Loading..." : "Sign Up"}
                   </button>
                 </div>
                 <div className={`mt-3 register ${style.register}`}>

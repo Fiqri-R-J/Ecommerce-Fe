@@ -1,3 +1,5 @@
+/* eslint-disable react/jsx-key */
+/* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable @next/next/no-img-element */
 import React from "react";
 import Head from "next/head";
@@ -7,6 +9,15 @@ import Navbar from "@/components/organisms/navbar";
 import CardSelectProduct from "@/components/molecules/cardSelectProduct";
 
 export default function bag() {
+  const [bagList, setBagList] = React.useState([
+    {
+      nameProduk: "jacket",
+      brand: "Zalora Cloth",
+      img: "/images/product.webp",
+      total: 1,
+      price: 30000,
+    },
+  ]);
   return (
     <>
       <Head>
@@ -62,8 +73,35 @@ export default function bag() {
                   </div>
                 </div>
                 {/* PRODUCT */}
-                <CardSelectProduct />
-                <CardSelectProduct />
+                {bagList.map((item, key) => {
+                  return (
+                    <CardSelectProduct
+                      {...item}
+                      handleOnIncrease={() => {
+                        const changeBag = bagList.map((_item, _key) => {
+                          if (_key === key) {
+                            return { ...item, ...{ total: 1 + item.total } };
+                          } else {
+                            return item;
+                          }
+                        });
+                        setBagList(changeBag);
+                      }}
+                      handleOnDecrease={() => {
+                        if (item.total > 1) {
+                          const changeBag = bagList.map((_item, _key) => {
+                            if (_key === key) {
+                              return { ...item, ...{ total: item.total - 1 } };
+                            } else {
+                              return item;
+                            }
+                          });
+                          setBagList(changeBag);
+                        }
+                      }}
+                    />
+                  );
+                })}
               </div>
               {/* SIDE RIGHT */}
               <div className="col-4">

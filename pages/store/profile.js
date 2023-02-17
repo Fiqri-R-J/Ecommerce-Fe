@@ -1,55 +1,91 @@
+import Navbar from "@/components/organisms/navbar";
 import React from "react";
+import Sidebar from "../../components/organisms/sidebar";
 
 export default function profile() {
   return (
     <div>
-      <div className="profile">
-        <div className="container-fluid">
+      <Navbar />
+      <div className="profile mt-5">
+        <div className="container">
           <div className="row">
             <div className="col-3">
-              <div class="row justify-content-center align-items-center g-2">
-                <div class="col">
-                  {" "}
-                  <img
-                    src="../../images/profile.png"
-                    alt="profile"
-                    style={{ borderRadius: "50%" }}
-                  />
-                </div>
-                <div class="col">
-                  <p className="text">Johanes Mikael</p>
-                  <span>ubah profile</span>
-                </div>
-              </div>
+              <Sidebar />
             </div>
-            <div
-              className="col"
-              style={{ backgroundColor: "#F5F5F5", width: "100%" }}
-            >
-              <div className="container">
-                <div class="card">
-                  <div class="card-body">
-                    <h5>My Profile Store</h5>
-                    <p>Manage your profile information</p>
-                    <hr />
-                    <div class="row g-3 align-items-center">
-                      <div class="col-auto">
-                        <label for="inputPassword6" class="col-form-label">
-                          Password
-                        </label>
+            <div className="col">
+              <div class="card">
+                <div class="card-body">
+                  <h5>My profile store</h5>
+                  <p className="text-body-secondary">text-body-secondary</p>
+                  <hr />
+                  <div className="row">
+                    <div className="col-8">
+                      <form class="row 3">
+                        <div class="col-4">
+                          <p>Store name</p>
+                        </div>
+                        <div class="col">
+                          <label for="inputStoreName" class="visually-hidden">
+                            Password
+                          </label>
+                          <input
+                            type="text"
+                            class="form-control"
+                            id="inputStoreName"
+                            placeholder="Store Name"
+                          />
+                        </div>
+                      </form>
+                      <form class="row mt-3">
+                        <div class="col-4">
+                          <p>Store description</p>
+                        </div>
+                        <div class="col">
+                          <textarea
+                            class="form-control"
+                            id="exampleFormControlTextarea1"
+                            row="4"
+                          ></textarea>
+                        </div>
+                      </form>
+                      <div className="col-6 offset-4 mt-3">
+                        <button
+                          type="button"
+                          class=" btn badge rounded-pill text-bg-danger"
+                        >
+                          Save
+                        </button>
                       </div>
-                      <div class="col-auto">
-                        <input
-                          type="password"
-                          id="inputPassword6"
-                          class="form-control"
-                          aria-describedby="passwordHelpInline"
+                    </div>
+                    <div className="col-1">
+                      <div
+                        className="verline ms-4"
+                        style={{
+                          borderLeft: "5px solid #D4D4D4",
+                          height: "200px",
+                          left: "50%",
+                          marginLeft: "-3px",
+                          top: "0",
+                        }}
+                      ></div>
+                    </div>
+                    <div className="col-3">
+                      <div className="imgStore">
+                        <img
+                          src="../../images/profile.png"
+                          alt="store"
+                          style={{
+                            width: "100px",
+                            height: "100px",
+                            borderRadius: "50%",
+                          }}
                         />
-                      </div>
-                      <div class="col-auto">
-                        <span id="passwordHelpInline" class="form-text">
-                          Must be 8-20 characters long.
-                        </span>
+                        <button
+                          type="button"
+                          class="btn badge rounded-pill text-bg-secondary mt-3"
+                        >
+                          Select Image
+                        </button>
                       </div>
                     </div>
                   </div>

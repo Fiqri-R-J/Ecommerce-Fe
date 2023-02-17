@@ -32,27 +32,32 @@ export default function RegSeller() {
 
       setCookie("token", connect?.data?.data?.accessToken);
       setCookie("profile", JSON.stringify(connect?.data?.data));
+
+      router.push("/");
     } catch (error) {
       console.log(error?.response?.data?.message?.message);
       // error?.response?.data?.message?.message
       if (error?.response?.data?.message?.email?.message) {
-        setError(error?.response?.data?.message?.email?.message ?? "Something wrong in our server");
+        setError(
+          error?.response?.data?.message?.email?.message ??
+            "Something wrong in our server"
+        );
       } else if (error?.response?.data?.message?.password?.message) {
-        setError(error?.response?.data?.message?.password?.message ?? "Something wrong in our server");
+        setError(
+          error?.response?.data?.message?.password?.message ??
+            "Something wrong in our server"
+        );
       } else if (error?.response?.data?.message?.message) {
-        setError(error?.response?.data?.message?.message ?? "Something wrong in our server");
-      } else { 
-        "Something wrong in our server";
+        setError(
+          error?.response?.data?.message?.message ??
+            "Something wrong in our server"
+        );
+      } else {
+        ("Something wrong in our server");
       }
       setIsLoading(false);
     }
   };
-
-  React.useEffect(() => {
-    if (getCookie("token") && getCookie("profile")) {
-      router.push("/");
-    }
-  }, [router]);
 
   return (
     <>
@@ -89,6 +94,25 @@ export default function RegSeller() {
                         }}
                       >
                         {error}
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+                {/* ALERT SUCCESS HANDLING */}
+                <div className={style.errorHandling}>
+                  <div className={`alert-error ${style.error}`}>
+                    {!error && getCookie("token") && getCookie("profile") ? (
+                      <div
+                        class="alert alert-success"
+                        role="alert"
+                        style={{
+                          fontSize: "16px",
+                          border: "0",
+                          borderRadius: "15px",
+                          padding: "13px 0 5px 0",
+                        }}
+                      >
+                        <p className="text-center">login successful</p>
                       </div>
                     ) : null}
                   </div>

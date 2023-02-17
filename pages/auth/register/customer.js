@@ -1,9 +1,62 @@
 /* eslint-disable @next/next/no-img-element */
+import React from "react";
 import Head from "next/head";
 import style from "@/styles/pages/register.module.scss";
 import Link from "next/link";
+import axios from "axios";
+import { setCookie, getCookie } from "cookies-next";
+import { useRouter } from "next/router";
 
 export default function RegSeller() {
+  const router = useRouter();
+  const [username, setUsername] = React.useState("");
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [error, setError] = React.useState(null);
+  const [success, setSuccess] = React.useState(false);
+
+  const handleSubmit = async () => {
+    try {
+      setIsLoading(true);
+
+      const connect = await axios.post("/api/regCustomer", {
+        username,
+        email,
+        password,
+      });
+
+      setIsLoading(false);
+      setError(null);
+      setSuccess(true);
+      router.push("/auth/login");
+    } catch (error) {
+      console.log(error?.response?.data?.message?.message);
+      // error?.response?.data?.message?.username?.message
+      if (error?.response?.data?.message?.username?.message) {
+        setError(
+          error?.response?.data?.message?.username?.message ??
+            "Something wrong in our server"
+        );
+      } else if (error?.response?.data?.message?.email?.message) {
+        setError(
+          error?.response?.data?.message?.email?.message ??
+            "Something wrong in our server"
+        );
+      } else if (error?.response?.data?.message?.password?.message) {
+        setError(
+          error?.response?.data?.message?.password?.message ??
+            "Something wrong in our server"
+        );
+      } else if (error?.response?.data?.message?.message) {
+        setError(
+          error?.response?.data?.message?.message ??
+            "Something wrong in our server"
+        );
+      } setIsLoading(false);
+    }
+  };
+
   return (
     <>
       <Head>
@@ -44,6 +97,44 @@ export default function RegSeller() {
                     </Link>
                   </div>
                 </div>
+                {/* ALERT ERROR HANDLING */}
+                <div className={style.errorHandling}>
+                  <div className={`alert-error ${style.error}`}>
+                    {error ? (
+                      <div
+                        class="alert alert-danger text-center mb-3"
+                        role="alert"
+                        style={{
+                          fontSize: "14px",
+                          border: "0",
+                          borderRadius: "15px",
+                          marginBottom: "-15px",
+                        }}
+                      >
+                        {error}
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+                {/* ALERT SUCCESS HANDLING */}
+                <div className={style.errorHandling}>
+                  <div className={`alert-error ${style.error}`}>
+                    {!error && success ? (
+                      <div
+                        class="alert alert-success"
+                        role="alert"
+                        style={{
+                          fontSize: "16px",
+                          border: "0",
+                          borderRadius: "15px",
+                          padding: "13px 0 5px 0",
+                        }}
+                      >
+                        <p className="text-center">Register successful</p>
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
                 <div className={`${style.form}`}>
                   <form>
                     <div className="mb-3">
@@ -53,7 +144,7 @@ export default function RegSeller() {
                         id="name"
                         aria-describedby="emailHelp"
                         placeholder="Name"
-                        // onChange={(e) => setFullname(e.target.value)}
+                        onChange={(e) => setUsername(e.target.value)}
                       />
                     </div>
                     <div className="mb-3">
@@ -63,7 +154,7 @@ export default function RegSeller() {
                         id="email"
                         aria-describedby="emailHelp"
                         placeholder="Email"
-                        // onChange={(e) => setEmail(e.target.value)}
+                        onChange={(e) => setEmail(e.target.value)}
                       />
                     </div>
                     <div className="mb-3">
@@ -73,7 +164,7 @@ export default function RegSeller() {
                         id="phone"
                         aria-describedby="emailHelp"
                         placeholder="Password"
-                        // onChange={(e) => setPhone_number(e.target.value)}
+                        onChange={(e) => setPassword(e.target.value)}
                       />
                     </div>
                   </form>
@@ -82,19 +173,16 @@ export default function RegSeller() {
                   <button
                     className="btn btn-warning"
                     type="button"
-                    // onClick={handleSubmit}
-                    // disabled={isLoading}
+                    onClick={handleSubmit}
+                    disabled={isLoading}
                   >
-                    Sign Up
+                    {isLoading ? "Loading..." : "Sign Up"}
                   </button>
                 </div>
                 <div className={`register ${style.register}`}>
                   <p className="text-center">
                     Already have a Tokopedia account?{" "}
-                    <Link
-                      href={"/auth/login/customer"}
-                      className={`${style.linkLogin}`}
-                    >
+                    <Link href={"/auth/login"} className={`${style.linkLogin}`}>
                       Login
                     </Link>
                   </p>

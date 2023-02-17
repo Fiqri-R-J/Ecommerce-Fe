@@ -1,9 +1,59 @@
 /* eslint-disable @next/next/no-img-element */
+import React from "react";
 import Head from "next/head";
 import style from "@/styles/pages/loginStyle.module.scss";
 import Link from "next/link";
+import axios from "axios";
+import { setCookie, getCookie } from "cookies-next";
+import { useRouter } from "next/router";
 
 export default function RegSeller() {
+  const router = useRouter();
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [error, setError] = React.useState(null);
+
+  // React.useEffect(() => {
+  //   console.log(getCookie("profile"));
+  // }, []);
+
+  const handleSubmit = async () => {
+    try {
+      setIsLoading(true);
+
+      const connect = await axios.post("/api/login", {
+        email,
+        password,
+      });
+
+      setIsLoading(false);
+      setError(null);
+
+      setCookie("token", connect?.data?.data?.accessToken);
+      setCookie("profile", JSON.stringify(connect?.data?.data));
+    } catch (error) {
+      console.log(error?.response?.data?.message?.message);
+      // error?.response?.data?.message?.message
+      if (error?.response?.data?.message?.email?.message) {
+        setError(error?.response?.data?.message?.email?.message ?? "Something wrong in our server");
+      } else if (error?.response?.data?.message?.password?.message) {
+        setError(error?.response?.data?.message?.password?.message ?? "Something wrong in our server");
+      } else if (error?.response?.data?.message?.message) {
+        setError(error?.response?.data?.message?.message ?? "Something wrong in our server");
+      } else { 
+        "Something wrong in our server";
+      }
+      setIsLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    if (getCookie("token") && getCookie("profile")) {
+      router.push("/");
+    }
+  }, [router]);
+
   return (
     <>
       <Head>
@@ -24,24 +74,23 @@ export default function RegSeller() {
                 <div className={`${style.order}`}>
                   <h5>Please login with your account</h5>
                 </div>
-                <div className={`${style.btn}`}>
-                  <div
-                    className="btn-group"
-                    role="group"
-                    aria-label="Basic radio toggle button group"
-                  >
-                    <button
-                      type="button"
-                      className={`btn btn-outline-primary rounded-start ${style.btnCustomerCS}`}
-                    >
-                      Customer
-                    </button>
-                    <Link
-                      href={"/auth/login/seller"}
-                      className={`btn rounded-end ${style.btnSellerCS}`}
-                    >
-                      Seller
-                    </Link>
+                {/* ALERT ERROR HANDLING */}
+                <div className={style.errorHandling}>
+                  <div className={`alert-error ${style.error}`}>
+                    {error ? (
+                      <div
+                        class="alert alert-danger text-center mb-3"
+                        role="alert"
+                        style={{
+                          fontSize: "14px",
+                          border: "0",
+                          borderRadius: "15px",
+                          marginBottom: "-15px",
+                        }}
+                      >
+                        {error}
+                      </div>
+                    ) : null}
                   </div>
                 </div>
                 <div className={`${style.form}`}>
@@ -53,7 +102,7 @@ export default function RegSeller() {
                         id="email"
                         aria-describedby="emailHelp"
                         placeholder="Email"
-                        // onChange={(e) => setEmail(e.target.value)}
+                        onChange={(e) => setEmail(e.target.value)}
                       />
                     </div>
                     <div className="mb-3">
@@ -63,7 +112,7 @@ export default function RegSeller() {
                         id="phone"
                         aria-describedby="emailHelp"
                         placeholder="Password"
-                        // onChange={(e) => setPhone_number(e.target.value)}
+                        onChange={(e) => setPassword(e.target.value)}
                       />
                     </div>
                     <p className="text-end">Forgot password?</p>
@@ -73,10 +122,10 @@ export default function RegSeller() {
                   <button
                     className="btn btn-warning"
                     type="button"
-                    // onClick={handleSubmit}
-                    // disabled={isLoading}
+                    onClick={handleSubmit}
+                    disabled={isLoading}
                   >
-                    Login
+                    {isLoading ? "Loading..." : "Login"}
                   </button>
                 </div>
                 <div className={`register ${style.register}`}>

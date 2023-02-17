@@ -69,6 +69,15 @@
         }
       }
 
+      .errorHandling {
+        display: flex;
+        justify-content: center;
+
+        .error {
+          width: 400px;
+        }
+      }
+
       .form {
         display: flex;
         justify-content: center;

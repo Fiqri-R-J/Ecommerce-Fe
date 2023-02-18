@@ -2,9 +2,7 @@ import React from "react";
 import Link from "next/link";
 import style from "../../styles/pages/sidebarStyle.module.scss";
 import { AiOutlineHome } from "react-icons/ai";
-import { BsFillPencilFill } from "react-icons/bs";
-import { BsBoxSeam } from "react-icons/bs";
-import { BsCart2 } from "react-icons/bs";
+import { BsFillPencilFill, BsBoxSeam, BsCart2 } from "react-icons/bs";
 
 export default function sidebar() {
   return (

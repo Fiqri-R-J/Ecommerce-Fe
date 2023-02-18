@@ -1,0 +1,25 @@
+.main {
+  .containerNavbar {
+    display: flex;
+    align-items: center;
+    background-color: white;
+  }
+
+  .content {
+    .breadcrumb {
+      margin-bottom: 40px;
+
+      li,
+      a {
+        color: #9B9B9B;
+        text-decoration: none;
+      }
+    }
+
+    .content {
+      .subTitle {
+        margin-bottom: 20px;
+      }
+    }
+  }
+}

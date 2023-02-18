@@ -179,11 +179,11 @@ export default function DetailProduct() {
                         Add bag
                       </Link>
                       <Link
-                        href={"/bag/my-bag"}
+                        href={"/checkout"}
                         type="button"
                         className={`btn btn-primary rounded-pill ${style.btnBuyNow}`}
                       >
-                        Add bag
+                        Buy Now
                       </Link>
                     </div>
                   </div>

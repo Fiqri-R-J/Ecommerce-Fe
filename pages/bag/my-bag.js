@@ -121,7 +121,7 @@ export default function bag() {
                   <div className="row">
                     <div className="col-12">
                       <Link
-                        href={"/bag/my-bag"}
+                        href={"/checkout"}
                         type="button"
                         className={`btn btn-primary ${style.btnBuy}`}
                       >

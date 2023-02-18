@@ -1,11 +1,16 @@
 import Navbar from "@/components/organisms/navbar";
 import React from "react";
 import Sidebar from "../../components/organisms/sidebar";
+import style from "../../styles/pages/homeStyle.module.scss";
 
 export default function profile() {
   return (
     <div>
-      <Navbar />
+      <nav
+        className={`container-fluid sticky-sm-top shadow py-2 ${style.containerNavbar}`}
+      >
+        <Navbar />
+      </nav>
       <div className="profile mt-5">
         <div className="container">
           <div className="row">

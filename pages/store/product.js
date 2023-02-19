@@ -63,10 +63,22 @@ export default function product() {
                       col="2"
                     />
                   </div>
-                  <div class="card text-start">
-                    <div class="card-body">
-                      <h4 class="card-title">Title</h4>
-                      <p class="card-text">Body</p>
+                  <div className="card text-start">
+                    <div className="card-body">
+                      <table className="table">
+                        <thead>
+                          <tr>
+                            <th scope="col">Product Name</th>
+                            <th scope="col">Price</th>
+                            <th scope="col">Stock</th>
+                          </tr>
+                        </thead>
+                      </table>
+                      <img
+                        src="../../images/product.png"
+                        className="mx-auto d-block"
+                        alt="product"
+                      />
                     </div>
                   </div>
                 </div>

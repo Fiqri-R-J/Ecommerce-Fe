@@ -49,9 +49,9 @@ export default function sidebar() {
 
         <ul className="dropdown-menu">
           <li>
-            <a class="dropdown-item" href="#">
+            <Link class="dropdown-item" href="/store/profile">
               Store Profile
-            </a>
+            </Link>
           </li>
         </ul>
       </div>
@@ -77,13 +77,18 @@ export default function sidebar() {
 
         <ul className="dropdown-menu">
           <li>
-            <a class="dropdown-item" href="#">
-              Store Profile
-            </a>
+            <Link class="dropdown-item" href="/store/product">
+              My Product
+            </Link>
+          </li>
+          <li>
+            <Link class="dropdown-item" href="/store/selling">
+              Selling Product
+            </Link>
           </li>
         </ul>
       </div>
-      <div className="product mt-3 d-flex align-items-center">
+      {/* <div className="product mt-3 d-flex align-items-center">
         <div
           className={`${style.bgIcon}`}
           style={{
@@ -110,7 +115,7 @@ export default function sidebar() {
             </a>
           </li>
         </ul>
-      </div>
+      </div> */}
     </div>
   );
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import Navbar from "@/components/organisms/navbar";
 import React from "react";
 import Sidebar from "../../components/organisms/sidebar";

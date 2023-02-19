@@ -3,8 +3,44 @@
 import React from "react";
 import style from "../../styles/pages/navbarStyle.module.scss";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import { getCookies, getCookie, setCookie, deleteCookie } from "cookies-next";
+import { AiOutlineBell, AiOutlineShoppingCart } from "react-icons/ai";
+import { BsEnvelope } from "react-icons/bs";
 
 export default function navbar() {
+  const [isAuth, setIsAuth] = React.useState(false);
+  const [getData, setGetData] = React.useState(null);
+  const [getToken, setGetToken] = React.useState(null);
+
+  React.useEffect(() => {
+    let token = getCookie("token");
+    let profile = getCookie("profile");
+
+    if (token && profile) {
+      const convertData = JSON.parse(profile);
+
+      setGetData(convertData);
+      setGetToken(token);
+      setIsAuth(true);
+    }
+  }, []);
+
+  const profPict = getData?.photo_profile;
+
+  const handleLogout = () => {
+    deleteCookie("profile");
+    deleteCookie("token");
+    window.location.reload();
+  };
+
+  const handleLogin = () => {
+    router.push("/auth/login");
+  };
+
+  const handleSignup = () => {
+    router.push("/auth/register");
+  };
   return (
     <div className={`container ${style.main}`}>
       <nav className={`${style.navbar}`}>
@@ -306,28 +342,109 @@ export default function navbar() {
               </li>
             </ul>
             {/* BUTTON SHOPPING LOGIN AND REGISTER */}
-            <form className={`d-flex ${style.auth}`} role="search">
-              <Link href={"/bag/my-bag"}>
-                <img
-                  className={style.shopping}
-                  src="/images/shopping.webp"
-                  alt="icon-navbar"
-                />
-              </Link>
-              <Link
-                href={"/auth/login"}
-                type="button"
-                className={`btn btn-primary me-3 ${style.btnLogin}`}
-              >
-                Login
-              </Link>
-              <Link
-                href={"/auth/register/customer"}
-                className={`btn btn-outline-primary ${style.btnSignup}`}
-              >
-                Signup
-              </Link>
-            </form>
+            {isAuth ? (
+              <form className={`d-flex ${style.auth}`} role="search">
+                <Link href={"/bag/my-bag"}>
+                  <img
+                    className={style.shopping}
+                    src="/images/shopping.webp"
+                    alt="icon-navbar"
+                  />
+                </Link>
+                <div className="dropdown-center">
+                  <img
+                    className={style.shopping}
+                    src="/images/bell.png"
+                    alt="icon-navbar"
+                    role="button"
+                    data-bs-toggle="dropdown"
+                  />
+                  <ul className="dropdown-menu">
+                    <li>
+                      <a className="dropdown-item" href="#">
+                        <img src="/images/notification.png" alt="icon-navbar" />
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+                <div className="dropdown-center">
+                  <img
+                    className={style.shopping}
+                    src="/images/mail.png"
+                    alt="icon-navbar"
+                    role="button"
+                    data-bs-toggle="dropdown"
+                  />
+                  <ul className="dropdown-menu">
+                    <li>
+                      <a className="dropdown-item" href="#">
+                        Action
+                      </a>
+                    </li>
+                    <li>
+                      <a className="dropdown-item" href="#">
+                        Action two
+                      </a>
+                    </li>
+                    <li>
+                      <a className="dropdown-item" href="#">
+                        Action three
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+                <div className="nav-item dropdown-center">
+                  <img
+                    src="../../images/profile.png"
+                    width="40px"
+                    height="40px"
+                    style={{
+                      objectFit: "cover",
+                      borderRadius: " 50%",
+                    }}
+                    alt="profile"
+                    className="mx-auto d-block nav-link dropdown-toggle"
+                    role="button"
+                    data-bs-toggle="dropdown"
+                  />
+                  <ul className="dropdown-menu">
+                    <li>
+                      <Link href={"/profile"}>
+                        <div className="dropdown-item">Profile</div>
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href={"/logout"}>
+                        <div className="dropdown-item">logout</div>
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+              </form>
+            ) : (
+              <form className={`d-flex ${style.auth}`} role="search">
+                <Link href={"/bag/my-bag"}>
+                  <img
+                    className={style.shopping}
+                    src="/images/shopping.webp"
+                    alt="icon-navbar"
+                  />
+                </Link>
+                <Link
+                  href={"/auth/login"}
+                  type="button"
+                  className={`btn btn-primary me-3 ${style.btnLogin}`}
+                >
+                  Login
+                </Link>
+                <Link
+                  href={"/auth/register/customer"}
+                  className={`btn btn-outline-primary ${style.btnSignup}`}
+                >
+                  Signup
+                </Link>
+              </form>
+            )}
           </div>
         </nav>
       </nav>

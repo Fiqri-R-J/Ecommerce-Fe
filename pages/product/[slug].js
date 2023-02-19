@@ -4,7 +4,7 @@ import Head from "next/head";
 import style from "@/styles/pages/detailProductStyle.module.scss";
 import Link from "next/link";
 import Navbar from "@/components/organisms/navbar";
-import CardProduct from "@/components/molecules/cardProduct";
+import CardProduct from "@/components/molecules/cardProductNew";
 import Footer from "@/components/organisms/footer";
 
 export default function DetailProduct() {

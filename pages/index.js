@@ -6,12 +6,22 @@ import { Inter } from "@next/font/google";
 import style from "@/styles/pages/homeStyle.module.scss";
 import Link from "next/link";
 import Navbar from "@/components/organisms/navbar";
-import CardProduct from "@/components/molecules/cardProduct";
+import CardProductNew from "@/components/molecules/cardProductNew";
+import CardProductPopular from "@/components/molecules/cardProductPopular";
 import Footer from "@/components/organisms/footer";
+import axios from "axios";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export default function Home() {
+export default function Home(props) {
+  const productListNew = props.productListNew;
+  const productListPopular = props.productListPopular;
+
+  const [productNew, setProductNew] = React.useState(productListNew.data);
+  const [productPopular, setProductPopular] = React.useState(
+    productListPopular.data
+  );
+
   return (
     <>
       <Head>
@@ -130,18 +140,38 @@ export default function Home() {
               <p>You’ve never seen it before!</p>
             </div>
             <div className={`row ${style.content}`}>
-              <div className="col-3">
+              {/* <div className="col-3">
                 <CardProduct />
-              </div>
-              <div className="col-3">
-                <CardProduct />
-              </div>
-              <div className="col-3">
-                <CardProduct />
-              </div>
-              <div className="col-3">
-                <CardProduct />
-              </div>
+              </div> */}
+              {productNew?.map((item, key) => (
+                <React.Fragment key={key}>
+                  <div className="col-3 mb-4">
+                    <CardProductNew
+                      // photo={item?.products_picture?.product_picture}
+                      // img={() => {
+                      //   const picture = item?.products_picture?.product_picture;
+
+                      //   picture.includes("https")
+                      //     ? picture
+                      //     : "https://res.cloudinary.com/daouvimjz/image/upload/v1676279237/" +
+                      //       picture;
+                      // }}
+                      // img={
+                      //   item?.products_picture?.product_picture.includes(
+                      //     "https"
+                      //   )
+                      //     ? item?.products_picture?.product_picture
+                      //     : "https://res.cloudinary.com/daouvimjz/image/upload/v1676279237/" +
+                      //       item?.products_picture?.product_picture
+                      // }
+                      img={item?.products_picture[0]?.product_picture}
+                      productName={item?.product_name}
+                      price={item?.price}
+                      storeName={item?.store_name}
+                    />
+                  </div>
+                </React.Fragment>
+              ))}
             </div>
           </section>
           {/* END OF NEW PRODUCT */}
@@ -153,18 +183,35 @@ export default function Home() {
               <p>Find clothes that are trending recently</p>
             </div>
             <div className={`row ${style.content}`}>
-              <div className="col-3">
-                <CardProduct />
-              </div>
-              <div className="col-3">
-                <CardProduct />
-              </div>
-              <div className="col-3">
-                <CardProduct />
-              </div>
-              <div className="col-3">
-                <CardProduct />
-              </div>
+              {productPopular?.map((item, key) => (
+                <React.Fragment key={key}>
+                  <div className="col-3 mb-4">
+                    <CardProductPopular
+                      // photo={item?.products_picture?.product_picture}
+                      // img={() => {
+                      //   const picture = item?.products_picture?.product_picture;
+
+                      //   picture.includes("https")
+                      //     ? picture
+                      //     : "https://res.cloudinary.com/daouvimjz/image/upload/v1676279237/" +
+                      //       picture;
+                      // }}
+                      // img={
+                      //   item?.products_picture?.product_picture.includes(
+                      //     "https"
+                      //   )
+                      //     ? item?.products_picture?.product_picture
+                      //     : "https://res.cloudinary.com/daouvimjz/image/upload/v1676279237/" +
+                      //       item?.products_picture?.product_picture
+                      // }
+                      img={item?.products_picture[0]?.product_picture}
+                      productName={item?.product_name}
+                      price={item?.price}
+                      storeName={item?.store_name}
+                    />
+                  </div>
+                </React.Fragment>
+              ))}
             </div>
           </section>
           {/* END OF POPULAR */}
@@ -176,4 +223,24 @@ export default function Home() {
       </main>
     </>
   );
+}
+
+export async function getServerSideProps(context) {
+  const productNew = await axios.get(
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/products?page=1&limit=12&sort=DESC`
+  );
+
+  const productPopular = await axios.get(
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/products?page=1&limit=12&orderBy=popular`
+  );
+
+  const convertProductNew = productNew.data;
+  const convertProductPopular = productPopular.data;
+
+  return {
+    props: {
+      productListNew: convertProductNew,
+      productListPopular: convertProductPopular,
+    }, // will be passed to the page component as props
+  };
 }

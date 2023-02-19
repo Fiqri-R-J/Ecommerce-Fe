@@ -13,6 +13,19 @@ export default function navbar() {
   const [isAuth, setIsAuth] = React.useState(false);
   const [getData, setGetData] = React.useState(null);
   const [getToken, setGetToken] = React.useState(null);
+  const [xs, setXs] = React.useState(null);
+  const [s, setS] = React.useState(null);
+  const [m, setM] = React.useState(null);
+  const [l, setL] = React.useState(null);
+  const [xl, setXl] = React.useState(null);
+  const [tshirt, setTshirt] = React.useState(null);
+  const [shirt, setShirt] = React.useState(null);
+  const [shorts, setShorts] = React.useState(null);
+  const [outwear, setOutwear] = React.useState(null);
+  const [pants, setPants] = React.useState(null);
+  const [footwear, setFootwear] = React.useState(null);
+  const [bag, setBag] = React.useState(null);
+  const [headwear, setHeadwear] = React.useState(null);
 
   React.useEffect(() => {
     let token = getCookie("token");
@@ -124,56 +137,23 @@ export default function navbar() {
                         <div className=" border-bottom pb-4">
                           <div className={`${style.colors}`}>
                             <h5 className={`${style.titleColor}`}>Colors</h5>
-                            <div className={`${style.optionColor}`}>
-                              <button
-                                type="button"
-                                className={`btn rounded-circle`}
-                                style={{ backgroundColor: "black" }}
-                                // onClick={() => {
-                                //   setPaymentSelected("visa");
-                                // }}
-                              ></button>
-                              <button
-                                type="button"
-                                className={`btn rounded-circle shadow-sm border border-2`}
-                                style={{ backgroundColor: "white" }}
-                                // onClick={() => {
-                                //   setPaymentSelected("visa");
-                                // }}
-                              ></button>
-                              <button
-                                type="button"
-                                className={`btn rounded-circle`}
-                                style={{ backgroundColor: "#B82222" }}
-                                // onClick={() => {
-                                //   setPaymentSelected("visa");
-                                // }}
-                              ></button>
-                              <button
-                                type="button"
-                                className={`btn rounded-circle`}
-                                style={{ backgroundColor: "#BEA9A9" }}
-                                // onClick={() => {
-                                //   setPaymentSelected("visa");
-                                // }}
-                              ></button>
-                              <button
-                                type="button"
-                                className={`btn rounded-circle`}
-                                style={{ backgroundColor: "#E2BB8D" }}
-                                // onClick={() => {
-                                //   setPaymentSelected("visa");
-                                // }}
-                              ></button>
-                              <button
-                                type="button"
-                                className={`btn rounded-circle`}
-                                style={{ backgroundColor: "#151867" }}
-                                // onClick={() => {
-                                //   setPaymentSelected("visa");
-                                // }}
-                              ></button>
-                            </div>
+                            <select
+                              className="form-select"
+                              aria-label="Default select example"
+                              // onChange={(e) => {
+                              //   fetchBySort(e.target.value);
+                              // }}
+                            >
+                              <option selected disabled>
+                                Color
+                              </option>
+                              <option value="black">Black</option>
+                              <option value="white">White</option>
+                              <option value="red">Red</option>
+                              <option value="gray">Gray</option>
+                              <option value="cream">Cream</option>
+                              <option value="blue">Blue</option>
+                            </select>
                           </div>
                         </div>
                         {/* SIZE */}
@@ -183,51 +163,56 @@ export default function navbar() {
                             <div className={`${style.optionSizes}`}>
                               <button
                                 type="button"
-                                className={`btn rounded-3`}
-                                style={{ backgroundColor: "white" }}
-                                // onClick={() => {
-                                //   setPaymentSelected("visa");
-                                // }}
+                                className={`btn rounded-3 ${
+                                  xs === "xs" ? `${style.paymentSelected}` : ""
+                                }`}
+                                onClick={() => {
+                                  setXs("xs");
+                                }}
                               >
                                 <p>XS</p>
                               </button>
                               <button
                                 type="button"
-                                className={`btn rounded-3`}
-                                style={{ backgroundColor: "white" }}
-                                // onClick={() => {
-                                //   setPaymentSelected("visa");
-                                // }}
+                                className={`btn rounded-3 ${
+                                  s === "s" ? `${style.paymentSelected}` : ""
+                                }`}
+                                onClick={() => {
+                                  setS("s");
+                                }}
                               >
                                 S
                               </button>
                               <button
                                 type="button"
-                                className={`btn rounded-3`}
-                                style={{ backgroundColor: "white" }}
-                                // onClick={() => {
-                                //   setPaymentSelected("visa");
-                                // }}
+                                className={`btn rounded-3 ${
+                                  m === "m" ? `${style.paymentSelected}` : ""
+                                }`}
+                                onClick={() => {
+                                  setM("m");
+                                }}
                               >
                                 M
                               </button>
                               <button
                                 type="button"
-                                className={`btn rounded-3`}
-                                style={{ backgroundColor: "white" }}
-                                // onClick={() => {
-                                //   setPaymentSelected("visa");
-                                // }}
+                                className={`btn rounded-3 ${
+                                  l === "l" ? `${style.paymentSelected}` : ""
+                                }`}
+                                onClick={() => {
+                                  setL("l");
+                                }}
                               >
                                 L
                               </button>
                               <button
                                 type="button"
-                                className={`btn rounded-3`}
-                                style={{ backgroundColor: "white" }}
-                                // onClick={() => {
-                                //   setPaymentSelected("visa");
-                                // }}
+                                className={`btn rounded-3 ${
+                                  xl === "xl" ? `${style.paymentSelected}` : ""
+                                }`}
+                                onClick={() => {
+                                  setXl("xl");
+                                }}
                               >
                                 <p style={{ marginLeft: "-1px" }}>XL</p>
                               </button>
@@ -243,53 +228,107 @@ export default function navbar() {
                             <div className={`${style.optionCategory}`}>
                               <button
                                 type="button"
-                                className={`btn rounded-3`}
-                                style={{ backgroundColor: "white" }}
-                                // onClick={() => {
-                                //   setPaymentSelected("visa");
-                                // }}
+                                className={`btn rounded-3 ${
+                                  tshirt === "T-shirt"
+                                    ? `${style.paymentSelected}`
+                                    : ""
+                                }`}
+                                onClick={() => {
+                                  setTshirt("T-shirt");
+                                }}
                               >
-                                <p>All</p>
+                                <p>T-shirt</p>
                               </button>
                               <button
                                 type="button"
-                                className={`btn rounded-3`}
-                                style={{ backgroundColor: "white" }}
-                                // onClick={() => {
-                                //   setPaymentSelected("visa");
-                                // }}
+                                className={`btn rounded-3 ${
+                                  shirt === "Shirt"
+                                    ? `${style.paymentSelected}`
+                                    : ""
+                                }`}
+                                onClick={() => {
+                                  setShirt("Shirt");
+                                }}
                               >
-                                <p>Women</p>
+                                <p>Shirt</p>
                               </button>
                               <button
                                 type="button"
-                                className={`btn rounded-3`}
-                                style={{ backgroundColor: "white" }}
-                                // onClick={() => {
-                                //   setPaymentSelected("visa");
-                                // }}
+                                className={`btn rounded-3 ${
+                                  shorts === "Shorts"
+                                    ? `${style.paymentSelected}`
+                                    : ""
+                                }`}
+                                onClick={() => {
+                                  setShorts("Shorts");
+                                }}
                               >
-                                <p>Men</p>
+                                <p>Shorts</p>
                               </button>
                               <button
                                 type="button"
-                                className={`btn rounded-3`}
-                                style={{ backgroundColor: "white" }}
-                                // onClick={() => {
-                                //   setPaymentSelected("visa");
-                                // }}
+                                className={`btn rounded-3 ${
+                                  outwear === "outwear"
+                                    ? `${style.paymentSelected}`
+                                    : ""
+                                }`}
+                                onClick={() => {
+                                  setOutwear("outwear");
+                                }}
                               >
-                                <p>Boys</p>
+                                <p>Outwear</p>
                               </button>
                               <button
                                 type="button"
-                                className={`btn rounded-3`}
-                                style={{ backgroundColor: "white" }}
-                                // onClick={() => {
-                                //   setPaymentSelected("visa");
-                                // }}
+                                className={`btn rounded-3 ${
+                                  pants === "pants"
+                                    ? `${style.paymentSelected}`
+                                    : ""
+                                }`}
+                                onClick={() => {
+                                  setPants("pants");
+                                }}
                               >
-                                <p>Girls</p>
+                                <p>pants</p>
+                              </button>
+                              <button
+                                type="button"
+                                className={`btn rounded-3 ${
+                                  footwear === "footwear"
+                                    ? `${style.paymentSelected}`
+                                    : ""
+                                }`}
+                                onClick={() => {
+                                  setFootwear("footwear");
+                                }}
+                              >
+                                <p>footwear</p>
+                              </button>
+                              <button
+                                type="button"
+                                className={`btn rounded-3 ${
+                                  bag === "bag"
+                                    ? `${style.paymentSelected}`
+                                    : ""
+                                }`}
+                                onClick={() => {
+                                  setBag("bag");
+                                }}
+                              >
+                                <p>bag</p>
+                              </button>
+                              <button
+                                type="button"
+                                className={`btn rounded-3 ${
+                                  headwear === "headwear"
+                                    ? `${style.paymentSelected}`
+                                    : ""
+                                }`}
+                                onClick={() => {
+                                  setHeadwear("headwear");
+                                }}
+                              >
+                                <p>headwear</p>
                               </button>
                             </div>
                           </div>
@@ -410,7 +449,7 @@ export default function navbar() {
                   />
                   <ul className="dropdown-menu">
                     <li>
-                      <Link href={"/profile"}>
+                      <Link href={"/store/profile"}>
                         <div className="dropdown-item">Profile</div>
                       </Link>
                     </li>

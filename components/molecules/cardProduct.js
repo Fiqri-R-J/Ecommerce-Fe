@@ -1,12 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
 import React from 'react'
-import style from "@/styles/pages/homeStyle.module.scss";
+import style from "@/styles/pages/cardProductStyle.module.scss";
 import Link from "next/link";
 
 export default function cardProduct() {
   return (
     <div>
-      <Link href={"/"} className={`card shadow ${style.card}`}>
+      <Link href={"/product/test"} className={`card shadow ${style.card}`}>
         <img
           src="/images/product.webp"
           className={`card-img-top ${style.imgProduct}`}

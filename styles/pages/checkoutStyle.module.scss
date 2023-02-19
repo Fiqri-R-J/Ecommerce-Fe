@@ -1,0 +1,179 @@
+.main {
+  .containerNavbar {
+    display: flex;
+    align-items: center;
+    background-color: white;
+  }
+
+  .bag {
+    padding: 40px 20px;
+
+    .subTitle {
+      h3 {
+        font-weight: bold;
+      }
+
+      p {
+        font-weight: 500;
+        margin-top: 25px;
+        margin-bottom: 010px;
+      }
+    }
+
+    .listProduct {
+      .cardSelectAll {
+        border-radius: 7px;
+        background-color: white;
+        // height: 80px;
+
+        .subTitle {
+          font-weight: 500;
+          margin-bottom: 5px;
+        }
+
+        .btnAddress {
+          border-color: #9B9B9B;
+          color: #9B9B9B;
+          width: 200px;
+          font-size: 14px;
+          padding: 8px 0;
+        }
+
+        .btnAddress:hover {
+          border-color: #9B9B9B;
+          background-color: #9B9B9B;
+          color: white;
+        }
+      }
+
+      .product {
+        border-radius: 7px;
+        background-color: white;
+        height: 110px;
+
+        label {
+          img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 7px;
+          }
+        }
+
+        .productName {
+          h5 {
+            font-size: 16px;
+          }
+
+          p {
+            font-size: 14px;
+            color: #9B9B9B;
+          }
+        }
+
+        .totalPrice {
+          h5 {
+            font-size: 20px;
+          }
+        }
+      }
+
+      .cardCost {
+        border-radius: 7px;
+
+        h5 {
+          font-size: 18px;
+        }
+
+        p {
+          color: #9B9B9B;
+        }
+
+        .order {
+          margin-bottom: -10px;
+        }
+
+        .totalPrice {
+          .total {
+            font-weight: bold;
+            color: #DB3022;
+          }
+        }
+
+        .btnBuy {
+          width: 100%;
+          font-size: 14px;
+          padding: 8px 30px;
+          color: white;
+          font-weight: 500;
+          border: 1px solid #DB3022;
+          background-color: #DB3022;
+          border-radius: 40px;
+        }
+
+        .modal {
+          .titleModal {
+            font-size: 25px;
+            margin-right: 330px;
+          }
+
+          .paymentMethod {
+            .optionPayment {
+              margin-bottom: 35px;
+              .iconGopay {
+                width: 95px;
+              }
+
+              .namePayment {
+                margin: 0;
+                padding: 0;
+                font-size: 21px;
+              }
+
+              .check {
+                box-shadow: none;
+                border-color: #9B9B9B;
+              }
+
+              .check:checked {
+                background-color: red;
+                box-shadow: none;
+                border-color: #DB3022;
+              }
+
+              .iconPos {
+                width: 70px;
+              }
+
+              .iconMastercard {
+                width: 70px;
+              }
+            }
+          }
+
+          .total {
+            .delivery {
+              margin-top: -10px;
+            }
+          }
+
+          .footer {
+            height: 80px;
+            .total {
+              color: #DB3022;
+            }
+
+            .btnBuy {
+              width: 150px;
+              padding: 8px 0;
+              background-color: #DB3022;
+              border-color: #DB3022;
+              border-radius: 40px;
+              font-size: 13px;
+            }
+          }
+        }
+      }
+    }
+  }
+}

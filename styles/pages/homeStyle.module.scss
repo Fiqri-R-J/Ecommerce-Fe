@@ -16,6 +16,7 @@
       flex: 0 0 40%;
       border-radius: 8px;
       scroll-snap-align: start;
+      cursor: pointer;
     }
   }
 
@@ -40,6 +41,10 @@
         flex: 0 0 20%;
         border-radius: 8px;
         scroll-snap-align: start;
+
+        .icon {
+          cursor: pointer;
+        }
       }
     }
   }

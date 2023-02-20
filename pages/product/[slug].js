@@ -4,19 +4,14 @@ import Head from "next/head";
 import style from "@/styles/pages/detailProductStyle.module.scss";
 import Link from "next/link";
 import Navbar from "@/components/organisms/navbar";
-import CardProduct from "@/components/molecules/cardProductNew";
+import CardProductNew from "@/components/molecules/cardProductNew";
 import Footer from "@/components/organisms/footer";
+import axios from "axios";
 
-export default function DetailProduct() {
-  // const [bagList, setBagList] = React.useState([
-  //   {
-  //     nameProduk: "jacket",
-  //     brand: "Zalora Cloth",
-  //     img: "/images/product.webp",
-  //     total: 1,
-  //     price: 30000,
-  //   },
-  // ]);
+export default function DetailProduct(props) {
+  const productListNew = props.productListNew;
+
+  const [productNew, setProductNew] = React.useState(productListNew.data);
   return (
     <>
       <Head>
@@ -233,18 +228,18 @@ export default function DetailProduct() {
               <h2>You can also like this</h2>
               <p>You’ve never seen it before!</p>
               <div className={`row ${style.content}`}>
-                <div className="col-3">
-                  <CardProduct />
-                </div>
-                <div className="col-3">
-                  <CardProduct />
-                </div>
-                <div className="col-3">
-                  <CardProduct />
-                </div>
-                <div className="col-3">
-                  <CardProduct />
-                </div>
+                {productNew?.map((item, key) => (
+                  <React.Fragment key={key}>
+                    <div className="col-3 mb-4">
+                      <CardProductNew
+                        img={item?.products_picture[0]?.product_picture}
+                        productName={item?.product_name}
+                        price={item?.price}
+                        storeName={item?.store_name}
+                      />
+                    </div>
+                  </React.Fragment>
+                ))}
               </div>
             </div>
           </section>
@@ -257,4 +252,18 @@ export default function DetailProduct() {
       </main>
     </>
   );
+}
+
+export async function getServerSideProps(context) {
+  const productNew = await axios.get(
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/products?sort=DESC&categoryFilter=tshirt`
+  );
+
+  const convertProductNew = productNew.data;
+
+  return {
+    props: {
+      productListNew: convertProductNew,
+    }, // will be passed to the page component as props
+  };
 }

@@ -22,6 +22,44 @@ export default function Home(props) {
     productListPopular.data
   );
 
+  // SORT BY CATEGORY
+  const fetchBySort = (sortValue) => {
+    if (sortValue) {
+    }
+
+    axios
+      .get(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/products?sort=DESC&categoryFilter=${sortValue}`
+      )
+      .then(({ data }) => {
+        setProductNew(data?.data);
+        console.log(data?.data);
+      })
+      .catch((err) => {
+        // setProductNew("");
+      });
+    // .finally(() => setIsLoading(false));
+  };
+
+  // SORT BY CATEGORY
+  const fetchByColor = (sortValue) => {
+    if (sortValue) {
+    }
+
+    axios
+      .get(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/products?sort=DESC&colorFilter=${sortValue}`
+      )
+      .then(({ data }) => {
+        setProductNew(data?.data);
+        console.log(data?.data);
+      })
+      .catch((err) => {
+        // setProductNew("");
+      });
+    // .finally(() => setIsLoading(false));
+  };
+
   return (
     <>
       <Head>
@@ -54,6 +92,10 @@ export default function Home(props) {
                 className={style.icon}
                 src="/images/Card-Promotion2.webp"
                 alt="icon-navbar"
+                onClick={() => fetchByColor("black")}
+                onChange={(e) => {
+                  fetchByColor(e.target.value);
+                }}
               />
             </div>
             <div className={style.item}>
@@ -99,6 +141,10 @@ export default function Home(props) {
                   className={style.icon}
                   src="/images/t-shirt.webp"
                   alt="icon-navbar"
+                  onClick={() => fetchBySort("tshirt")}
+                  onChange={(e) => {
+                    fetchBySort(e.target.value);
+                  }}
                 />
               </div>
               <div className={style.item}>
@@ -106,13 +152,21 @@ export default function Home(props) {
                   className={style.icon}
                   src="/images/shorts.webp"
                   alt="icon-navbar"
+                  onClick={() => fetchBySort("shorts")}
+                  onChange={(e) => {
+                    fetchBySort(e.target.value);
+                  }}
                 />
               </div>
               <div className={style.item}>
                 <img
                   className={style.icon}
-                  src="/images/jacket.webp"
+                  src="/images/bag.png"
                   alt="icon-navbar"
+                  onClick={() => fetchBySort("bag")}
+                  onChange={(e) => {
+                    fetchBySort(e.target.value);
+                  }}
                 />
               </div>
               <div className={style.item}>
@@ -120,6 +174,10 @@ export default function Home(props) {
                   className={style.icon}
                   src="/images/pants.webp"
                   alt="icon-navbar"
+                  onClick={() => fetchBySort("tshirt")}
+                  onChange={(e) => {
+                    fetchBySort(e.target.value);
+                  }}
                 />
               </div>
               <div className={style.item}>
@@ -127,6 +185,10 @@ export default function Home(props) {
                   className={style.icon}
                   src="/images/shoes.webp"
                   alt="icon-navbar"
+                  onClick={() => fetchBySort("tshirt")}
+                  onChange={(e) => {
+                    fetchBySort(e.target.value);
+                  }}
                 />
               </div>
             </div>
@@ -143,35 +205,22 @@ export default function Home(props) {
               {/* <div className="col-3">
                 <CardProduct />
               </div> */}
-              {productNew?.map((item, key) => (
-                <React.Fragment key={key}>
-                  <div className="col-3 mb-4">
-                    <CardProductNew
-                      // photo={item?.products_picture?.product_picture}
-                      // img={() => {
-                      //   const picture = item?.products_picture?.product_picture;
-
-                      //   picture.includes("https")
-                      //     ? picture
-                      //     : "https://res.cloudinary.com/daouvimjz/image/upload/v1676279237/" +
-                      //       picture;
-                      // }}
-                      // img={
-                      //   item?.products_picture?.product_picture.includes(
-                      //     "https"
-                      //   )
-                      //     ? item?.products_picture?.product_picture
-                      //     : "https://res.cloudinary.com/daouvimjz/image/upload/v1676279237/" +
-                      //       item?.products_picture?.product_picture
-                      // }
-                      img={item?.products_picture[0]?.product_picture}
-                      productName={item?.product_name}
-                      price={item?.price}
-                      storeName={item?.store_name}
-                    />
-                  </div>
-                </React.Fragment>
-              ))}
+              {productNew.length === 0 ? (
+                <h2 className="text-center">Sorry, No Data Found</h2>
+              ) : (
+                productNew?.map((item, key) => (
+                  <React.Fragment key={key}>
+                    <div className="col-3 mb-4">
+                      <CardProductNew
+                        img={item?.products_picture[0]?.product_picture}
+                        productName={item?.product_name}
+                        price={item?.price}
+                        storeName={item?.store_name}
+                      />
+                    </div>
+                  </React.Fragment>
+                ))
+              )}
             </div>
           </section>
           {/* END OF NEW PRODUCT */}

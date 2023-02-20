@@ -1,13 +1,15 @@
 .card {
   width: 100%;
+  height: 400px;
   text-decoration: none;
 
   .imgProduct {
-    height: 165px;
+    height: 230px;
     object-fit: cover;
   }
 
   .cardTitle {
+    height: 50px;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;

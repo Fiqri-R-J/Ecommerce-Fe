@@ -11,11 +11,60 @@ import CardSelectProduct from "@/components/molecules/cardSelectProduct";
 export default function bag() {
   const [bagList, setBagList] = React.useState([
     {
-      nameProduk: "jacket",
+      nameProduk: "Mens formal suit - Black",
       brand: "Zalora Cloth",
       img: "/images/product.webp",
       total: 1,
-      price: 30000,
+      price: 250000,
+    },
+    {
+      nameProduk: "Baju Muslim Pria",
+      brand: "Zalora Cloth",
+      img: "/images/imgProduct.webp",
+      total: 1,
+      price: 150000,
+    },
+    {
+      nameProduk: "Mens formal suit - Black",
+      brand: "Zalora Cloth",
+      img: "/images/product.webp",
+      total: 1,
+      price: 250000,
+    },
+    {
+      nameProduk: "Baju Muslim Pria",
+      brand: "Zalora Cloth",
+      img: "/images/imgProduct.webp",
+      total: 1,
+      price: 150000,
+    },
+    {
+      nameProduk: "Mens formal suit - Black",
+      brand: "Zalora Cloth",
+      img: "/images/product.webp",
+      total: 1,
+      price: 250000,
+    },
+    {
+      nameProduk: "Baju Muslim Pria",
+      brand: "Zalora Cloth",
+      img: "/images/imgProduct.webp",
+      total: 1,
+      price: 150000,
+    },
+    {
+      nameProduk: "Mens formal suit - Black",
+      brand: "Zalora Cloth",
+      img: "/images/product.webp",
+      total: 1,
+      price: 250000,
+    },
+    {
+      nameProduk: "Baju Muslim Pria",
+      brand: "Zalora Cloth",
+      img: "/images/imgProduct.webp",
+      total: 1,
+      price: 150000,
     },
   ]);
   return (
@@ -107,7 +156,7 @@ export default function bag() {
               <div className="col-4">
                 <div
                   className={`shadow-sm py-4 px-4 border mt-3 mb-4 ${style.cardCost}`}
-                  style={{ width: "100%" }}
+                  style={{ width: "365px", position: "fixed" }}
                 >
                   <h5>Shopping summary</h5>
                   <div className="row mt-4 mb-2">
@@ -115,7 +164,7 @@ export default function bag() {
                       <p>Total price</p>
                     </div>
                     <div className="col-6">
-                      <h5 className="text-end">$ 40.0</h5>
+                      <h5 className="text-end">Rp.250000</h5>
                     </div>
                   </div>
                   <div className="row">

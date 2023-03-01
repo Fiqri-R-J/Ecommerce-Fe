@@ -59,7 +59,7 @@ export default function DetailProduct(props) {
                 </div>
                 <div className={`col-8 ${style.sideRight}`}>
                   <div className="row">
-                    <h3 className={style.title}>Baju muslim pira</h3>
+                    <h3 className={style.title}>Baju muslim pria</h3>
                     <p className={style.brand}>Zalora Cloth</p>
                     <img
                       src="/images/Rating.webp"
@@ -84,46 +84,38 @@ export default function DetailProduct(props) {
                         <option selected disabled>
                           Color
                         </option>
-                        <option value="name_asc">white</option>
-                        <option value="name_desc">black</option>
-                        <option value="release_asc">red</option>
-                        <option value="release_desc">Green</option>
+                        <option value="black">Black</option>
+                        <option value="white">White</option>
+                        <option value="red">Red</option>
+                        <option value="gray">Gray</option>
+                        <option value="cream">Cream</option>
+                        <option value="blue">Blue</option>
                       </select>
                     </div>
                   </div>
-                  <div className="row">
-                    <div className="col-4">
-                      {/* <nav aria-label="Page navigation example ">
-                        <ul class="pagination">
+                  {/* SIZE */}
+                  <div className="row" style={{ marginTop: "30px" }}>
+                    <div className="col-3">
+                      <h5>Size</h5>
+                      <nav aria-label="Page navigation example">
+                        <ul
+                          class="pagination"
+                          // style={{ marginLeft: "80px", marginTop: "10px" }}
+                        >
                           <li class="page-item">
                             <a
-                              class="page-link border rounded-circle border-2"
+                              class="page-link border rounded-circle border-2 fw-bold"
                               aria-label="Previous"
                               style={{
                                 borderRadius: "50px",
                                 borderColor: "black",
                               }}
-                              onClick={() => {
-                                const kurang = () => {
-                                  const changeBag = bagList.map(
-                                    (_item, _key) => {
-                                      if (_key === key) {
-                                        return {
-                                          ...item,
-                                          ...{ total: 1 + item.total },
-                                        };
-                                      } else {
-                                        return item;
-                                      }
-                                    }
-                                  );
-                                  setBagList(changeBag);
-                                };
-                              }}
                             >
                               <span
                                 aria-hidden="true"
-                                style={{ color: "black" }}
+                                style={{
+                                  color: "black",
+                                }}
                               >
                                 -
                               </span>
@@ -134,16 +126,13 @@ export default function DetailProduct(props) {
                               class="page-link border-0"
                               style={{ color: "black" }}
                             >
-                              {total}
+                              1
                             </a>
                           </li>
                           <li class="page-item">
                             <a
-                              class="page-link border rounded-circle border-2"
+                              class="page-link border rounded-circle border-2 fw-bold"
                               aria-label="Next"
-                              onClick={() => {
-                                handleOnIncrease();
-                              }}
                             >
                               <span
                                 aria-hidden="true"
@@ -154,10 +143,60 @@ export default function DetailProduct(props) {
                             </a>
                           </li>
                         </ul>
-                      </nav> */}
+                      </nav>
+                    </div>
+                    <div className="col-4">
+                      <h5>Jumlah</h5>
+                      <nav aria-label="Page navigation example">
+                        <ul
+                          class="pagination"
+                          // style={{ marginLeft: "80px", marginTop: "10px" }}
+                        >
+                          <li class="page-item">
+                            <a
+                              class="page-link border rounded-circle border-2 fw-bold"
+                              aria-label="Previous"
+                              style={{
+                                borderRadius: "50px",
+                                borderColor: "black",
+                              }}
+                            >
+                              <span
+                                aria-hidden="true"
+                                style={{
+                                  color: "black",
+                                }}
+                              >
+                                -
+                              </span>
+                            </a>
+                          </li>
+                          <li class="page-item">
+                            <a
+                              class="page-link border-0"
+                              style={{ color: "black" }}
+                            >
+                              1
+                            </a>
+                          </li>
+                          <li class="page-item">
+                            <a
+                              class="page-link border rounded-circle border-2 fw-bold"
+                              aria-label="Next"
+                            >
+                              <span
+                                aria-hidden="true"
+                                style={{ color: "black" }}
+                              >
+                                +
+                              </span>
+                            </a>
+                          </li>
+                        </ul>
+                      </nav>
                     </div>
                   </div>
-                  <div className="row mt-5">
+                  <div className="row mt-4">
                     <div className={`col-12 ${style.btnProduct}`}>
                       <Link
                         href={"/bag/my-bag"}

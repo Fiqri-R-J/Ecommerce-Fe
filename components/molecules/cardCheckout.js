@@ -43,7 +43,7 @@ export default function cardSelectProduct(props) {
           <div
             className={`col-2 offset-1 d-flex align-items-center ${style.totalPrice}`}
           >
-            <h5 className="text-end">$ 20.0</h5>
+            <h5 className="text-end">Rp.250000</h5>
           </div>
         </div>
       </div>

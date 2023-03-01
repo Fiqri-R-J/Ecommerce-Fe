@@ -80,7 +80,7 @@ export default function bag() {
                         <p>Order</p>
                       </div>
                       <div className="col-6">
-                        <h5 className="text-end">$ 40.0</h5>
+                        <h5 className="text-end">Rp.250000</h5>
                       </div>
                     </div>
                     <div className="row">
@@ -88,7 +88,7 @@ export default function bag() {
                         <p>Delivery</p>
                       </div>
                       <div className="col-6">
-                        <h5 className="text-end">$ 5.0</h5>
+                        <h5 className="text-end">Rp.15000</h5>
                       </div>
                     </div>
                   </div>
@@ -98,7 +98,7 @@ export default function bag() {
                         <h5>Shopping summary</h5>
                       </div>
                       <div className="col-5">
-                        <h5 className={`text-end ${style.total}`}>$ 45.0</h5>
+                        <h5 className={`text-end ${style.total}`}>Rp.265000</h5>
                       </div>
                     </div>
                   </div>
@@ -232,7 +232,7 @@ export default function bag() {
                                     <p className={style.orderDelivery}>Order</p>
                                   </div>
                                   <div className="col-6 text-end">
-                                    <h5>$ 40.0</h5>
+                                    <h5>Rp.250000</h5>
                                   </div>
                                 </div>
                                 <div className={`row ${style.delivery}`}>
@@ -242,7 +242,7 @@ export default function bag() {
                                     </p>
                                   </div>
                                   <div className="col-6 text-end">
-                                    <h5>$ 5.0</h5>
+                                    <h5>Rp.15000</h5>
                                   </div>
                                 </div>
                               </div>
@@ -260,7 +260,7 @@ export default function bag() {
                                   >
                                     Shopping summary
                                   </h4>
-                                  <h5 className={`${style.total}`}>$ 45.0</h5>
+                                  <h5 className={`${style.total}`}>Rp.265000</h5>
                                 </div>
                                 <div className="col-6 text-end">
                                   <button

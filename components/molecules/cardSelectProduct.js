@@ -39,9 +39,9 @@ export default function cardSelectProduct(props) {
             <p>{brand}</p>
           </div>
           {/* TOTAL */}
-          <div className={`col-3 text-end`}>
-            <nav aria-label="Page navigation example ">
-              <ul class="pagination">
+          <div className={`col-3`}>
+            <nav aria-label="Page navigation example">
+              <ul class="pagination" style={{marginLeft: "80px", marginTop: "10px"}}>
                 <li class="page-item">
                   <a
                     class="page-link border rounded-circle border-2"
@@ -81,7 +81,7 @@ export default function cardSelectProduct(props) {
           <div
             className={`col-2 offset-1 d-flex align-items-center ${style.totalPrice}`}
           >
-            <h5 className="text-end">{price}</h5>
+            <h5 className="text-end">Rp.{price}</h5>
           </div>
         </div>
       </div>

@@ -23,6 +23,7 @@ export default function address(props) {
   //console.log(JSON.parse(token));
   //console.log(JSON.parse(profile));
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const [profiles, setProfiles] = React.useState(JSON.parse(profile));
   console.log(profiles[0]);
   console.log("tes");

@@ -449,7 +449,7 @@ export default function navbar() {
                   />
                   <ul className="dropdown-menu">
                     <li>
-                      <Link href={"/store/profile"}>
+                      <Link href={"/store/user/profile"}>
                         <div className="dropdown-item">Profile</div>
                       </Link>
                     </li>

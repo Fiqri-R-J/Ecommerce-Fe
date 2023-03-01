@@ -2,7 +2,7 @@ import React from "react";
 import Sidebar from "../../components/organisms/sidebar";
 import Navbar from "@/components/organisms/navbar";
 import style from "../../styles/pages/homeStyle.module.scss";
-import button from "../../styles/pages/navbarStyle.module.scss";
+import Link from "next/link";
 
 export default function selling() {
   return (
@@ -152,9 +152,15 @@ export default function selling() {
                   </div>
                 </div>
               </div>
-              <button type="button" class="btn badge text-bg-danger mb-5">
-                Jual
-              </button>
+              <div className="col-6 mt-3 mb-5">
+                <Link
+                  href={""}
+                  type="button"
+                  className={`btn btn-primary me-3 ${style.save}`}
+                >
+                  Jual
+                </Link>
+              </div>
             </div>
           </div>
         </div>

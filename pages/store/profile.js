@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import Navbar from "@/components/organisms/navbar";
+import Link from "next/link";
 import React from "react";
 import Sidebar from "../../components/organisms/sidebar";
 import style from "../../styles/pages/homeStyle.module.scss";
@@ -55,12 +56,13 @@ export default function profile() {
                         </div>
                       </form>
                       <div className="col-6 offset-4 mt-3">
-                        <button
+                        <Link
+                          href={""}
                           type="button"
-                          class=" btn badge rounded-pill text-bg-danger"
+                          className={`btn btn-primary me-3 ${style.save}`}
                         >
                           Save
-                        </button>
+                        </Link>
                       </div>
                     </div>
                     <div className="col-1">

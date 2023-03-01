@@ -11,13 +11,13 @@ import CardProductPopular from "@/components/molecules/cardProductPopular";
 import Footer from "@/components/organisms/footer";
 import axios from "axios";
 
-const inter = Inter({ subsets: ["latin"] });
-
 export default function Home(props) {
   const productListNew = props.productListNew;
   const productListPopular = props.productListPopular;
 
   const [productNew, setProductNew] = React.useState(productListNew.data);
+  const [dataNotFound, setDataNotFound] = React.useState(false);
+  const [subTitle, setSubTitle] = React.useState("");
   const [productPopular, setProductPopular] = React.useState(
     productListPopular.data
   );
@@ -33,10 +33,11 @@ export default function Home(props) {
       )
       .then(({ data }) => {
         setProductNew(data?.data);
-        console.log(data?.data);
+        setDataNotFound(false);
       })
       .catch((err) => {
         // setProductNew("");
+        setDataNotFound(true);
       });
     // .finally(() => setIsLoading(false));
   };
@@ -52,10 +53,10 @@ export default function Home(props) {
       )
       .then(({ data }) => {
         setProductNew(data?.data);
-        console.log(data?.data);
+        setDataNotFound(false);
       })
       .catch((err) => {
-        // setProductNew("");
+        setDataNotFound(true);
       });
     // .finally(() => setIsLoading(false));
   };
@@ -92,7 +93,10 @@ export default function Home(props) {
                 className={style.icon}
                 src="/images/Card-Promotion2.webp"
                 alt="icon-navbar"
-                onClick={() => fetchByColor("black")}
+                onClick={() => {
+                  fetchByColor("black");
+                  setSubTitle("Black Edition");
+                }}
                 onChange={(e) => {
                   fetchByColor(e.target.value);
                 }}
@@ -141,7 +145,10 @@ export default function Home(props) {
                   className={style.icon}
                   src="/images/t-shirt.webp"
                   alt="icon-navbar"
-                  onClick={() => fetchBySort("tshirt")}
+                  onClick={() => {
+                    fetchBySort("tshirt");
+                    setSubTitle("T-Shirt");
+                  }}
                   onChange={(e) => {
                     fetchBySort(e.target.value);
                   }}
@@ -152,7 +159,10 @@ export default function Home(props) {
                   className={style.icon}
                   src="/images/shorts.webp"
                   alt="icon-navbar"
-                  onClick={() => fetchBySort("shorts")}
+                  onClick={() => {
+                    fetchBySort("shorts");
+                    setSubTitle("Short");
+                  }}
                   onChange={(e) => {
                     fetchBySort(e.target.value);
                   }}
@@ -163,7 +173,10 @@ export default function Home(props) {
                   className={style.icon}
                   src="/images/bag.png"
                   alt="icon-navbar"
-                  onClick={() => fetchBySort("bag")}
+                  onClick={() => {
+                    fetchBySort("bag");
+                    setSubTitle("Bag");
+                  }}
                   onChange={(e) => {
                     fetchBySort(e.target.value);
                   }}
@@ -174,7 +187,10 @@ export default function Home(props) {
                   className={style.icon}
                   src="/images/pants.webp"
                   alt="icon-navbar"
-                  onClick={() => fetchBySort("tshirt")}
+                  onClick={() => {
+                    fetchBySort("pants");
+                    setSubTitle("Pants");
+                  }}
                   onChange={(e) => {
                     fetchBySort(e.target.value);
                   }}
@@ -197,16 +213,29 @@ export default function Home(props) {
 
           {/* NEW PRODUCT */}
           <section className={`container mt-5 ${style.Product}`}>
-            <div className={`${style.subTitle}`}>
-              <h2>New</h2>
-              <p>You’ve never seen it before!</p>
-            </div>
+            {subTitle === "" ? (
+              <div className={`${style.subTitle}`}>
+                <h2>New</h2>
+                <p>You’ve never seen it before!</p>
+              </div>
+            ) : (
+              <div className={`${style.subTitle}`}>
+                <h2>{subTitle}</h2>
+                <p>Category of your choice</p>
+              </div>
+            )}
+
             <div className={`row ${style.content}`}>
               {/* <div className="col-3">
                 <CardProduct />
               </div> */}
-              {productNew.length === 0 ? (
-                <h2 className="text-center">Sorry, No Data Found</h2>
+              {dataNotFound ? (
+                <div style={{ marginBottom: "100px" }}>
+                  <h2 className="text-center">Data not found</h2>
+                  <p className="text-center" style={{ color: "#9B9B9B", fontSize: "14px" }}>
+                    Product with category {subTitle} is empty
+                  </p>
+                </div>
               ) : (
                 productNew?.map((item, key) => (
                   <React.Fragment key={key}>
@@ -280,7 +309,7 @@ export async function getServerSideProps(context) {
   );
 
   const productPopular = await axios.get(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/products?page=1&limit=12&orderBy=popular`
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/products?page=1&limit=12&sort=DESC&orderBy=popular`
   );
 
   const convertProductNew = productNew.data;

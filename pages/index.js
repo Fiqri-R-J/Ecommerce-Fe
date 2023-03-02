@@ -42,7 +42,7 @@ export default function Home(props) {
     // .finally(() => setIsLoading(false));
   };
 
-  // SORT BY CATEGORY
+  // SORT BY CATEGORY COLOR
   const fetchByColor = (sortValue) => {
     if (sortValue) {
     }
@@ -84,13 +84,6 @@ export default function Home(props) {
             <div className={style.item}>
               <img
                 className={style.icon}
-                src="/images/Card-Promotion.webp"
-                alt="icon-navbar"
-              />
-            </div>
-            <div className={style.item}>
-              <img
-                className={style.icon}
                 src="/images/Card-Promotion2.webp"
                 alt="icon-navbar"
                 onClick={() => {
@@ -107,27 +100,28 @@ export default function Home(props) {
                 className={style.icon}
                 src="/images/Card-Promotion.webp"
                 alt="icon-navbar"
+                onClick={() => {
+                  setProductNew(productListPopular.data);
+                  setSubTitle("Trends In 2020");
+                }}
+                onChange={(e) => {
+                  fetchByColor(e.target.value);
+                }}
               />
             </div>
             <div className={style.item}>
               <img
-                className={style.icon}
-                src="/images/Card-Promotion2.webp"
+                className={`rounded-2 ${style.icon}`}
+                src="/images/white-edition.webp"
                 alt="icon-navbar"
-              />
-            </div>
-            <div className={style.item}>
-              <img
-                className={style.icon}
-                src="/images/Card-Promotion.webp"
-                alt="icon-navbar"
-              />
-            </div>
-            <div className={style.item}>
-              <img
-                className={style.icon}
-                src="/images/Card-Promotion2.webp"
-                alt="icon-navbar"
+                style={{ width: "457px" }}
+                onClick={() => {
+                  fetchByColor("white");
+                  setSubTitle("White Edition");
+                }}
+                onChange={(e) => {
+                  fetchByColor(e.target.value);
+                }}
               />
             </div>
           </section>
@@ -143,8 +137,23 @@ export default function Home(props) {
               <div className={style.item}>
                 <img
                   className={style.icon}
+                  src="/images/all-product.webp"
+                  alt="category-all-product"
+                  style={{ width: "206px" }}
+                  onClick={() => {
+                    setProductNew(productListNew.data);
+                    setSubTitle("");
+                  }}
+                  onChange={(e) => {
+                    fetchBySort(e.target.value);
+                  }}
+                />
+              </div>
+              <div className={style.item}>
+                <img
+                  className={style.icon}
                   src="/images/t-shirt.webp"
-                  alt="icon-navbar"
+                  alt="category-t-shirt"
                   onClick={() => {
                     fetchBySort("tshirt");
                     setSubTitle("T-Shirt");
@@ -157,11 +166,12 @@ export default function Home(props) {
               <div className={style.item}>
                 <img
                   className={style.icon}
-                  src="/images/shorts.webp"
-                  alt="icon-navbar"
+                  src="/images/shirt.webp"
+                  alt="category-shirt"
+                  style={{ width: "206px" }}
                   onClick={() => {
-                    fetchBySort("shorts");
-                    setSubTitle("Short");
+                    fetchBySort("shirt");
+                    setSubTitle("Shirt");
                   }}
                   onChange={(e) => {
                     fetchBySort(e.target.value);
@@ -171,11 +181,11 @@ export default function Home(props) {
               <div className={style.item}>
                 <img
                   className={style.icon}
-                  src="/images/bag.png"
-                  alt="icon-navbar"
+                  src="/images/shorts.webp"
+                  alt="category-shorts"
                   onClick={() => {
-                    fetchBySort("bag");
-                    setSubTitle("Bag");
+                    fetchBySort("shorts");
+                    setSubTitle("Shorts");
                   }}
                   onChange={(e) => {
                     fetchBySort(e.target.value);
@@ -186,7 +196,7 @@ export default function Home(props) {
                 <img
                   className={style.icon}
                   src="/images/pants.webp"
-                  alt="icon-navbar"
+                  alt="category-pants"
                   onClick={() => {
                     fetchBySort("pants");
                     setSubTitle("Pants");
@@ -199,9 +209,57 @@ export default function Home(props) {
               <div className={style.item}>
                 <img
                   className={style.icon}
-                  src="/images/shoes.webp"
-                  alt="icon-navbar"
-                  onClick={() => fetchBySort("tshirt")}
+                  src="/images/headwear.webp"
+                  alt="category-headwear"
+                  style={{ width: "206px" }}
+                  onClick={() => {
+                    fetchBySort("headwear");
+                    setSubTitle("Headwear");
+                  }}
+                  onChange={(e) => {
+                    fetchBySort(e.target.value);
+                  }}
+                />
+              </div>
+              <div className={style.item}>
+                <img
+                  className={style.icon}
+                  src="/images/outwear.webp"
+                  alt="category-outwear"
+                  style={{ width: "206px" }}
+                  onClick={() => {
+                    fetchBySort("outwear");
+                    setSubTitle("Outwear");
+                  }}
+                  onChange={(e) => {
+                    fetchBySort(e.target.value);
+                  }}
+                />
+              </div>
+              <div className={style.item}>
+                <img
+                  className={style.icon}
+                  src="/images/footwear.webp"
+                  alt="category-footwear"
+                  style={{ width: "206px" }}
+                  onClick={() => {
+                    fetchBySort("footwear");
+                    setSubTitle("Footwear");
+                  }}
+                  onChange={(e) => {
+                    fetchBySort(e.target.value);
+                  }}
+                />
+              </div>
+              <div className={style.item}>
+                <img
+                  className={style.icon}
+                  src="/images/bag.png"
+                  alt="category-bag"
+                  onClick={() => {
+                    fetchBySort("bag");
+                    setSubTitle("Bag");
+                  }}
                   onChange={(e) => {
                     fetchBySort(e.target.value);
                   }}
@@ -232,7 +290,10 @@ export default function Home(props) {
               {dataNotFound ? (
                 <div style={{ marginBottom: "100px" }}>
                   <h2 className="text-center">Data not found</h2>
-                  <p className="text-center" style={{ color: "#9B9B9B", fontSize: "14px" }}>
+                  <p
+                    className="text-center"
+                    style={{ color: "#9B9B9B", fontSize: "14px" }}
+                  >
                     Product with category {subTitle} is empty
                   </p>
                 </div>
@@ -265,23 +326,6 @@ export default function Home(props) {
                 <React.Fragment key={key}>
                   <div className="col-3 mb-4">
                     <CardProductPopular
-                      // photo={item?.products_picture?.product_picture}
-                      // img={() => {
-                      //   const picture = item?.products_picture?.product_picture;
-
-                      //   picture.includes("https")
-                      //     ? picture
-                      //     : "https://res.cloudinary.com/daouvimjz/image/upload/v1676279237/" +
-                      //       picture;
-                      // }}
-                      // img={
-                      //   item?.products_picture?.product_picture.includes(
-                      //     "https"
-                      //   )
-                      //     ? item?.products_picture?.product_picture
-                      //     : "https://res.cloudinary.com/daouvimjz/image/upload/v1676279237/" +
-                      //       item?.products_picture?.product_picture
-                      // }
                       img={item?.products_picture[0]?.product_picture}
                       productName={item?.product_name}
                       price={item?.price}

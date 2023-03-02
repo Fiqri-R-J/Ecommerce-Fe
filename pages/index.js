@@ -21,6 +21,15 @@ export default function Home(props) {
   const [productPopular, setProductPopular] = React.useState(
     productListPopular.data
   );
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [totalPage, setTotalPage] = React.useState(
+    Math.ceil(productListNew.total / 4)
+  );
+  const [currentPagePopular, setCurrentPagePopular] = React.useState(1);
+  const [totalPagePopular, setTotalPagePopular] = React.useState(
+    Math.ceil(productListPopular.total / 4)
+  );
+  const [clickCategory, setClickCategory] = React.useState(false);
 
   // SORT BY CATEGORY
   const fetchBySort = (sortValue) => {
@@ -61,6 +70,50 @@ export default function Home(props) {
     // .finally(() => setIsLoading(false));
   };
 
+  // PAGINATION FOR NEW PRODUCT
+  const paginationNewProduct = (pageParam) => {
+    // setIsLoading(true);
+    axios
+      .get(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/products?page=${pageParam}&limit=4&sort=DESC`
+      )
+      .then(({ data }) => {
+        let totalPage = Math.ceil(productListNew.total / 4);
+        setProductNew(data?.data);
+        setTotalPage(totalPage);
+        setCurrentPage(pageParam);
+      })
+      .catch((err) => {
+        setProductNew([]);
+        console.log(err);
+      })
+      .finally(() => {
+        // setIsLoading(false);
+      });
+  };
+
+  // PAGINATION FOR POPULAR PRODUCT
+  const paginationPopularProduct = (pageParam) => {
+    // setIsLoading(true);
+    axios
+      .get(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/products?page=${pageParam}&limit=4&sort=DESC&orderBy=popular`
+      )
+      .then(({ data }) => {
+        let totalPage = Math.ceil(productListPopular.total / 4);
+        setProductPopular(data?.data);
+        setTotalPagePopular(totalPage);
+        setCurrentPagePopular(pageParam);
+      })
+      .catch((err) => {
+        setProductPopular([]);
+        console.log(err);
+      })
+      .finally(() => {
+        // setIsLoading(false);
+      });
+  };
+
   return (
     <>
       <Head>
@@ -89,6 +142,7 @@ export default function Home(props) {
                 onClick={() => {
                   fetchByColor("black");
                   setSubTitle("Black Edition");
+                  setClickCategory(true);
                 }}
                 onChange={(e) => {
                   fetchByColor(e.target.value);
@@ -103,6 +157,7 @@ export default function Home(props) {
                 onClick={() => {
                   setProductNew(productListPopular.data);
                   setSubTitle("Trends In 2020");
+                  setClickCategory(true);
                 }}
                 onChange={(e) => {
                   fetchByColor(e.target.value);
@@ -118,6 +173,7 @@ export default function Home(props) {
                 onClick={() => {
                   fetchByColor("white");
                   setSubTitle("White Edition");
+                  setClickCategory(true);
                 }}
                 onChange={(e) => {
                   fetchByColor(e.target.value);
@@ -143,6 +199,7 @@ export default function Home(props) {
                   onClick={() => {
                     setProductNew(productListNew.data);
                     setSubTitle("");
+                    setClickCategory(false);
                   }}
                   onChange={(e) => {
                     fetchBySort(e.target.value);
@@ -157,6 +214,7 @@ export default function Home(props) {
                   onClick={() => {
                     fetchBySort("tshirt");
                     setSubTitle("T-Shirt");
+                    setClickCategory(true);
                   }}
                   onChange={(e) => {
                     fetchBySort(e.target.value);
@@ -172,6 +230,7 @@ export default function Home(props) {
                   onClick={() => {
                     fetchBySort("shirt");
                     setSubTitle("Shirt");
+                    setClickCategory(true);
                   }}
                   onChange={(e) => {
                     fetchBySort(e.target.value);
@@ -186,6 +245,7 @@ export default function Home(props) {
                   onClick={() => {
                     fetchBySort("shorts");
                     setSubTitle("Shorts");
+                    setClickCategory(true);
                   }}
                   onChange={(e) => {
                     fetchBySort(e.target.value);
@@ -200,6 +260,7 @@ export default function Home(props) {
                   onClick={() => {
                     fetchBySort("pants");
                     setSubTitle("Pants");
+                    setClickCategory(true);
                   }}
                   onChange={(e) => {
                     fetchBySort(e.target.value);
@@ -215,6 +276,7 @@ export default function Home(props) {
                   onClick={() => {
                     fetchBySort("headwear");
                     setSubTitle("Headwear");
+                    setClickCategory(true);
                   }}
                   onChange={(e) => {
                     fetchBySort(e.target.value);
@@ -230,6 +292,7 @@ export default function Home(props) {
                   onClick={() => {
                     fetchBySort("outwear");
                     setSubTitle("Outwear");
+                    setClickCategory(true);
                   }}
                   onChange={(e) => {
                     fetchBySort(e.target.value);
@@ -245,6 +308,7 @@ export default function Home(props) {
                   onClick={() => {
                     fetchBySort("footwear");
                     setSubTitle("Footwear");
+                    setClickCategory(true);
                   }}
                   onChange={(e) => {
                     fetchBySort(e.target.value);
@@ -259,6 +323,7 @@ export default function Home(props) {
                   onClick={() => {
                     fetchBySort("bag");
                     setSubTitle("Bag");
+                    setClickCategory(true);
                   }}
                   onChange={(e) => {
                     fetchBySort(e.target.value);
@@ -270,7 +335,7 @@ export default function Home(props) {
           {/* END OF CATEGORY */}
 
           {/* NEW PRODUCT */}
-          <section className={`container mt-5 ${style.Product}`}>
+          <section className={`container mt-5 mb-3 ${style.Product}`}>
             {subTitle === "" ? (
               <div className={`${style.subTitle}`}>
                 <h2>New</h2>
@@ -298,45 +363,137 @@ export default function Home(props) {
                   </p>
                 </div>
               ) : (
-                productNew?.map((item, key) => (
-                  <React.Fragment key={key}>
-                    <div className="col-3 mb-4">
-                      <CardProductNew
-                        img={item?.products_picture[0]?.product_picture}
-                        productName={item?.product_name}
-                        price={item?.price}
-                        storeName={item?.store_name}
-                      />
-                    </div>
-                  </React.Fragment>
-                ))
+                productNew?.map((item, key) => {
+                  const convertNumber = item?.price.replace(
+                    /\d(?=(\d{3})+$)/g,
+                    "$&."
+                  );
+
+                  const capitalize = (str) => {
+                    return str.replace(/(^\w|\s\w)/g, function (letter) {
+                      return letter.toUpperCase();
+                    });
+                  };
+
+                  return (
+                    <React.Fragment key={key}>
+                      <div className="col-3 mb-4">
+                        <CardProductNew
+                          img={item?.products_picture[0]?.product_picture}
+                          productName={capitalize(item?.product_name)}
+                          price={convertNumber}
+                          storeName={item?.store_name}
+                        />
+                      </div>
+                    </React.Fragment>
+                  );
+                })
               )}
             </div>
           </section>
           {/* END OF NEW PRODUCT */}
 
+          {/* PAGINATION */}
+          {!clickCategory ? (
+            <section
+              className={`container pagination justify-content-center ${style.pagination}`}
+            >
+              <nav aria-label="Page navigation example">
+                <ul className="pagination">
+                  {[...new Array(totalPage)].map((item, key) => {
+                    let position = ++key;
+                    return (
+                      <li className="page-item" key={key}>
+                        <a
+                          className={`page-link ${
+                            currentPage === position
+                              ? `active border border-danger me-2 rounded-2 ${style.currentPage}`
+                              : `me-2 rounded-2 text-black border border-danger ${style.unActivePagination}`
+                          }`}
+                          onClick={() => {
+                            paginationNewProduct(position);
+                          }}
+                        >
+                          {position}
+                        </a>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </nav>
+            </section>
+          ) : null}
+
+          {/* END OF PAGINATION */}
+
           {/* POPULAR */}
-          <section className={`container mt-5 mb-5 ${style.Product}`}>
-            <div className={`${style.subTitle}`}>
-              <h2>Popular</h2>
-              <p>Find clothes that are trending recently</p>
-            </div>
-            <div className={`row ${style.content}`}>
-              {productPopular?.map((item, key) => (
-                <React.Fragment key={key}>
-                  <div className="col-3 mb-4">
-                    <CardProductPopular
-                      img={item?.products_picture[0]?.product_picture}
-                      productName={item?.product_name}
-                      price={item?.price}
-                      storeName={item?.store_name}
-                    />
-                  </div>
-                </React.Fragment>
-              ))}
-            </div>
-          </section>
+          {!clickCategory ? (
+            <section className={`container mt-5 mb-3 ${style.Product}`}>
+              <div className={`${style.subTitle}`}>
+                <h2>Popular</h2>
+                <p>Find clothes that are trending recently</p>
+              </div>
+              <div className={`row ${style.content}`}>
+                {productPopular?.map((item, key) => {
+                  const convertNumber = item?.price.replace(
+                    /\d(?=(\d{3})+$)/g,
+                    "$&."
+                  );
+
+                  const capitalize = (str) => {
+                    return str.replace(/(^\w|\s\w)/g, function (letter) {
+                      return letter.toUpperCase();
+                    });
+                  };
+                  return (
+                    <React.Fragment key={key}>
+                      <div className="col-3 mb-4">
+                        <CardProductPopular
+                          img={item?.products_picture[0]?.product_picture}
+                          productName={capitalize(item?.product_name)}
+                          price={convertNumber}
+                          storeName={item?.store_name}
+                        />
+                      </div>
+                    </React.Fragment>
+                  );
+                })}
+              </div>
+            </section>
+          ) : null}
           {/* END OF POPULAR */}
+
+          {/* PAGINATION */}
+          {!clickCategory ? (
+            <section
+              className={`container pagination justify-content-center mb-5 ${style.pagination}`}
+            >
+              <nav aria-label="Page navigation example">
+                <ul className="pagination">
+                  {[...new Array(totalPagePopular)].map((item, key) => {
+                    let position = ++key;
+                    return (
+                      <li className="page-item" key={key}>
+                        <a
+                          className={`page-link ${
+                            currentPagePopular === position
+                              ? `active border border-danger me-2 rounded-2 ${style.currentPage}`
+                              : `me-2 rounded-2 text-black border border-danger ${style.unActivePagination}`
+                          }`}
+                          onClick={() => {
+                            paginationPopularProduct(position);
+                          }}
+                        >
+                          {position}
+                        </a>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </nav>
+            </section>
+          ) : null}
+          {/* END OF PAGINATION */}
 
           {/* FOOTER */}
           <Footer />
@@ -349,11 +506,11 @@ export default function Home(props) {
 
 export async function getServerSideProps(context) {
   const productNew = await axios.get(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/products?page=1&limit=12&sort=DESC`
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/products?page=1&limit=4&sort=DESC`
   );
 
   const productPopular = await axios.get(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/products?page=1&limit=12&sort=DESC&orderBy=popular`
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/products?page=1&limit=4&sort=DESC&orderBy=popular`
   );
 
   const convertProductNew = productNew.data;

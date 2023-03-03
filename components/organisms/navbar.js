@@ -13,19 +13,9 @@ export default function navbar() {
   const [isAuth, setIsAuth] = React.useState(false);
   const [getData, setGetData] = React.useState(null);
   const [getToken, setGetToken] = React.useState(null);
-  const [xs, setXs] = React.useState(null);
-  const [s, setS] = React.useState(null);
-  const [m, setM] = React.useState(null);
-  const [l, setL] = React.useState(null);
-  const [xl, setXl] = React.useState(null);
-  const [tshirt, setTshirt] = React.useState(null);
-  const [shirt, setShirt] = React.useState(null);
-  const [shorts, setShorts] = React.useState(null);
-  const [outwear, setOutwear] = React.useState(null);
-  const [pants, setPants] = React.useState(null);
-  const [footwear, setFootwear] = React.useState(null);
-  const [bag, setBag] = React.useState(null);
-  const [headwear, setHeadwear] = React.useState(null);
+  const [size, setSize] = React.useState(null);
+  const [category, setCategory] = React.useState(null);
+  const [discard, setDiscard]= React.useState(null)
 
   React.useEffect(() => {
     let token = getCookie("token");
@@ -164,10 +154,12 @@ export default function navbar() {
                               <button
                                 type="button"
                                 className={`btn rounded-3 ${
-                                  xs === "xs" ? `${style.paymentSelected}` : ""
+                                  size === "xs"
+                                    ? `${style.paymentSelected}`
+                                    : ""
                                 }`}
                                 onClick={() => {
-                                  setXs("xs");
+                                  setSize("xs");
                                 }}
                               >
                                 <p>XS</p>
@@ -175,10 +167,10 @@ export default function navbar() {
                               <button
                                 type="button"
                                 className={`btn rounded-3 ${
-                                  s === "s" ? `${style.paymentSelected}` : ""
+                                  size === "s" ? `${style.paymentSelected}` : ""
                                 }`}
                                 onClick={() => {
-                                  setS("s");
+                                  setSize("s");
                                 }}
                               >
                                 S
@@ -186,10 +178,10 @@ export default function navbar() {
                               <button
                                 type="button"
                                 className={`btn rounded-3 ${
-                                  m === "m" ? `${style.paymentSelected}` : ""
+                                  size === "m" ? `${style.paymentSelected}` : ""
                                 }`}
                                 onClick={() => {
-                                  setM("m");
+                                  setSize("m");
                                 }}
                               >
                                 M
@@ -197,10 +189,10 @@ export default function navbar() {
                               <button
                                 type="button"
                                 className={`btn rounded-3 ${
-                                  l === "l" ? `${style.paymentSelected}` : ""
+                                  size === "l" ? `${style.paymentSelected}` : ""
                                 }`}
                                 onClick={() => {
-                                  setL("l");
+                                  setSize("l");
                                 }}
                               >
                                 L
@@ -208,10 +200,12 @@ export default function navbar() {
                               <button
                                 type="button"
                                 className={`btn rounded-3 ${
-                                  xl === "xl" ? `${style.paymentSelected}` : ""
+                                  size === "xl"
+                                    ? `${style.paymentSelected}`
+                                    : ""
                                 }`}
                                 onClick={() => {
-                                  setXl("xl");
+                                  setSize("xl");
                                 }}
                               >
                                 <p style={{ marginLeft: "-1px" }}>XL</p>
@@ -229,12 +223,12 @@ export default function navbar() {
                               <button
                                 type="button"
                                 className={`btn rounded-3 ${
-                                  tshirt === "T-shirt"
+                                  category === "T-shirt"
                                     ? `${style.paymentSelected}`
                                     : ""
                                 }`}
                                 onClick={() => {
-                                  setTshirt("T-shirt");
+                                  setCategory("T-shirt");
                                 }}
                               >
                                 <p>T-shirt</p>
@@ -242,12 +236,12 @@ export default function navbar() {
                               <button
                                 type="button"
                                 className={`btn rounded-3 ${
-                                  shirt === "Shirt"
+                                  category === "Shirt"
                                     ? `${style.paymentSelected}`
                                     : ""
                                 }`}
                                 onClick={() => {
-                                  setShirt("Shirt");
+                                  setCategory("Shirt");
                                 }}
                               >
                                 <p>Shirt</p>
@@ -255,12 +249,12 @@ export default function navbar() {
                               <button
                                 type="button"
                                 className={`btn rounded-3 ${
-                                  shorts === "Shorts"
+                                  category === "Shorts"
                                     ? `${style.paymentSelected}`
                                     : ""
                                 }`}
                                 onClick={() => {
-                                  setShorts("Shorts");
+                                  setCategory("Shorts");
                                 }}
                               >
                                 <p>Shorts</p>
@@ -268,12 +262,12 @@ export default function navbar() {
                               <button
                                 type="button"
                                 className={`btn rounded-3 ${
-                                  outwear === "outwear"
+                                  category === "outwear"
                                     ? `${style.paymentSelected}`
                                     : ""
                                 }`}
                                 onClick={() => {
-                                  setOutwear("outwear");
+                                  setCategory("outwear");
                                 }}
                               >
                                 <p>Outwear</p>
@@ -281,12 +275,12 @@ export default function navbar() {
                               <button
                                 type="button"
                                 className={`btn rounded-3 ${
-                                  pants === "pants"
+                                  category === "pants"
                                     ? `${style.paymentSelected}`
                                     : ""
                                 }`}
                                 onClick={() => {
-                                  setPants("pants");
+                                  setCategory("pants");
                                 }}
                               >
                                 <p>pants</p>
@@ -294,12 +288,12 @@ export default function navbar() {
                               <button
                                 type="button"
                                 className={`btn rounded-3 ${
-                                  footwear === "footwear"
+                                  category === "footwear"
                                     ? `${style.paymentSelected}`
                                     : ""
                                 }`}
                                 onClick={() => {
-                                  setFootwear("footwear");
+                                  setCategory("footwear");
                                 }}
                               >
                                 <p>footwear</p>
@@ -307,12 +301,12 @@ export default function navbar() {
                               <button
                                 type="button"
                                 className={`btn rounded-3 ${
-                                  bag === "bag"
+                                  category === "bag"
                                     ? `${style.paymentSelected}`
                                     : ""
                                 }`}
                                 onClick={() => {
-                                  setBag("bag");
+                                  setCategory("bag");
                                 }}
                               >
                                 <p>bag</p>
@@ -320,12 +314,12 @@ export default function navbar() {
                               <button
                                 type="button"
                                 className={`btn rounded-3 ${
-                                  headwear === "headwear"
+                                  category === "headwear"
                                     ? `${style.paymentSelected}`
                                     : ""
                                 }`}
                                 onClick={() => {
-                                  setHeadwear("headwear");
+                                  setCategory("headwear");
                                 }}
                               >
                                 <p>headwear</p>
@@ -364,7 +358,10 @@ export default function navbar() {
                         <button
                           type="button"
                           className={`btn btn-outline-primary ${style.btnDiscard}`}
-                          data-bs-dismiss="modal"
+                          onClick={() => {
+                            setSize(null);
+                            setCategory(null);
+                          }}
                         >
                           Discard
                         </button>

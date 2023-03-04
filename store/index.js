@@ -1,27 +1,28 @@
-import { configureStore } from "@reduxjs/toolkit";
-import { persistReducer } from "redux-persist";
-import { combineReducers } from "redux";
-import storage from "redux-persist/lib/storage";
-import { encryptTransform } from "redux-persist-transform-encrypt";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
 
 import auth from "./reducer/auth";
+import product from "./reducer/product";
 
-// combine all reducer
+import { persistStore, persistReducer } from "redux-persist";
+
+import storageSession from "redux-persist/lib/storage/session";
+
+// import { getDefaultMiddleware } from '@reduxjs/toolkit';
+
+// const customizedMiddleware = getDefaultMiddleware({
+//   serializableCheck: false,
+// });
+
+//COMBINE ALL REDUCERS
 const reducers = combineReducers({
   auth,
+  product,
 });
 
 const persistConfig = {
   key: "root",
-  storage,
-  transforms: [
-    encryptTransform({
-      secretKey: "my-super-secret-key",
-      onError: function (error) {
-        // Handle the error.
-      },
-    }),
-  ],
+  storage: storageSession,
+  whitelist: ["auth", "product"],
 };
 
 const persistedReducer = persistReducer(persistConfig, reducers);
@@ -29,6 +30,11 @@ const persistedReducer = persistReducer(persistConfig, reducers);
 const store = configureStore({
   reducer: persistedReducer,
   devTools: process.env.NODE_ENV !== "production",
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
 });
 
+export const persistor = persistStore(store);
 export default store;

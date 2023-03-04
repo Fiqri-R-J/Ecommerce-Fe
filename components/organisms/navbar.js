@@ -4,18 +4,60 @@
 import React from "react";
 import style from "../../styles/pages/navbarStyle.module.scss";
 import Link from "next/link";
+import axios from "axios";
 import { useRouter } from "next/router";
 import { getCookies, getCookie, setCookie, deleteCookie } from "cookies-next";
 import { AiOutlineBell, AiOutlineShoppingCart } from "react-icons/ai";
 import { BsEnvelope } from "react-icons/bs";
 
-export default function navbar() {
+export default function navbar(props) {
+  const productAllBrand = props.productAllBrand;
   const [isAuth, setIsAuth] = React.useState(false);
   const [getData, setGetData] = React.useState(null);
   const [getToken, setGetToken] = React.useState(null);
   const [size, setSize] = React.useState(null);
   const [category, setCategory] = React.useState(null);
-  const [discard, setDiscard]= React.useState(null)
+  const [keyword, setKeyword] = React.useState("");
+  const [product, setProduct] = React.useState([]);
+  const [filterColor, setFilterColor] = React.useState("");
+  const [filterSize, setFilterSize] = React.useState("");
+  const [filterCategory, setFilterCategory] = React.useState("");
+  const [filterBrand, setFilterBrand] = React.useState("");
+  const [allBrand, setAllBrand] = React.useState();
+
+  
+
+  const [productNew, setProductNew] = React.useState(productAllBrand);
+
+  console.log(productAllBrand);
+
+  // React.useEffect(() => {
+  //   axios
+  //     .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/products/?allBrand=true`)
+  //     .then(({ data }) => {
+  //       setAllBrand(data?.data);
+  //       // console.log(data?.data)
+  //       console.log("oke")
+  //       console.log(allBrand);
+  //     })
+  //     .catch(() => {
+  //       // setProduct([]);
+  //     });
+  // },[allBrand]);
+
+  // const test = () => {
+  //   axios
+  //     .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/products/?allBrand=true`)
+  //     .then(({ data }) => {
+  //       setAllBrand(data?.data);
+  //       // console.log(data?.data)
+  //       console.log("oke");
+  //       console.log(allBrand);
+  //     })
+  //     .catch(() => {
+  //       // setProduct([]);
+  //     });
+  // }
 
   React.useEffect(() => {
     let token = getCookie("token");
@@ -45,6 +87,38 @@ export default function navbar() {
   const handleSignup = () => {
     router.push("/auth/register");
   };
+
+  // FEATURE SEARCH PRODUCT
+  const fetchByKeyword = () => {
+    axios
+      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/products/${keyword}`)
+      .then(({ data }) => {
+        setKeyword("");
+        product(data?.data);
+        // setTotalPage(0);
+      })
+      .catch(() => setProduct([]));
+    // .finally(() => setIsLoading(false));
+  };
+
+  // FEATURE SEARCH PRODUCT
+  const productByCategory = () => {
+    axios
+      .get(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/products/?page=1&limit=12&sizeFilter=${filterSize}&colorFilter=${filterColor}&categoryFilter=${filterCategory}`
+      )
+      .then(({ data }) => {
+        setProduct(data);
+        // setTotalPage(0);
+      })
+      .catch((err) => {
+        setProduct([]);
+        console.log(err);
+      });
+    // .finally(() => setIsLoading(false));
+  };
+  // console.log(product);
+
   return (
     <div className={`container ${style.main}`}>
       <nav className={`${style.navbar}`}>
@@ -79,6 +153,15 @@ export default function navbar() {
                   id="exampleInputEmail1"
                   aria-describedby="emailHelp"
                   placeholder="Search"
+                  value={keyword}
+                  onChange={(e) => {
+                    setKeyword(e.target.value);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      fetchByKeyword();
+                    }
+                  }}
                 />
               </li>
               {/* SORT */}
@@ -130,9 +213,9 @@ export default function navbar() {
                             <select
                               className="form-select"
                               aria-label="Default select example"
-                              // onChange={(e) => {
-                              //   fetchBySort(e.target.value);
-                              // }}
+                              onChange={(e) => {
+                                setFilterColor(e.target.value);
+                              }}
                             >
                               <option selected disabled>
                                 Color
@@ -160,6 +243,7 @@ export default function navbar() {
                                 }`}
                                 onClick={() => {
                                   setSize("xs");
+                                  setFilterSize("XS");
                                 }}
                               >
                                 <p>XS</p>
@@ -171,6 +255,7 @@ export default function navbar() {
                                 }`}
                                 onClick={() => {
                                   setSize("s");
+                                  setFilterSize("S");
                                 }}
                               >
                                 S
@@ -182,6 +267,7 @@ export default function navbar() {
                                 }`}
                                 onClick={() => {
                                   setSize("m");
+                                  setFilterSize("M");
                                 }}
                               >
                                 M
@@ -193,6 +279,7 @@ export default function navbar() {
                                 }`}
                                 onClick={() => {
                                   setSize("l");
+                                  setFilterSize("L");
                                 }}
                               >
                                 L
@@ -206,6 +293,7 @@ export default function navbar() {
                                 }`}
                                 onClick={() => {
                                   setSize("xl");
+                                  setFilterSize("XL");
                                 }}
                               >
                                 <p style={{ marginLeft: "-1px" }}>XL</p>
@@ -229,6 +317,7 @@ export default function navbar() {
                                 }`}
                                 onClick={() => {
                                   setCategory("T-shirt");
+                                  setFilterCategory("tshirt");
                                 }}
                               >
                                 <p>T-shirt</p>
@@ -242,6 +331,7 @@ export default function navbar() {
                                 }`}
                                 onClick={() => {
                                   setCategory("Shirt");
+                                  setFilterCategory("shirt");
                                 }}
                               >
                                 <p>Shirt</p>
@@ -255,6 +345,7 @@ export default function navbar() {
                                 }`}
                                 onClick={() => {
                                   setCategory("Shorts");
+                                  setFilterCategory("shorts");
                                 }}
                               >
                                 <p>Shorts</p>
@@ -268,6 +359,7 @@ export default function navbar() {
                                 }`}
                                 onClick={() => {
                                   setCategory("outwear");
+                                  setFilterCategory("outwear");
                                 }}
                               >
                                 <p>Outwear</p>
@@ -281,6 +373,7 @@ export default function navbar() {
                                 }`}
                                 onClick={() => {
                                   setCategory("pants");
+                                  setFilterCategory("pants");
                                 }}
                               >
                                 <p>pants</p>
@@ -294,6 +387,7 @@ export default function navbar() {
                                 }`}
                                 onClick={() => {
                                   setCategory("footwear");
+                                  setFilterCategory("footwear");
                                 }}
                               >
                                 <p>footwear</p>
@@ -307,6 +401,7 @@ export default function navbar() {
                                 }`}
                                 onClick={() => {
                                   setCategory("bag");
+                                  setFilterCategory("bag");
                                 }}
                               >
                                 <p>bag</p>
@@ -320,6 +415,7 @@ export default function navbar() {
                                 }`}
                                 onClick={() => {
                                   setCategory("headwear");
+                                  setFilterCategory("headwear");
                                 }}
                               >
                                 <p>headwear</p>
@@ -342,12 +438,23 @@ export default function navbar() {
                                 <option selected disabled>
                                   Brand
                                 </option>
+                                {/* {test.map((item, key) => (
+                                  <React.Fragment key={key}>
+                                    <option value={item}>
+                                      {item}
+                                    </option>
+                                  </React.Fragment>
+                                ))} */}
+
+                                {/* <option selected disabled>
+                                  Brand
+                                </option>
                                 <option value="name_asc">
                                   Adidas Originals
                                 </option>
                                 <option value="name_desc">Jack & Jones</option>
                                 <option value="release_asc">s.Oliver</option>
-                                <option value="release_desc">Gucci</option>
+                                <option value="release_desc">Gucci</option> */}
                               </select>
                             </div>
                           </div>
@@ -368,7 +475,9 @@ export default function navbar() {
                         <button
                           type="button"
                           className={`btn btn-secondary ${style.btnApply}`}
-                          data-bs-dismiss="modal"
+                          onClick={() => {
+                            productByCategory();
+                          }}
                         >
                           Apply
                         </button>
@@ -487,4 +596,18 @@ export default function navbar() {
       </nav>
     </div>
   );
+}
+
+export async function getServerSideProps(context) {
+  const getAllBrand = await axios.get(
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/products/?allBrand=true`
+  );
+
+  const convertAllBrand = getAllBrand.data;
+
+  return {
+    props: {
+      productAllBrand: convertAllBrand,
+    }, // will be passed to the page component as props
+  };
 }

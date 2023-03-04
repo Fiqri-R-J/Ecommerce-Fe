@@ -423,7 +423,6 @@ export default function Home(props) {
               </nav>
             </section>
           ) : null}
-
           {/* END OF PAGINATION */}
 
           {/* POPULAR */}

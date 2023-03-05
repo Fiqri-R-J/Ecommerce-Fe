@@ -10,8 +10,7 @@ import { getCookies, getCookie, setCookie, deleteCookie } from "cookies-next";
 import { AiOutlineBell, AiOutlineShoppingCart } from "react-icons/ai";
 import { BsEnvelope } from "react-icons/bs";
 
-export default function navbar(props) {
-  const productAllBrand = props.productAllBrand;
+export default function navbar() {
   const [isAuth, setIsAuth] = React.useState(false);
   const [getData, setGetData] = React.useState(null);
   const [getToken, setGetToken] = React.useState(null);
@@ -23,41 +22,21 @@ export default function navbar(props) {
   const [filterSize, setFilterSize] = React.useState("");
   const [filterCategory, setFilterCategory] = React.useState("");
   const [filterBrand, setFilterBrand] = React.useState("");
-  const [allBrand, setAllBrand] = React.useState();
+  const [allBrand, setAllBrand] = React.useState([]);
 
-  
-
-  const [productNew, setProductNew] = React.useState(productAllBrand);
-
-  console.log(productAllBrand);
-
-  // React.useEffect(() => {
-  //   axios
-  //     .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/products/?allBrand=true`)
-  //     .then(({ data }) => {
-  //       setAllBrand(data?.data);
-  //       // console.log(data?.data)
-  //       console.log("oke")
-  //       console.log(allBrand);
-  //     })
-  //     .catch(() => {
-  //       // setProduct([]);
-  //     });
-  // },[allBrand]);
-
-  // const test = () => {
-  //   axios
-  //     .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/products/?allBrand=true`)
-  //     .then(({ data }) => {
-  //       setAllBrand(data?.data);
-  //       // console.log(data?.data)
-  //       console.log("oke");
-  //       console.log(allBrand);
-  //     })
-  //     .catch(() => {
-  //       // setProduct([]);
-  //     });
-  // }
+  // GET ALL BRAND
+  React.useEffect(() => {
+    axios
+      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/products/?allBrand=true`)
+      .then(({ data }) => {
+        const brand = JSON.parse(data?.data);
+        setAllBrand(brand);
+        // console.log(data?.data)
+      })
+      .catch(() => {
+        // setProduct([]);
+      });
+  }, []);
 
   React.useEffect(() => {
     let token = getCookie("token");
@@ -105,19 +84,18 @@ export default function navbar(props) {
   const productByCategory = () => {
     axios
       .get(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/products/?page=1&limit=12&sizeFilter=${filterSize}&colorFilter=${filterColor}&categoryFilter=${filterCategory}`
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/products/?page=1&limit=12&sizeFilter=${filterSize}&colorFilter=${filterColor}&categoryFilter=${filterCategory}&brandFilter=${filterBrand}`
       )
       .then(({ data }) => {
-        setProduct(data);
+        setProduct(data?.data);
         // setTotalPage(0);
       })
       .catch((err) => {
         setProduct([]);
-        console.log(err);
+        // console.log(err);
       });
     // .finally(() => setIsLoading(false));
   };
-  // console.log(product);
 
   return (
     <div className={`container ${style.main}`}>
@@ -429,32 +407,20 @@ export default function navbar(props) {
                             <h5 className={`${style.titleBrand}`}>Brand</h5>
                             <div className={`${style.optionBrand}`}>
                               <select
-                                className="form-select"
+                                className="form-select btn-group dropup"
                                 aria-label="Default select example"
-                                // onChange={(e) => {
-                                //   fetchBySort(e.target.value);
-                                // }}
+                                onChange={(e) => {
+                                  setFilterBrand(e.target.value);
+                                }}
                               >
                                 <option selected disabled>
                                   Brand
                                 </option>
-                                {/* {test.map((item, key) => (
-                                  <React.Fragment key={key}>
-                                    <option value={item}>
-                                      {item}
-                                    </option>
-                                  </React.Fragment>
-                                ))} */}
-
-                                {/* <option selected disabled>
-                                  Brand
-                                </option>
-                                <option value="name_asc">
-                                  Adidas Originals
-                                </option>
-                                <option value="name_desc">Jack & Jones</option>
-                                <option value="release_asc">s.Oliver</option>
-                                <option value="release_desc">Gucci</option> */}
+                                {allBrand.map((item, key) => (
+                                  <option value={item} key={key}>
+                                    {item}
+                                  </option>
+                                ))}
                               </select>
                             </div>
                           </div>
@@ -596,18 +562,4 @@ export default function navbar(props) {
       </nav>
     </div>
   );
-}
-
-export async function getServerSideProps(context) {
-  const getAllBrand = await axios.get(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/products/?allBrand=true`
-  );
-
-  const convertAllBrand = getAllBrand.data;
-
-  return {
-    props: {
-      productAllBrand: convertAllBrand,
-    }, // will be passed to the page component as props
-  };
 }

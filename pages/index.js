@@ -10,6 +10,10 @@ import CardProductNew from "@/components/molecules/cardProductNew";
 import CardProductPopular from "@/components/molecules/cardProductPopular";
 import Footer from "@/components/organisms/footer";
 import axios from "axios";
+import { useRouter } from "next/router";
+//REDUX
+import * as productRedux from "@/store/reducer/product";
+import { useDispatch } from "react-redux";
 
 export default function Home(props) {
   const productListNew = props.productListNew;
@@ -30,6 +34,24 @@ export default function Home(props) {
     Math.ceil(productListPopular.total / 4)
   );
   const [clickCategory, setClickCategory] = React.useState(false);
+
+  const router = useRouter();
+  //REDUX
+  const dispatch = useDispatch();
+
+  const handleClickSlug = (slug) => {
+    axios
+      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/products/${slug}`)
+      .then(({ data }) => {
+        console.log("response", data);
+        dispatch(
+          productRedux.setData({
+            data: data?.data[0],
+          })
+        );
+        router.push(`/product/${slug}`);
+      });
+  };
 
   // SORT BY CATEGORY
   const fetchBySort = (sortValue) => {
@@ -68,6 +90,11 @@ export default function Home(props) {
         setDataNotFound(true);
       });
     // .finally(() => setIsLoading(false));
+    const capitalize = (str) => {
+      return str.replace(/(^\w|\s\w)/g, function (letter) {
+        return letter.toUpperCase();
+      });
+    };
   };
 
   // PAGINATION FOR NEW PRODUCT
@@ -126,8 +153,7 @@ export default function Home(props) {
         <div className="container-fluid p-0">
           {/* NAVBAR */}
           <nav
-            className={`container-fluid sticky-sm-top shadow py-2 ${style.containerNavbar}`}
-          >
+            className={`container-fluid sticky-sm-top shadow py-2 ${style.containerNavbar}`}>
             <Navbar />
           </nav>
           {/* END OF NAVBAR */}
@@ -180,6 +206,17 @@ export default function Home(props) {
                 }}
               />
             </div>
+            <style>
+              {`
+    ::-webkit-scrollbar {
+      width: 0.1em;
+      height: 0.5em;
+    }
+    ::-webkit-scrollbar-thumb {
+      background-color: rgba(0, 0, 0, 0.2);
+    }
+  `}
+            </style>
           </section>
           {/* END OF PROMOTION */}
 
@@ -357,8 +394,7 @@ export default function Home(props) {
                   <h2 className="text-center">Data not found</h2>
                   <p
                     className="text-center"
-                    style={{ color: "#9B9B9B", fontSize: "14px" }}
-                  >
+                    style={{ color: "#9B9B9B", fontSize: "14px" }}>
                     Product with category {subTitle} is empty
                   </p>
                 </div>
@@ -374,15 +410,20 @@ export default function Home(props) {
                       return letter.toUpperCase();
                     });
                   };
-
                   return (
                     <React.Fragment key={key}>
-                      <div className="col-3 mb-4">
+                      <div
+                        className="col-3 mb-4"
+                        onClick={() => {
+                          handleClickSlug(item?.slug);
+                        }}>
                         <CardProductNew
                           img={item?.products_picture[0]?.product_picture}
                           productName={capitalize(item?.product_name)}
                           price={convertNumber}
                           storeName={item?.store_name}
+                          avgReview={item?.avg_review}
+                          getSlug={item?.slug}
                         />
                       </div>
                     </React.Fragment>
@@ -396,8 +437,7 @@ export default function Home(props) {
           {/* PAGINATION */}
           {!clickCategory ? (
             <section
-              className={`container pagination justify-content-center ${style.pagination}`}
-            >
+              className={`container pagination justify-content-center ${style.pagination}`}>
               <nav aria-label="Page navigation example">
                 <ul className="pagination">
                   {[...new Array(totalPage)].map((item, key) => {
@@ -412,8 +452,7 @@ export default function Home(props) {
                           }`}
                           onClick={() => {
                             paginationNewProduct(position);
-                          }}
-                        >
+                          }}>
                           {position}
                         </a>
                       </li>
@@ -426,6 +465,44 @@ export default function Home(props) {
           {/* END OF PAGINATION */}
 
           {/* POPULAR */}
+          <section className={`container mt-5 mb-5 ${style.Product}`}>
+            <div className={`${style.subTitle}`}>
+              <h2>Popular</h2>
+              <p>Find clothes that are trending recently</p>
+            </div>
+            <div className={`row ${style.content}`}>
+              {productPopular?.map((item, key) => {
+                const convertNumber = item?.price.replace(
+                  /\d(?=(\d{3})+$)/g,
+                  "$&."
+                );
+
+                const capitalize = (str) => {
+                  return str.replace(/(^\w|\s\w)/g, function (letter) {
+                    return letter.toUpperCase();
+                  });
+                };
+
+                return (
+                  <React.Fragment key={key}>
+                    <div
+                      className="col-3 mb-4"
+                      onClick={() => {
+                        handleClickSlug(item?.slug);
+                      }}>
+                      <CardProductPopular
+                        img={item?.products_picture[0]?.product_picture}
+                        productName={capitalize(item?.product_name)}
+                        price={convertNumber}
+                        storeName={item?.store_name}
+                        avgReview={item?.avg_review}
+                      />
+                    </div>
+                  </React.Fragment>
+                );
+              })}
+            </div>
+          </section>
           {!clickCategory ? (
             <section className={`container mt-5 mb-3 ${style.Product}`}>
               <div className={`${style.subTitle}`}>
@@ -465,8 +542,7 @@ export default function Home(props) {
           {/* PAGINATION */}
           {!clickCategory ? (
             <section
-              className={`container pagination justify-content-center mb-5 ${style.pagination}`}
-            >
+              className={`container pagination justify-content-center mb-5 ${style.pagination}`}>
               <nav aria-label="Page navigation example">
                 <ul className="pagination">
                   {[...new Array(totalPagePopular)].map((item, key) => {
@@ -481,8 +557,7 @@ export default function Home(props) {
                           }`}
                           onClick={() => {
                             paginationPopularProduct(position);
-                          }}
-                        >
+                          }}>
                           {position}
                         </a>
                       </li>

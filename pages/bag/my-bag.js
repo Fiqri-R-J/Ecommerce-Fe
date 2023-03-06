@@ -7,66 +7,123 @@ import style from "@/styles/pages/myBagStyle.module.scss";
 import Link from "next/link";
 import Navbar from "@/components/organisms/navbar";
 import CardSelectProduct from "@/components/molecules/cardSelectProduct";
+import axios from "axios";
+import { useRouter } from "next/router";
+import { getCookies, getCookie, setCookie, deleteCookie } from "cookies-next";
 
-export default function bag() {
-  const [bagList, setBagList] = React.useState([
-    {
-      nameProduk: "Mens formal suit - Black",
-      brand: "Zalora Cloth",
-      img: "/images/product.webp",
-      total: 1,
-      price: 250000,
-    },
-    {
-      nameProduk: "Baju Muslim Pria",
-      brand: "Zalora Cloth",
-      img: "/images/imgProduct.webp",
-      total: 1,
-      price: 150000,
-    },
-    {
-      nameProduk: "Mens formal suit - Black",
-      brand: "Zalora Cloth",
-      img: "/images/product.webp",
-      total: 1,
-      price: 250000,
-    },
-    {
-      nameProduk: "Baju Muslim Pria",
-      brand: "Zalora Cloth",
-      img: "/images/imgProduct.webp",
-      total: 1,
-      price: 150000,
-    },
-    {
-      nameProduk: "Mens formal suit - Black",
-      brand: "Zalora Cloth",
-      img: "/images/product.webp",
-      total: 1,
-      price: 250000,
-    },
-    {
-      nameProduk: "Baju Muslim Pria",
-      brand: "Zalora Cloth",
-      img: "/images/imgProduct.webp",
-      total: 1,
-      price: 150000,
-    },
-    {
-      nameProduk: "Mens formal suit - Black",
-      brand: "Zalora Cloth",
-      img: "/images/product.webp",
-      total: 1,
-      price: 250000,
-    },
-    {
-      nameProduk: "Baju Muslim Pria",
-      brand: "Zalora Cloth",
-      img: "/images/imgProduct.webp",
-      total: 1,
-      price: 150000,
-    },
-  ]);
+export default function bag(props) {
+  const [getCheckout, setGetCheckout] = React.useState([]);
+  const [updatedCheckoutItems, setUpdatedCheckoutItems] = React.useState([]);
+
+  React.useEffect(() => {
+    const fetchCheckoutHistory = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/checkout/detail/history`,
+          {
+            headers: {
+              Authorization: `Bearer ${props.token}`,
+            },
+          }
+        );
+
+        setGetCheckout(response.data.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchCheckoutHistory();
+  }, []);
+
+  console.log("getCheckout---", getCheckout);
+
+  const [quantities, setQuantities] = React.useState(() => {
+    const quantitiesObj = {};
+    for (const item of getCheckout) {
+      quantitiesObj[item.products_id] = item.qty;
+    }
+    return quantitiesObj;
+  });
+
+  const handleOnIncrease = (productId) => {
+    setQuantities((prevState) => {
+      const currentQty = prevState[productId] || 0;
+      const updatedQty = currentQty + 1;
+      const maxQty = getCheckout.find((item) => item.products_id === productId)
+        .products[0].qty;
+      return {
+        ...prevState,
+        [productId]: updatedQty <= maxQty ? updatedQty : maxQty,
+      };
+    });
+  };
+
+  const handleOnDecrease = (productId) => {
+    setQuantities((prevState) => ({
+      ...prevState,
+      [productId]: Math.max((prevState[productId] || 0) - 1, 0),
+    }));
+  };
+
+  React.useEffect(() => {
+    setUpdatedCheckoutItems(
+      getCheckout.map((item) => {
+        const productId = item.products[0]?.id;
+        const updatedQty = quantities[item.products_id] || item.qty;
+        const totalPrice = item.products[0]?.price * updatedQty;
+
+        console.log(
+          "quantities[item.products_id]",
+          quantities[item.products_id]
+        );
+        return {
+          ...item,
+          newQty: updatedQty,
+          newTotalPrice: totalPrice,
+        };
+      })
+    );
+  }, [getCheckout, quantities]);
+
+  console.log("getCheckout", getCheckout);
+  console.log("updatedCheckoutItems", updatedCheckoutItems);
+
+  const [selectedAll, setSelectedAll] = React.useState(false);
+  const [selectedCheckouts, setSelectedCheckouts] = React.useState([]);
+
+  const handleSelectAll = () => {
+    setSelectedAll(!selectedAll);
+    setSelectedCheckouts(getCheckout.map((item) => item.checkout_id));
+  };
+
+  const handleSelectCheckout = (id) => {
+    if (selectedCheckouts.includes(id)) {
+      setSelectedCheckouts(selectedCheckouts.filter((item) => item !== id));
+    } else {
+      setSelectedCheckouts([...selectedCheckouts, id]);
+    }
+  };
+
+  const [masterChecked, setMasterChecked] = React.useState(false);
+  const [childChecked, setChildChecked] = React.useState(false);
+
+  const handleMasterChange = (e) => {
+    setMasterChecked(e.target.checked);
+    setChildChecked(e.target.checked);
+  };
+
+  const handleChildChange = (e, id) => {
+    const isChecked = e.target.checked;
+      ((prevState) => {
+      if (isChecked) {
+        return [...prevState, id];
+      } else {
+        return prevState.filter((item) => item !== id);
+      }
+    });
+  };
+
   return (
     <>
       <Head>
@@ -79,8 +136,7 @@ export default function bag() {
         <div className="container-fluid p-0">
           {/* NAVBAR */}
           <nav
-            className={`container-fluid sticky-sm-top shadow py-2 ${style.containerNavbar}`}
-          >
+            className={`container-fluid sticky-sm-top shadow py-2 ${style.containerNavbar}`}>
             <Navbar />
           </nav>
           {/* END OF NAVBAR */}
@@ -96,8 +152,7 @@ export default function bag() {
                 {/* SELECT ALL PRODUCT */}
                 <div
                   className={`shadow-sm pt-3 px-4 border mt-3 mb-4 ${style.cardSelectAll}`}
-                  style={{ width: "100%" }}
-                >
+                  style={{ width: "100%" }}>
                   <div className={`row`}>
                     <div className="col-7">
                       <div class="form-check">
@@ -106,11 +161,14 @@ export default function bag() {
                           type="checkbox"
                           value=""
                           id="selectAll"
+                          // checked={selectedAll}
+                          // onClick={handleSelectAll}
+                          checked={masterChecked}
+                          onChange={handleMasterChange}
                         />
                         <label
                           className="form-check-label d-inline-block"
-                          for="selectAll"
-                        >
+                          for="selectAll">
                           Select all items{" "}
                           <p className="d-inline-block">(2 items selected)</p>
                         </label>
@@ -122,33 +180,44 @@ export default function bag() {
                   </div>
                 </div>
                 {/* PRODUCT */}
-                {bagList.map((item, key) => {
+                {getCheckout.map((item, key) => {
+                  const capitalize = (str) => {
+                    return str.replace(/(^\w|\s\w)/g, function (letter) {
+                      return letter.toUpperCase();
+                    });
+                  };
+                  const product = item.products[0];
+                  const price =
+                    product.price * (quantities[item.products_id] || item.qty);
+                  const prices = price.toString();
+                  const convertPrice = prices.replace(
+                    /\d(?=(\d{3})+$)/g,
+                    "$&."
+                  );
                   return (
-                    <CardSelectProduct
-                      {...item}
-                      handleOnIncrease={() => {
-                        const changeBag = bagList.map((_item, _key) => {
-                          if (_key === key) {
-                            return { ...item, ...{ total: 1 + item.total } };
-                          } else {
-                            return item;
-                          }
-                        });
-                        setBagList(changeBag);
-                      }}
-                      handleOnDecrease={() => {
-                        if (item.total > 1) {
-                          const changeBag = bagList.map((_item, _key) => {
-                            if (_key === key) {
-                              return { ...item, ...{ total: item.total - 1 } };
-                            } else {
-                              return item;
-                            }
-                          });
-                          setBagList(changeBag);
+                    <React.Fragment key={key}>
+                      <CardSelectProduct
+                        img={`https://res.cloudinary.com/daouvimjz/image/upload/v1676281237/${item?.product_picture}`}
+                        selectedProductName={capitalize(item?.product_name)}
+                        brand={capitalize(item?.products[0]?.brand)}
+                        // total={item?.qty}
+                        total={quantities[item.products_id] || item.qty}
+                        selectedColor={capitalize(item?.color)}
+                        // price={item?.products[0]?.price * item?.qty}
+                        price={convertPrice}
+                        selectedSize={capitalize(item?.size)}
+                        handleOnIncrease={() =>
+                          handleOnIncrease(item.products_id)
                         }
-                      }}
-                    />
+                        handleOnDecrease={() =>
+                          handleOnDecrease(item.products_id)
+                        }
+                        // selectedAll={selectedAll}
+                        // handleSelectAll={handleSelectAll}
+                        childChecked={childChecked}
+                        handleChildChange={handleChildChange}
+                      />
+                    </React.Fragment>
                   );
                 })}
               </div>
@@ -156,8 +225,7 @@ export default function bag() {
               <div className="col-4">
                 <div
                   className={`shadow-sm py-4 px-4 border mt-3 mb-4 ${style.cardCost}`}
-                  style={{ width: "365px", position: "fixed" }}
-                >
+                  style={{ width: "365px", position: "fixed" }}>
                   <h5>Shopping summary</h5>
                   <div className="row mt-4 mb-2">
                     <div className="col-6">
@@ -172,8 +240,7 @@ export default function bag() {
                       <Link
                         href={"/checkout"}
                         type="button"
-                        className={`btn btn-primary ${style.btnBuy}`}
-                      >
+                        className={`btn btn-primary ${style.btnBuy}`}>
                         Buy
                       </Link>
                     </div>
@@ -181,30 +248,20 @@ export default function bag() {
                 </div>
               </div>
             </div>
-            {/* <div
-              className="movie-selected ps-5 pt-4 pb-4 pe-4 shadow-sm"
-              style={{ width: "100%" }}
-            >
-              <div className="row">
-                <div className="col-6">
-                  <h5 className="movie-title mt-1">Spider-Man: Homecoming</h5>
-                </div>
-                <div className="col-3 offset-3">
-                  <Link href={"/View-all"}>
-                    <button
-                      type="button"
-                      className="btn btn-primary change-movie"
-                    >
-                      Change movie
-                    </button>
-                  </Link>
-                </div>
-              </div>
-            </div> */}
           </section>
           {/* END OF MY BAG */}
         </div>
       </main>
     </>
   );
+}
+
+export async function getServerSideProps(context) {
+  const token = getCookie("token", context) || "";
+
+  return {
+    props: {
+      token,
+    },
+  };
 }

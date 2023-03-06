@@ -10,10 +10,54 @@ import CardSelectProduct from "@/components/molecules/cardSelectProduct";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { getCookies, getCookie, setCookie, deleteCookie } from "cookies-next";
+import { useDispatch } from "react-redux";
+import * as checkoutRedux from "@/store/reducer/checkout";
+//MUI
+import { Card, CardContent, Modal, Button } from "@mui/material";
+import LoadingButton from "@mui/lab/LoadingButton";
+import Alert from "@mui/material/Alert";
+import Typography from "@mui/material/Typography";
+import { styled } from "@mui/material/styles";
+
+const MyCard = styled(Card)({
+  margin: "auto",
+  marginTop: "10%",
+  maxWidth: 500,
+  textAlign: "center",
+  borderRadius: "20px",
+  padding: "25px",
+  borderColor: "red",
+});
+
+const MyModal = styled(Modal)({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  borderColor: "red",
+});
+
+const MyButton = styled(Button)({
+  borderRadius: "20px",
+  marginTop: "20px",
+  background: "#DB3022",
+  color: "white",
+  "&:hover": {
+    background: "#DB2522",
+    border: "none",
+  },
+});
 
 export default function bag(props) {
   const [getCheckout, setGetCheckout] = React.useState([]);
   const [updatedCheckoutItems, setUpdatedCheckoutItems] = React.useState([]);
+  const [showModal, setShowModal] = React.useState(false);
+  const [errMsg, setErrMsg] = React.useState("");
+  const [isErr, setIsErr] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
+
+  const handleClose = () => {
+    setShowModal(false);
+  };
 
   React.useEffect(() => {
     const fetchCheckoutHistory = async () => {
@@ -35,8 +79,6 @@ export default function bag(props) {
 
     fetchCheckoutHistory();
   }, []);
-
-  console.log("getCheckout---", getCheckout);
 
   const [quantities, setQuantities] = React.useState(() => {
     const quantitiesObj = {};
@@ -86,43 +128,131 @@ export default function bag(props) {
     );
   }, [getCheckout, quantities]);
 
-  console.log("getCheckout", getCheckout);
-  console.log("updatedCheckoutItems", updatedCheckoutItems);
+  const [isChecked, setIsChecked] = React.useState(false);
+  const [checkedItems, setCheckedItems] = React.useState([]);
 
-  const [selectedAll, setSelectedAll] = React.useState(false);
-  const [selectedCheckouts, setSelectedCheckouts] = React.useState([]);
-
-  const handleSelectAll = () => {
-    setSelectedAll(!selectedAll);
-    setSelectedCheckouts(getCheckout.map((item) => item.checkout_id));
-  };
-
-  const handleSelectCheckout = (id) => {
-    if (selectedCheckouts.includes(id)) {
-      setSelectedCheckouts(selectedCheckouts.filter((item) => item !== id));
+  const handleMasterCheckboxChange = (event) => {
+    const { checked } = event.target;
+    setIsChecked(checked);
+    if (checked) {
+      const items = getCheckout.map((item) => item.checkout_id);
+      setCheckedItems(items);
     } else {
-      setSelectedCheckouts([...selectedCheckouts, id]);
+      setCheckedItems([]);
     }
   };
 
-  const [masterChecked, setMasterChecked] = React.useState(false);
-  const [childChecked, setChildChecked] = React.useState(false);
-
-  const handleMasterChange = (e) => {
-    setMasterChecked(e.target.checked);
-    setChildChecked(e.target.checked);
+  const handleChildCheckboxChange = (event, id) => {
+    const { checked } = event.target;
+    if (checked) {
+      setCheckedItems((prevItems) => [...prevItems, id]);
+    } else {
+      setCheckedItems((prevItems) => prevItems.filter((item) => item !== id));
+    }
   };
 
-  const handleChildChange = (e, id) => {
-    const isChecked = e.target.checked;
-      ((prevState) => {
-      if (isChecked) {
-        return [...prevState, id];
-      } else {
-        return prevState.filter((item) => item !== id);
+  const handleDelete = async () => {
+    try {
+      if (checkedItems.length == 0) {
+        setShowModal(true);
+        setIsErr(true);
+        setErrMsg("To delete an item, please select it from the list below");
+        return;
       }
-    });
+
+      for (let i = 0; i < checkedItems.length; i++) {
+        const response = await axios.delete(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/checkout/delete`,
+          {
+            headers: {
+              Authorization: `Bearer ${props.token}`,
+            },
+            data: { checkout_id: checkedItems[i] },
+          }
+        );
+      }
+      setIsErr(false);
+      setShowModal(false);
+      setCheckedItems([]);
+
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/checkout/detail/history`,
+        {
+          headers: {
+            Authorization: `Bearer ${props.token}`,
+          },
+        }
+      );
+      setGetCheckout(response.data.data);
+      setIsErr(false);
+      setShowModal(false);
+      setCheckedItems([]);
+    } catch (error) {
+      console.log(error);
+    }
   };
+
+  // console.log("getCheckout", getCheckout);
+  // console.log("updatedCheckoutItems", updatedCheckoutItems);
+  // console.log("checkedItems======", checkedItems);
+
+  let totalSummaryData = [];
+  let isDisabled = true;
+
+  for (let i = 0; i < updatedCheckoutItems.length; i++) {
+    if (updatedCheckoutItems[i].checkout_id == checkedItems[i]) {
+      totalSummaryData.push(updatedCheckoutItems[i]);
+      isDisabled = false;
+    }
+  }
+
+  let totalSummaryPrice = 0;
+  let totalSummaryQty = 0;
+  let totalSummaryPriceConverted = "";
+
+  if (totalSummaryData.length > 0) {
+    for (let i = 0; i < totalSummaryData.length; i++) {
+      totalSummaryPrice += totalSummaryData[i].newTotalPrice;
+      totalSummaryQty += totalSummaryData[i].newQty;
+    }
+    const convert = totalSummaryPrice.toString();
+    totalSummaryPriceConverted = convert.replace(/\d(?=(\d{3})+$)/g, "$&.");
+  }
+
+  const router = useRouter();
+  //REDUX
+  const dispatch = useDispatch();
+
+  const handleCheckout = async () => {
+    try {
+      console.log("props.token=>>>", props.token);
+      for (let i = 0; i < totalSummaryData.length; i++) {
+        const response = await axios.patch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/checkout/edit`,
+          {
+            checkout_id: totalSummaryData[i].checkout_id,
+            products_id: totalSummaryData[i].products_id,
+            qty: totalSummaryData[i].newQty,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${props.token}`,
+            },
+          }
+        );
+      }
+      dispatch(
+        checkoutRedux.setDataCheckout({
+          data: totalSummaryData,
+        })
+      );
+      router.push(`/checkout`);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  console.log("totalSummaryData=>>>>>>>", totalSummaryData);
 
   return (
     <>
@@ -132,7 +262,31 @@ export default function bag(props) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+
       <main className={style.main}>
+        <MyModal open={showModal} onClose={handleClose}>
+          <MyCard>
+            <CardContent>
+              {/* <Typography variant="h4">Verification email sent!</Typography>
+               */}
+              <Alert
+                variant="filled"
+                severity="error"
+                sx={{ justifyContent: "center" }}>
+                <strong style={{ fontSize: "16px" }}>
+                  Oops, missing requirements!
+                </strong>
+              </Alert>
+
+              <Typography variant="body1" sx={{ margin: "20px" }}>
+                {errMsg}
+              </Typography>
+
+              <div style={{ display: "flex", flexDirection: "column" }}></div>
+            </CardContent>
+          </MyCard>
+        </MyModal>
+
         <div className="container-fluid p-0">
           {/* NAVBAR */}
           <nav
@@ -161,21 +315,21 @@ export default function bag(props) {
                           type="checkbox"
                           value=""
                           id="selectAll"
-                          // checked={selectedAll}
-                          // onClick={handleSelectAll}
-                          checked={masterChecked}
-                          onChange={handleMasterChange}
+                          checked={isChecked}
+                          onChange={handleMasterCheckboxChange}
                         />
                         <label
                           className="form-check-label d-inline-block"
                           for="selectAll">
                           Select all items{" "}
-                          <p className="d-inline-block">(2 items selected)</p>
+                          <p className="d-inline-block">
+                            ({checkedItems.length} items selected)
+                          </p>
                         </label>
                       </div>
                     </div>
                     <div className="col-5 text-end">
-                      <button>Deleted</button>
+                      <button onClick={handleDelete}>Delete</button>
                     </div>
                   </div>
                 </div>
@@ -212,10 +366,10 @@ export default function bag(props) {
                         handleOnDecrease={() =>
                           handleOnDecrease(item.products_id)
                         }
-                        // selectedAll={selectedAll}
-                        // handleSelectAll={handleSelectAll}
-                        childChecked={childChecked}
-                        handleChildChange={handleChildChange}
+                        childChecked={checkedItems.includes(item.checkout_id)}
+                        handleChildChange={(event) =>
+                          handleChildCheckboxChange(event, item.checkout_id)
+                        }
                       />
                     </React.Fragment>
                   );
@@ -229,21 +383,83 @@ export default function bag(props) {
                   <h5>Shopping summary</h5>
                   <div className="row mt-4 mb-2">
                     <div className="col-6">
-                      <p>Total price</p>
+                      {totalSummaryData.length !== 0 ? (
+                        <p>
+                          Total price{" "}
+                          <p style={{ color: "#9B9B9B" }}>
+                            ({totalSummaryQty} product)
+                          </p>
+                        </p>
+                      ) : (
+                        <p>Total price</p>
+                      )}
                     </div>
                     <div className="col-6">
-                      <h5 className="text-end">Rp.250000</h5>
+                      {totalSummaryData.length !== 0 ? (
+                        <h5 className="text-end">
+                          Rp{totalSummaryPriceConverted}
+                        </h5>
+                      ) : (
+                        <h5 className="text-end">-</h5>
+                      )}
                     </div>
                   </div>
                   <div className="row">
-                    <div className="col-12">
-                      <Link
-                        href={"/checkout"}
-                        type="button"
-                        className={`btn btn-primary ${style.btnBuy}`}>
+                    {/* {totalSummaryData.length === 0 ? (
+                      <div className="col-12">
+                        <Link
+                          href={"/checkout"}
+                          type="button"
+                          className={`btn btn-primary ${style.btnBuy}`}
+                          disabled={true}>
+                          Buy
+                        </Link>
+                      </div>
+                    ) : (
+                      <div className="col-12">
+                        <Link
+                          href={"/checkout"}
+                          type="button"
+                          className={`btn btn-primary ${style.btnBuy}`}>
+                          Buy
+                        </Link>
+                      </div>
+                    )} */}
+                    {!isDisabled ? (
+                      isLoading ? (
+                        <LoadingButton
+                          loading={isLoading}
+                          variant="contained"
+                          color="primary"
+                          fullWidth
+                          sx={{
+                            borderRadius: "20px",
+                            marginTop: "20px",
+                            background: "#DB3022",
+                            color: "black",
+                          }}
+                          onClick={handleCheckout}>
+                          {isLoading ? "Loading..." : "Buy"}
+                        </LoadingButton>
+                      ) : (
+                        <MyButton
+                          variant="contained"
+                          color="primary"
+                          fullWidth
+                          onClick={handleCheckout}>
+                          Buy
+                        </MyButton>
+                      )
+                    ) : (
+                      <MyButton
+                        disabled
+                        variant="contained"
+                        color="primary"
+                        fullWidth
+                        onClick={handleCheckout}>
                         Buy
-                      </Link>
-                    </div>
+                      </MyButton>
+                    )}
                   </div>
                 </div>
               </div>

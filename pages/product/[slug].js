@@ -25,16 +25,6 @@ import { Card, CardContent, Modal } from "@mui/material";
 import DangerousIcon from "@mui/icons-material/Dangerous";
 import { styled } from "@mui/material/styles";
 
-// const MyFormControl = styled(FormControl)({
-//   "& .MuiSelect-outlined": {
-//     borderColor: "#DB3022",
-//     "&:focus": {
-//       borderColor: "#DB3022",
-//       boxShadow: "0 0 0 0.2rem rgba(219,48,34,.25)",
-//     },
-//   },
-// });
-
 const MyCard = styled(Card)({
   margin: "auto",
   marginTop: "10%",

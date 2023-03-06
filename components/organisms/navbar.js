@@ -1,8 +1,10 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
 import React from "react";
 import style from "../../styles/pages/navbarStyle.module.scss";
 import Link from "next/link";
+import axios from "axios";
 import { useRouter } from "next/router";
 import { getCookies, getCookie, setCookie, deleteCookie } from "cookies-next";
 import { AiOutlineBell, AiOutlineShoppingCart } from "react-icons/ai";
@@ -12,6 +14,29 @@ export default function navbar() {
   const [isAuth, setIsAuth] = React.useState(false);
   const [getData, setGetData] = React.useState(null);
   const [getToken, setGetToken] = React.useState(null);
+  const [size, setSize] = React.useState(null);
+  const [category, setCategory] = React.useState(null);
+  const [keyword, setKeyword] = React.useState("");
+  const [product, setProduct] = React.useState([]);
+  const [filterColor, setFilterColor] = React.useState("");
+  const [filterSize, setFilterSize] = React.useState("");
+  const [filterCategory, setFilterCategory] = React.useState("");
+  const [filterBrand, setFilterBrand] = React.useState("");
+  const [allBrand, setAllBrand] = React.useState([]);
+
+  // GET ALL BRAND
+  React.useEffect(() => {
+    axios
+      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/products/?allBrand=true`)
+      .then(({ data }) => {
+        const brand = JSON.parse(data?.data);
+        setAllBrand(brand);
+        // console.log(data?.data)
+      })
+      .catch(() => {
+        // setProduct([]);
+      });
+  }, []);
 
   React.useEffect(() => {
     let token = getCookie("token");
@@ -41,6 +66,37 @@ export default function navbar() {
   const handleSignup = () => {
     router.push("/auth/register");
   };
+
+  // FEATURE SEARCH PRODUCT
+  const fetchByKeyword = () => {
+    axios
+      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/products/${keyword}`)
+      .then(({ data }) => {
+        setKeyword("");
+        product(data?.data);
+        // setTotalPage(0);
+      })
+      .catch(() => setProduct([]));
+    // .finally(() => setIsLoading(false));
+  };
+
+  // FEATURE SEARCH PRODUCT
+  const productByCategory = () => {
+    axios
+      .get(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/products/?page=1&limit=12&sizeFilter=${filterSize}&colorFilter=${filterColor}&categoryFilter=${filterCategory}&brandFilter=${filterBrand}`
+      )
+      .then(({ data }) => {
+        setProduct(data?.data);
+        // setTotalPage(0);
+      })
+      .catch((err) => {
+        setProduct([]);
+        // console.log(err);
+      });
+    // .finally(() => setIsLoading(false));
+  };
+
   return (
     <div className={`container ${style.main}`}>
       <nav className={`${style.navbar}`}>
@@ -75,6 +131,15 @@ export default function navbar() {
                   id="exampleInputEmail1"
                   aria-describedby="emailHelp"
                   placeholder="Search"
+                  value={keyword}
+                  onChange={(e) => {
+                    setKeyword(e.target.value);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      fetchByKeyword();
+                    }
+                  }}
                 />
               </li>
               {/* SORT */}
@@ -123,56 +188,23 @@ export default function navbar() {
                         <div className=" border-bottom pb-4">
                           <div className={`${style.colors}`}>
                             <h5 className={`${style.titleColor}`}>Colors</h5>
-                            <div className={`${style.optionColor}`}>
-                              <button
-                                type="button"
-                                className={`btn rounded-circle`}
-                                style={{ backgroundColor: "black" }}
-                                // onClick={() => {
-                                //   setPaymentSelected("visa");
-                                // }}
-                              ></button>
-                              <button
-                                type="button"
-                                className={`btn rounded-circle shadow-sm border border-2`}
-                                style={{ backgroundColor: "white" }}
-                                // onClick={() => {
-                                //   setPaymentSelected("visa");
-                                // }}
-                              ></button>
-                              <button
-                                type="button"
-                                className={`btn rounded-circle`}
-                                style={{ backgroundColor: "#B82222" }}
-                                // onClick={() => {
-                                //   setPaymentSelected("visa");
-                                // }}
-                              ></button>
-                              <button
-                                type="button"
-                                className={`btn rounded-circle`}
-                                style={{ backgroundColor: "#BEA9A9" }}
-                                // onClick={() => {
-                                //   setPaymentSelected("visa");
-                                // }}
-                              ></button>
-                              <button
-                                type="button"
-                                className={`btn rounded-circle`}
-                                style={{ backgroundColor: "#E2BB8D" }}
-                                // onClick={() => {
-                                //   setPaymentSelected("visa");
-                                // }}
-                              ></button>
-                              <button
-                                type="button"
-                                className={`btn rounded-circle`}
-                                style={{ backgroundColor: "#151867" }}
-                                // onClick={() => {
-                                //   setPaymentSelected("visa");
-                                // }}
-                              ></button>
-                            </div>
+                            <select
+                              className="form-select"
+                              aria-label="Default select example"
+                              onChange={(e) => {
+                                setFilterColor(e.target.value);
+                              }}
+                            >
+                              <option selected disabled>
+                                Color
+                              </option>
+                              <option value="black">Black</option>
+                              <option value="white">White</option>
+                              <option value="red">Red</option>
+                              <option value="gray">Gray</option>
+                              <option value="cream">Cream</option>
+                              <option value="blue">Blue</option>
+                            </select>
                           </div>
                         </div>
                         {/* SIZE */}
@@ -182,51 +214,65 @@ export default function navbar() {
                             <div className={`${style.optionSizes}`}>
                               <button
                                 type="button"
-                                className={`btn rounded-3`}
-                                style={{ backgroundColor: "white" }}
-                                // onClick={() => {
-                                //   setPaymentSelected("visa");
-                                // }}
+                                className={`btn rounded-3 ${
+                                  size === "xs"
+                                    ? `${style.paymentSelected}`
+                                    : ""
+                                }`}
+                                onClick={() => {
+                                  setSize("xs");
+                                  setFilterSize("XS");
+                                }}
                               >
                                 <p>XS</p>
                               </button>
                               <button
                                 type="button"
-                                className={`btn rounded-3`}
-                                style={{ backgroundColor: "white" }}
-                                // onClick={() => {
-                                //   setPaymentSelected("visa");
-                                // }}
+                                className={`btn rounded-3 ${
+                                  size === "s" ? `${style.paymentSelected}` : ""
+                                }`}
+                                onClick={() => {
+                                  setSize("s");
+                                  setFilterSize("S");
+                                }}
                               >
                                 S
                               </button>
                               <button
                                 type="button"
-                                className={`btn rounded-3`}
-                                style={{ backgroundColor: "white" }}
-                                // onClick={() => {
-                                //   setPaymentSelected("visa");
-                                // }}
+                                className={`btn rounded-3 ${
+                                  size === "m" ? `${style.paymentSelected}` : ""
+                                }`}
+                                onClick={() => {
+                                  setSize("m");
+                                  setFilterSize("M");
+                                }}
                               >
                                 M
                               </button>
                               <button
                                 type="button"
-                                className={`btn rounded-3`}
-                                style={{ backgroundColor: "white" }}
-                                // onClick={() => {
-                                //   setPaymentSelected("visa");
-                                // }}
+                                className={`btn rounded-3 ${
+                                  size === "l" ? `${style.paymentSelected}` : ""
+                                }`}
+                                onClick={() => {
+                                  setSize("l");
+                                  setFilterSize("L");
+                                }}
                               >
                                 L
                               </button>
                               <button
                                 type="button"
-                                className={`btn rounded-3`}
-                                style={{ backgroundColor: "white" }}
-                                // onClick={() => {
-                                //   setPaymentSelected("visa");
-                                // }}
+                                className={`btn rounded-3 ${
+                                  size === "xl"
+                                    ? `${style.paymentSelected}`
+                                    : ""
+                                }`}
+                                onClick={() => {
+                                  setSize("xl");
+                                  setFilterSize("XL");
+                                }}
                               >
                                 <p style={{ marginLeft: "-1px" }}>XL</p>
                               </button>
@@ -242,53 +288,115 @@ export default function navbar() {
                             <div className={`${style.optionCategory}`}>
                               <button
                                 type="button"
-                                className={`btn rounded-3`}
-                                style={{ backgroundColor: "white" }}
-                                // onClick={() => {
-                                //   setPaymentSelected("visa");
-                                // }}
+                                className={`btn rounded-3 ${
+                                  category === "T-shirt"
+                                    ? `${style.paymentSelected}`
+                                    : ""
+                                }`}
+                                onClick={() => {
+                                  setCategory("T-shirt");
+                                  setFilterCategory("tshirt");
+                                }}
                               >
-                                <p>All</p>
+                                <p>T-shirt</p>
                               </button>
                               <button
                                 type="button"
-                                className={`btn rounded-3`}
-                                style={{ backgroundColor: "white" }}
-                                // onClick={() => {
-                                //   setPaymentSelected("visa");
-                                // }}
+                                className={`btn rounded-3 ${
+                                  category === "Shirt"
+                                    ? `${style.paymentSelected}`
+                                    : ""
+                                }`}
+                                onClick={() => {
+                                  setCategory("Shirt");
+                                  setFilterCategory("shirt");
+                                }}
                               >
-                                <p>Women</p>
+                                <p>Shirt</p>
                               </button>
                               <button
                                 type="button"
-                                className={`btn rounded-3`}
-                                style={{ backgroundColor: "white" }}
-                                // onClick={() => {
-                                //   setPaymentSelected("visa");
-                                // }}
+                                className={`btn rounded-3 ${
+                                  category === "Shorts"
+                                    ? `${style.paymentSelected}`
+                                    : ""
+                                }`}
+                                onClick={() => {
+                                  setCategory("Shorts");
+                                  setFilterCategory("shorts");
+                                }}
                               >
-                                <p>Men</p>
+                                <p>Shorts</p>
                               </button>
                               <button
                                 type="button"
-                                className={`btn rounded-3`}
-                                style={{ backgroundColor: "white" }}
-                                // onClick={() => {
-                                //   setPaymentSelected("visa");
-                                // }}
+                                className={`btn rounded-3 ${
+                                  category === "outwear"
+                                    ? `${style.paymentSelected}`
+                                    : ""
+                                }`}
+                                onClick={() => {
+                                  setCategory("outwear");
+                                  setFilterCategory("outwear");
+                                }}
                               >
-                                <p>Boys</p>
+                                <p>Outwear</p>
                               </button>
                               <button
                                 type="button"
-                                className={`btn rounded-3`}
-                                style={{ backgroundColor: "white" }}
-                                // onClick={() => {
-                                //   setPaymentSelected("visa");
-                                // }}
+                                className={`btn rounded-3 ${
+                                  category === "pants"
+                                    ? `${style.paymentSelected}`
+                                    : ""
+                                }`}
+                                onClick={() => {
+                                  setCategory("pants");
+                                  setFilterCategory("pants");
+                                }}
                               >
-                                <p>Girls</p>
+                                <p>pants</p>
+                              </button>
+                              <button
+                                type="button"
+                                className={`btn rounded-3 ${
+                                  category === "footwear"
+                                    ? `${style.paymentSelected}`
+                                    : ""
+                                }`}
+                                onClick={() => {
+                                  setCategory("footwear");
+                                  setFilterCategory("footwear");
+                                }}
+                              >
+                                <p>footwear</p>
+                              </button>
+                              <button
+                                type="button"
+                                className={`btn rounded-3 ${
+                                  category === "bag"
+                                    ? `${style.paymentSelected}`
+                                    : ""
+                                }`}
+                                onClick={() => {
+                                  setCategory("bag");
+                                  setFilterCategory("bag");
+                                }}
+                              >
+                                <p>bag</p>
+                              </button>
+                              <button
+                                type="button"
+                                className={`btn rounded-3 ${
+                                  category === "headwear"
+                                    ? `${style.paymentSelected}`
+                                    : ""
+                                }`}
+                                onClick={() => {
+                                  setCategory("headwear");
+                                  setFilterCategory("headwear");
+                                }}
+                              >
+                                <p>headwear</p>
                               </button>
                             </div>
                           </div>
@@ -299,21 +407,20 @@ export default function navbar() {
                             <h5 className={`${style.titleBrand}`}>Brand</h5>
                             <div className={`${style.optionBrand}`}>
                               <select
-                                className="form-select"
+                                className="form-select btn-group dropup"
                                 aria-label="Default select example"
-                                // onChange={(e) => {
-                                //   fetchBySort(e.target.value);
-                                // }}
+                                onChange={(e) => {
+                                  setFilterBrand(e.target.value);
+                                }}
                               >
                                 <option selected disabled>
                                   Brand
                                 </option>
-                                <option value="name_asc">
-                                  Adidas Originals
-                                </option>
-                                <option value="name_desc">Jack & Jones</option>
-                                <option value="release_asc">s.Oliver</option>
-                                <option value="release_desc">Gucci</option>
+                                {allBrand.map((item, key) => (
+                                  <option value={item} key={key}>
+                                    {item}
+                                  </option>
+                                ))}
                               </select>
                             </div>
                           </div>
@@ -324,14 +431,19 @@ export default function navbar() {
                         <button
                           type="button"
                           className={`btn btn-outline-primary ${style.btnDiscard}`}
-                          data-bs-dismiss="modal"
+                          onClick={() => {
+                            setSize(null);
+                            setCategory(null);
+                          }}
                         >
                           Discard
                         </button>
                         <button
                           type="button"
                           className={`btn btn-secondary ${style.btnApply}`}
-                          data-bs-dismiss="modal"
+                          onClick={() => {
+                            productByCategory();
+                          }}
                         >
                           Apply
                         </button>

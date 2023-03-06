@@ -62,15 +62,24 @@
       }
 
       .colors {
-        .optionColor {
-          margin-top: 10px;
-          padding: 10px;
-          button {
-            width: 40px;
-            height: 40px;
-            margin-right: 25px;
+        select {
+            padding: 8px 10px;
+            background-color: white;
+            color: #4E4B66;
+            font-size: 14px;
+            border-color: #DEDEDE;
+            border-radius: 10px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
           }
-        }
+        
+          select:focus {
+            box-shadow: 0px 4px 10px 3px rgba(0, 0, 0, 0.11);
+            border-color: #DB3022;
+          }
       }
 
       .sizes {
@@ -87,6 +96,12 @@
               margin-left: -2px;
             }
           }
+
+          .paymentSelected {
+            background-color: #DB3022;
+            border: inset 1px #DB3022;
+            color: white;
+          }
         }
       }
 
@@ -101,6 +116,11 @@
             margin-right: 25px;
             margin-bottom: 20px;
             border: 1px solid #9B9B9B;
+          }
+          .paymentSelected {
+            background-color: #DB3022;
+            border: inset 1px #DB3022;
+            color: white;
           }
         }
       }

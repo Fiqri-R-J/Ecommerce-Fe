@@ -6,12 +6,114 @@ import { Inter } from "@next/font/google";
 import style from "@/styles/pages/homeStyle.module.scss";
 import Link from "next/link";
 import Navbar from "@/components/organisms/navbar";
-import CardProduct from "@/components/molecules/cardProduct";
+import CardProductNew from "@/components/molecules/cardProductNew";
+import CardProductPopular from "@/components/molecules/cardProductPopular";
 import Footer from "@/components/organisms/footer";
+import axios from "axios";
 
-const inter = Inter({ subsets: ["latin"] });
+export default function Home(props) {
+  const productListNew = props.productListNew;
+  const productListPopular = props.productListPopular;
 
-export default function Home() {
+  const [productNew, setProductNew] = React.useState(productListNew.data);
+  const [dataNotFound, setDataNotFound] = React.useState(false);
+  const [subTitle, setSubTitle] = React.useState("");
+  const [productPopular, setProductPopular] = React.useState(
+    productListPopular.data
+  );
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [totalPage, setTotalPage] = React.useState(
+    Math.ceil(productListNew.total / 4)
+  );
+  const [currentPagePopular, setCurrentPagePopular] = React.useState(1);
+  const [totalPagePopular, setTotalPagePopular] = React.useState(
+    Math.ceil(productListPopular.total / 4)
+  );
+  const [clickCategory, setClickCategory] = React.useState(false);
+
+  // SORT BY CATEGORY
+  const fetchBySort = (sortValue) => {
+    if (sortValue) {
+    }
+
+    axios
+      .get(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/products?sort=DESC&categoryFilter=${sortValue}`
+      )
+      .then(({ data }) => {
+        setProductNew(data?.data);
+        setDataNotFound(false);
+      })
+      .catch((err) => {
+        // setProductNew("");
+        setDataNotFound(true);
+      });
+    // .finally(() => setIsLoading(false));
+  };
+
+  // SORT BY CATEGORY COLOR
+  const fetchByColor = (sortValue) => {
+    if (sortValue) {
+    }
+
+    axios
+      .get(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/products?sort=DESC&colorFilter=${sortValue}`
+      )
+      .then(({ data }) => {
+        setProductNew(data?.data);
+        setDataNotFound(false);
+      })
+      .catch((err) => {
+        setDataNotFound(true);
+      });
+    // .finally(() => setIsLoading(false));
+  };
+
+  // PAGINATION FOR NEW PRODUCT
+  const paginationNewProduct = (pageParam) => {
+    // setIsLoading(true);
+    axios
+      .get(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/products?page=${pageParam}&limit=4&sort=DESC`
+      )
+      .then(({ data }) => {
+        let totalPage = Math.ceil(productListNew.total / 4);
+        setProductNew(data?.data);
+        setTotalPage(totalPage);
+        setCurrentPage(pageParam);
+      })
+      .catch((err) => {
+        setProductNew([]);
+        console.log(err);
+      })
+      .finally(() => {
+        // setIsLoading(false);
+      });
+  };
+
+  // PAGINATION FOR POPULAR PRODUCT
+  const paginationPopularProduct = (pageParam) => {
+    // setIsLoading(true);
+    axios
+      .get(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/products?page=${pageParam}&limit=4&sort=DESC&orderBy=popular`
+      )
+      .then(({ data }) => {
+        let totalPage = Math.ceil(productListPopular.total / 4);
+        setProductPopular(data?.data);
+        setTotalPagePopular(totalPage);
+        setCurrentPagePopular(pageParam);
+      })
+      .catch((err) => {
+        setProductPopular([]);
+        console.log(err);
+      })
+      .finally(() => {
+        // setIsLoading(false);
+      });
+  };
+
   return (
     <>
       <Head>
@@ -35,29 +137,16 @@ export default function Home() {
             <div className={style.item}>
               <img
                 className={style.icon}
-                src="/images/Card-Promotion.webp"
-                alt="icon-navbar"
-              />
-            </div>
-            <div className={style.item}>
-              <img
-                className={style.icon}
                 src="/images/Card-Promotion2.webp"
                 alt="icon-navbar"
-              />
-            </div>
-            <div className={style.item}>
-              <img
-                className={style.icon}
-                src="/images/Card-Promotion.webp"
-                alt="icon-navbar"
-              />
-            </div>
-            <div className={style.item}>
-              <img
-                className={style.icon}
-                src="/images/Card-Promotion2.webp"
-                alt="icon-navbar"
+                onClick={() => {
+                  fetchByColor("black");
+                  setSubTitle("Black Edition");
+                  setClickCategory(true);
+                }}
+                onChange={(e) => {
+                  fetchByColor(e.target.value);
+                }}
               />
             </div>
             <div className={style.item}>
@@ -65,13 +154,30 @@ export default function Home() {
                 className={style.icon}
                 src="/images/Card-Promotion.webp"
                 alt="icon-navbar"
+                onClick={() => {
+                  setProductNew(productListPopular.data);
+                  setSubTitle("Trends In 2020");
+                  setClickCategory(true);
+                }}
+                onChange={(e) => {
+                  fetchByColor(e.target.value);
+                }}
               />
             </div>
             <div className={style.item}>
               <img
-                className={style.icon}
-                src="/images/Card-Promotion2.webp"
+                className={`rounded-2 ${style.icon}`}
+                src="/images/white-edition.webp"
                 alt="icon-navbar"
+                style={{ width: "457px" }}
+                onClick={() => {
+                  fetchByColor("white");
+                  setSubTitle("White Edition");
+                  setClickCategory(true);
+                }}
+                onChange={(e) => {
+                  fetchByColor(e.target.value);
+                }}
               />
             </div>
           </section>
@@ -87,36 +193,141 @@ export default function Home() {
               <div className={style.item}>
                 <img
                   className={style.icon}
+                  src="/images/all-product.webp"
+                  alt="category-all-product"
+                  style={{ width: "206px" }}
+                  onClick={() => {
+                    setProductNew(productListNew.data);
+                    setSubTitle("");
+                    setClickCategory(false);
+                  }}
+                  onChange={(e) => {
+                    fetchBySort(e.target.value);
+                  }}
+                />
+              </div>
+              <div className={style.item}>
+                <img
+                  className={style.icon}
                   src="/images/t-shirt.webp"
-                  alt="icon-navbar"
+                  alt="category-t-shirt"
+                  onClick={() => {
+                    fetchBySort("tshirt");
+                    setSubTitle("T-Shirt");
+                    setClickCategory(true);
+                  }}
+                  onChange={(e) => {
+                    fetchBySort(e.target.value);
+                  }}
+                />
+              </div>
+              <div className={style.item}>
+                <img
+                  className={style.icon}
+                  src="/images/shirt.webp"
+                  alt="category-shirt"
+                  style={{ width: "206px" }}
+                  onClick={() => {
+                    fetchBySort("shirt");
+                    setSubTitle("Shirt");
+                    setClickCategory(true);
+                  }}
+                  onChange={(e) => {
+                    fetchBySort(e.target.value);
+                  }}
                 />
               </div>
               <div className={style.item}>
                 <img
                   className={style.icon}
                   src="/images/shorts.webp"
-                  alt="icon-navbar"
-                />
-              </div>
-              <div className={style.item}>
-                <img
-                  className={style.icon}
-                  src="/images/jacket.webp"
-                  alt="icon-navbar"
+                  alt="category-shorts"
+                  onClick={() => {
+                    fetchBySort("shorts");
+                    setSubTitle("Shorts");
+                    setClickCategory(true);
+                  }}
+                  onChange={(e) => {
+                    fetchBySort(e.target.value);
+                  }}
                 />
               </div>
               <div className={style.item}>
                 <img
                   className={style.icon}
                   src="/images/pants.webp"
-                  alt="icon-navbar"
+                  alt="category-pants"
+                  onClick={() => {
+                    fetchBySort("pants");
+                    setSubTitle("Pants");
+                    setClickCategory(true);
+                  }}
+                  onChange={(e) => {
+                    fetchBySort(e.target.value);
+                  }}
                 />
               </div>
               <div className={style.item}>
                 <img
                   className={style.icon}
-                  src="/images/shoes.webp"
-                  alt="icon-navbar"
+                  src="/images/headwear.webp"
+                  alt="category-headwear"
+                  style={{ width: "206px" }}
+                  onClick={() => {
+                    fetchBySort("headwear");
+                    setSubTitle("Headwear");
+                    setClickCategory(true);
+                  }}
+                  onChange={(e) => {
+                    fetchBySort(e.target.value);
+                  }}
+                />
+              </div>
+              <div className={style.item}>
+                <img
+                  className={style.icon}
+                  src="/images/outwear.webp"
+                  alt="category-outwear"
+                  style={{ width: "206px" }}
+                  onClick={() => {
+                    fetchBySort("outwear");
+                    setSubTitle("Outwear");
+                    setClickCategory(true);
+                  }}
+                  onChange={(e) => {
+                    fetchBySort(e.target.value);
+                  }}
+                />
+              </div>
+              <div className={style.item}>
+                <img
+                  className={style.icon}
+                  src="/images/footwear.webp"
+                  alt="category-footwear"
+                  style={{ width: "206px" }}
+                  onClick={() => {
+                    fetchBySort("footwear");
+                    setSubTitle("Footwear");
+                    setClickCategory(true);
+                  }}
+                  onChange={(e) => {
+                    fetchBySort(e.target.value);
+                  }}
+                />
+              </div>
+              <div className={style.item}>
+                <img
+                  className={style.icon}
+                  src="/images/bag.png"
+                  alt="category-bag"
+                  onClick={() => {
+                    fetchBySort("bag");
+                    setSubTitle("Bag");
+                    setClickCategory(true);
+                  }}
+                  onChange={(e) => {
+                    fetchBySort(e.target.value);
+                  }}
                 />
               </div>
             </div>
@@ -124,50 +335,164 @@ export default function Home() {
           {/* END OF CATEGORY */}
 
           {/* NEW PRODUCT */}
-          <section className={`container mt-5 ${style.Product}`}>
-            <div className={`${style.subTitle}`}>
-              <h2>New</h2>
-              <p>You’ve never seen it before!</p>
-            </div>
+          <section className={`container mt-5 mb-3 ${style.Product}`}>
+            {subTitle === "" ? (
+              <div className={`${style.subTitle}`}>
+                <h2>New</h2>
+                <p>You’ve never seen it before!</p>
+              </div>
+            ) : (
+              <div className={`${style.subTitle}`}>
+                <h2>{subTitle}</h2>
+                <p>Category of your choice</p>
+              </div>
+            )}
+
             <div className={`row ${style.content}`}>
-              <div className="col-3">
+              {/* <div className="col-3">
                 <CardProduct />
-              </div>
-              <div className="col-3">
-                <CardProduct />
-              </div>
-              <div className="col-3">
-                <CardProduct />
-              </div>
-              <div className="col-3">
-                <CardProduct />
-              </div>
+              </div> */}
+              {dataNotFound ? (
+                <div style={{ marginBottom: "100px" }}>
+                  <h2 className="text-center">Data not found</h2>
+                  <p
+                    className="text-center"
+                    style={{ color: "#9B9B9B", fontSize: "14px" }}
+                  >
+                    Product with category {subTitle} is empty
+                  </p>
+                </div>
+              ) : (
+                productNew?.map((item, key) => {
+                  const convertNumber = item?.price.replace(
+                    /\d(?=(\d{3})+$)/g,
+                    "$&."
+                  );
+
+                  const capitalize = (str) => {
+                    return str.replace(/(^\w|\s\w)/g, function (letter) {
+                      return letter.toUpperCase();
+                    });
+                  };
+
+                  return (
+                    <React.Fragment key={key}>
+                      <div className="col-3 mb-4">
+                        <CardProductNew
+                          img={item?.products_picture[0]?.product_picture}
+                          productName={capitalize(item?.product_name)}
+                          price={convertNumber}
+                          storeName={item?.store_name}
+                        />
+                      </div>
+                    </React.Fragment>
+                  );
+                })
+              )}
             </div>
           </section>
           {/* END OF NEW PRODUCT */}
 
+          {/* PAGINATION */}
+          {!clickCategory ? (
+            <section
+              className={`container pagination justify-content-center ${style.pagination}`}
+            >
+              <nav aria-label="Page navigation example">
+                <ul className="pagination">
+                  {[...new Array(totalPage)].map((item, key) => {
+                    let position = ++key;
+                    return (
+                      <li className="page-item" key={key}>
+                        <a
+                          className={`page-link ${
+                            currentPage === position
+                              ? `active border border-danger me-2 rounded-2 ${style.currentPage}`
+                              : `me-2 rounded-2 text-black border border-danger ${style.unActivePagination}`
+                          }`}
+                          onClick={() => {
+                            paginationNewProduct(position);
+                          }}
+                        >
+                          {position}
+                        </a>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </nav>
+            </section>
+          ) : null}
+          {/* END OF PAGINATION */}
+
           {/* POPULAR */}
-          <section className={`container mt-5 mb-5 ${style.Product}`}>
-            <div className={`${style.subTitle}`}>
-              <h2>Popular</h2>
-              <p>Find clothes that are trending recently</p>
-            </div>
-            <div className={`row ${style.content}`}>
-              <div className="col-3">
-                <CardProduct />
+          {!clickCategory ? (
+            <section className={`container mt-5 mb-3 ${style.Product}`}>
+              <div className={`${style.subTitle}`}>
+                <h2>Popular</h2>
+                <p>Find clothes that are trending recently</p>
               </div>
-              <div className="col-3">
-                <CardProduct />
+              <div className={`row ${style.content}`}>
+                {productPopular?.map((item, key) => {
+                  const convertNumber = item?.price.replace(
+                    /\d(?=(\d{3})+$)/g,
+                    "$&."
+                  );
+
+                  const capitalize = (str) => {
+                    return str.replace(/(^\w|\s\w)/g, function (letter) {
+                      return letter.toUpperCase();
+                    });
+                  };
+                  return (
+                    <React.Fragment key={key}>
+                      <div className="col-3 mb-4">
+                        <CardProductPopular
+                          img={item?.products_picture[0]?.product_picture}
+                          productName={capitalize(item?.product_name)}
+                          price={convertNumber}
+                          storeName={item?.store_name}
+                        />
+                      </div>
+                    </React.Fragment>
+                  );
+                })}
               </div>
-              <div className="col-3">
-                <CardProduct />
-              </div>
-              <div className="col-3">
-                <CardProduct />
-              </div>
-            </div>
-          </section>
+            </section>
+          ) : null}
           {/* END OF POPULAR */}
+
+          {/* PAGINATION */}
+          {!clickCategory ? (
+            <section
+              className={`container pagination justify-content-center mb-5 ${style.pagination}`}
+            >
+              <nav aria-label="Page navigation example">
+                <ul className="pagination">
+                  {[...new Array(totalPagePopular)].map((item, key) => {
+                    let position = ++key;
+                    return (
+                      <li className="page-item" key={key}>
+                        <a
+                          className={`page-link ${
+                            currentPagePopular === position
+                              ? `active border border-danger me-2 rounded-2 ${style.currentPage}`
+                              : `me-2 rounded-2 text-black border border-danger ${style.unActivePagination}`
+                          }`}
+                          onClick={() => {
+                            paginationPopularProduct(position);
+                          }}
+                        >
+                          {position}
+                        </a>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </nav>
+            </section>
+          ) : null}
+          {/* END OF PAGINATION */}
 
           {/* FOOTER */}
           <Footer />
@@ -176,4 +501,24 @@ export default function Home() {
       </main>
     </>
   );
+}
+
+export async function getServerSideProps(context) {
+  const productNew = await axios.get(
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/products?page=1&limit=4&sort=DESC`
+  );
+
+  const productPopular = await axios.get(
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/products?page=1&limit=4&sort=DESC&orderBy=popular`
+  );
+
+  const convertProductNew = productNew.data;
+  const convertProductPopular = productPopular.data;
+
+  return {
+    props: {
+      productListNew: convertProductNew,
+      productListPopular: convertProductPopular,
+    }, // will be passed to the page component as props
+  };
 }

@@ -73,7 +73,7 @@ export default function navbar() {
       .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/products/${keyword}`)
       .then(({ data }) => {
         setKeyword("");
-        product(data?.data);
+        setProduct(data?.data);
         // setTotalPage(0);
       })
       .catch(() => setProduct([]));
@@ -128,8 +128,6 @@ export default function navbar() {
                 <input
                   type="text"
                   className={`form-control ${style.search}`}
-                  id="exampleInputEmail1"
-                  aria-describedby="emailHelp"
                   placeholder="Search"
                   value={keyword}
                   onChange={(e) => {

@@ -137,7 +137,7 @@ export default function bag(props) {
         },
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${props.token}`,
           },
         }
       );
@@ -146,13 +146,13 @@ export default function bag(props) {
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/customer/detail`,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${props.token}`,
           },
         }
       );
       setIsLoading(false);
       // console.log("NEWPROFILEDATA", profileData);
-      // setGetProfileData(profileData.data);
+      setGetProfileData(profileData.data);
     } catch (error) {
       console.log(error);
       setIsLoading(false);
@@ -197,8 +197,8 @@ export default function bag(props) {
 
       setIsLoading(false);
       dispatch(deleteDataCheckout());
-      setGetCheckout([]);
-      router.push(`/`);
+      // setGetCheckout([]);
+      router.push("/");
     } catch (error) {
       console.log(error);
       setIsLoading(false);

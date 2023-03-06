@@ -54,6 +54,7 @@ export default function DetailProduct(props) {
   const [size, setSize] = React.useState("");
   const [quantity, setQuantity] = React.useState(1);
   const [showModal, setShowModal] = React.useState(false);
+  const [showModalSuccess, setShowModalSuccess] = React.useState(false);
   const [errMsg, setErrMsg] = React.useState("");
   const [isErr, setIsErr] = React.useState(false);
   const [getButton, setGetButton] = React.useState("");
@@ -114,10 +115,11 @@ export default function DetailProduct(props) {
       setIsLoading(false);
 
       if (getButton == "addbag") {
-        router.push("/bag/my-bag");
+        handleOpenSuccess();
       }
       if (getButton == "buynow") {
-        router.push("/checkout");
+        // router.push("/checkout");
+        router.push("/bag/my-bag");
       }
     } catch (error) {
       setIsLoading(false);
@@ -129,6 +131,14 @@ export default function DetailProduct(props) {
 
   const handleClose = () => {
     setShowModal(false);
+  };
+
+  const handleOpenSuccess = () => {
+    setShowModalSuccess(true);
+  };
+
+  const handleCloseSuccess = () => {
+    setShowModalSuccess(false);
   };
 
   const capitalize = (str) => {
@@ -195,21 +205,30 @@ export default function DetailProduct(props) {
                 Please complete required fields{" "}
               </Typography>
 
-              <div style={{ display: "flex", flexDirection: "column" }}>
-                {/* <MyButton
-                          variant="contained"
-                          onClick={handleResend}
-                          disabled={resendLoading}>
-                          {resendLoading ? "Resending..." : "Resend email"}
-                        </MyButton>
-                        <MyButton
-                          variant="contained"
-                          onClick={() =>
-                            (window.location.href = "/auth/login")
-                          }>
-                          Already received
-                        </MyButton> */}
-              </div>
+              <div style={{ display: "flex", flexDirection: "column" }}></div>
+            </CardContent>
+          </MyCard>
+        </MyModal>
+
+        <MyModal open={showModalSuccess} onClose={handleCloseSuccess}>
+          <MyCard>
+            <CardContent>
+              {/* <Typography variant="h4">Verification email sent!</Typography>
+               */}
+              <Alert
+                variant="filled"
+                severity="success"
+                sx={{ justifyContent: "center" }}>
+                <strong style={{ fontSize: "16px" }}>
+                  Success add Product to Cart
+                </strong>
+              </Alert>
+
+              {/* <Typography variant="body1" sx={{ margin: "20px" }}>
+                Please complete required fields{" "}
+              </Typography> */}
+
+              {/* <div style={{ display: "flex", flexDirection: "column" }}></div> */}
             </CardContent>
           </MyCard>
         </MyModal>

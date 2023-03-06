@@ -83,28 +83,28 @@ export default function bag(props) {
   const [quantities, setQuantities] = React.useState(() => {
     const quantitiesObj = {};
     for (const item of getCheckout) {
-      quantitiesObj[item.products_id] = item.qty;
+      quantitiesObj[item.checkout_id] = item.qty;
     }
     return quantitiesObj;
   });
 
-  const handleOnIncrease = (productId) => {
+  const handleOnIncrease = (checkoutId) => {
     setQuantities((prevState) => {
-      const currentQty = prevState[productId] || 0;
+      const currentQty = prevState[checkoutId] || 0;
       const updatedQty = currentQty + 1;
-      const maxQty = getCheckout.find((item) => item.products_id === productId)
+      const maxQty = getCheckout.find((item) => item.checkout_id === checkoutId)
         .products[0].qty;
       return {
         ...prevState,
-        [productId]: updatedQty <= maxQty ? updatedQty : maxQty,
+        [checkoutId]: updatedQty <= maxQty ? updatedQty : maxQty,
       };
     });
   };
 
-  const handleOnDecrease = (productId) => {
+  const handleOnDecrease = (checkoutId) => {
     setQuantities((prevState) => ({
       ...prevState,
-      [productId]: Math.max((prevState[productId] || 0) - 1, 0),
+      [checkoutId]: Math.max((prevState[checkoutId] || 0) - 1, 0),
     }));
   };
 
@@ -112,12 +112,12 @@ export default function bag(props) {
     setUpdatedCheckoutItems(
       getCheckout.map((item) => {
         const productId = item.products[0]?.id;
-        const updatedQty = quantities[item.products_id] || item.qty;
+        const updatedQty = quantities[item.checkout_id] || item.qty;
         const totalPrice = item.products[0]?.price * updatedQty;
 
         console.log(
-          "quantities[item.products_id]",
-          quantities[item.products_id]
+          "quantities[item.checkout_id]",
+          quantities[item.checkout_id]
         );
         return {
           ...item,
@@ -192,7 +192,7 @@ export default function bag(props) {
     }
   };
 
-  // console.log("getCheckout", getCheckout);
+  console.log("getCheckout", getCheckout);
   // console.log("updatedCheckoutItems", updatedCheckoutItems);
   // console.log("checkedItems======", checkedItems);
 
@@ -341,7 +341,7 @@ export default function bag(props) {
                   };
                   const product = item.products[0];
                   const price =
-                    product.price * (quantities[item.products_id] || item.qty);
+                    product.price * (quantities[item.checkout_id] || item.qty);
                   const prices = price.toString();
                   const convertPrice = prices.replace(
                     /\d(?=(\d{3})+$)/g,
@@ -354,16 +354,16 @@ export default function bag(props) {
                         selectedProductName={capitalize(item?.product_name)}
                         brand={capitalize(item?.products[0]?.brand)}
                         // total={item?.qty}
-                        total={quantities[item.products_id] || item.qty}
+                        total={quantities[item.checkout_id] || item.qty}
                         selectedColor={capitalize(item?.color)}
                         // price={item?.products[0]?.price * item?.qty}
                         price={convertPrice}
                         selectedSize={capitalize(item?.size)}
                         handleOnIncrease={() =>
-                          handleOnIncrease(item.products_id)
+                          handleOnIncrease(item.checkout_id)
                         }
                         handleOnDecrease={() =>
-                          handleOnDecrease(item.products_id)
+                          handleOnDecrease(item.checkout_id)
                         }
                         childChecked={checkedItems.includes(item.checkout_id)}
                         handleChildChange={(event) =>

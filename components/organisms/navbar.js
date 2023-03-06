@@ -8,11 +8,21 @@ import { useRouter } from "next/router";
 import { getCookies, getCookie, setCookie, deleteCookie } from "cookies-next";
 import { AiOutlineBell, AiOutlineShoppingCart } from "react-icons/ai";
 import { BsEnvelope } from "react-icons/bs";
+import { useSelector, useDispatch } from "react-redux";
+import { deleteDataCheckout } from "@/store/reducer/checkout";
+import { deleteAuthData } from "@/store/reducer/auth";
+import cookieParser from "cookie-parser";
+import axios from "axios";
 
 export default function navbar() {
+  const router = useRouter();
+  //REDUX
+  const dispatch = useDispatch();
+
   const [isAuth, setIsAuth] = React.useState(false);
   const [getData, setGetData] = React.useState(null);
-  const [getToken, setGetToken] = React.useState(null);
+  const [getToken, setGetToken] = React.useState("");
+  const [getProfilePict, setGetProfilePict] = React.useState(null);
   const [xs, setXs] = React.useState(null);
   const [s, setS] = React.useState(null);
   const [m, setM] = React.useState(null);
@@ -28,23 +38,45 @@ export default function navbar() {
   const [headwear, setHeadwear] = React.useState(null);
 
   React.useEffect(() => {
-    let token = getCookie("token");
-    let profile = getCookie("profile");
+    const token = localStorage.getItem("token");
+    setGetToken(token);
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/customer/detail`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setIsAuth(true);
+        setGetData(response.data.data);
 
-    if (token && profile) {
-      const convertData = JSON.parse(profile);
+        let temp = response.data.data.profile_picture.includes("https");
+        if (temp) {
+          setGetProfilePict(response.data.data.profile_picture);
+        } else {
+          let temps = `https://res.cloudinary.com/daouvimjz/image/upload/v1676281237/${response.data.data.profile_picture}`;
+          setGetProfilePict(temps);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
 
-      setGetData(convertData);
-      setGetToken(token);
-      setIsAuth(true);
-    }
+    fetchUserData();
   }, []);
 
-  const profPict = getData?.photo_profile;
+  // console.log("getData", getData);
 
   const handleLogout = () => {
     deleteCookie("profile");
     deleteCookie("token");
+    localStorage.removeItem("profile");
+    localStorage.removeItem("token");
+    dispatch(deleteDataCheckout());
+    dispatch(deleteAuthData());
     window.location.reload();
   };
 
@@ -72,14 +104,12 @@ export default function navbar() {
             data-bs-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent"
             aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
+            aria-label="Toggle navigation">
             <span className="navbar-toggler-icon"></span>
           </button>
           <div
             className="collapse navbar-collapse ms-5"
-            id="navbarSupportedContent"
-          >
+            id="navbarSupportedContent">
             <ul className="navbar-nav me-auto">
               {/* SEARCH */}
               <li className="nav-item mt-2">
@@ -98,8 +128,7 @@ export default function navbar() {
                   className="mt-1 ms-1"
                   data-bs-toggle="modal"
                   data-bs-target="#staticBackdrop"
-                  style={{ backgroundColor: "white", border: "none" }}
-                >
+                  style={{ backgroundColor: "white", border: "none" }}>
                   <img
                     className={style.sort}
                     src="/images/Search Field.png"
@@ -113,8 +142,7 @@ export default function navbar() {
                   data-bs-keyboard="false"
                   tabindex="-1"
                   aria-labelledby="staticBackdropLabel"
-                  aria-hidden="true"
-                >
+                  aria-hidden="true">
                   <div className="modal-dialog modal-dialog-scrollable shadow-lg">
                     <div className={`modal-content ${style.modal}`}>
                       <div className="modal-header">
@@ -122,12 +150,10 @@ export default function navbar() {
                           type="button"
                           className="btn-close me-2"
                           data-bs-dismiss="modal"
-                          aria-label="Close"
-                        ></button>
+                          aria-label="Close"></button>
                         <h1
                           className={`modal-title ${style.titleModal}`}
-                          id="staticBackdropLabel"
-                        >
+                          id="staticBackdropLabel">
                           Filter
                         </h1>
                       </div>
@@ -168,8 +194,7 @@ export default function navbar() {
                                 }`}
                                 onClick={() => {
                                   setXs("xs");
-                                }}
-                              >
+                                }}>
                                 <p>XS</p>
                               </button>
                               <button
@@ -179,8 +204,7 @@ export default function navbar() {
                                 }`}
                                 onClick={() => {
                                   setS("s");
-                                }}
-                              >
+                                }}>
                                 S
                               </button>
                               <button
@@ -190,8 +214,7 @@ export default function navbar() {
                                 }`}
                                 onClick={() => {
                                   setM("m");
-                                }}
-                              >
+                                }}>
                                 M
                               </button>
                               <button
@@ -201,8 +224,7 @@ export default function navbar() {
                                 }`}
                                 onClick={() => {
                                   setL("l");
-                                }}
-                              >
+                                }}>
                                 L
                               </button>
                               <button
@@ -212,8 +234,7 @@ export default function navbar() {
                                 }`}
                                 onClick={() => {
                                   setXl("xl");
-                                }}
-                              >
+                                }}>
                                 <p style={{ marginLeft: "-1px" }}>XL</p>
                               </button>
                             </div>
@@ -235,8 +256,7 @@ export default function navbar() {
                                 }`}
                                 onClick={() => {
                                   setTshirt("T-shirt");
-                                }}
-                              >
+                                }}>
                                 <p>T-shirt</p>
                               </button>
                               <button
@@ -248,8 +268,7 @@ export default function navbar() {
                                 }`}
                                 onClick={() => {
                                   setShirt("Shirt");
-                                }}
-                              >
+                                }}>
                                 <p>Shirt</p>
                               </button>
                               <button
@@ -261,8 +280,7 @@ export default function navbar() {
                                 }`}
                                 onClick={() => {
                                   setShorts("Shorts");
-                                }}
-                              >
+                                }}>
                                 <p>Shorts</p>
                               </button>
                               <button
@@ -274,8 +292,7 @@ export default function navbar() {
                                 }`}
                                 onClick={() => {
                                   setOutwear("outwear");
-                                }}
-                              >
+                                }}>
                                 <p>Outwear</p>
                               </button>
                               <button
@@ -287,8 +304,7 @@ export default function navbar() {
                                 }`}
                                 onClick={() => {
                                   setPants("pants");
-                                }}
-                              >
+                                }}>
                                 <p>pants</p>
                               </button>
                               <button
@@ -300,8 +316,7 @@ export default function navbar() {
                                 }`}
                                 onClick={() => {
                                   setFootwear("footwear");
-                                }}
-                              >
+                                }}>
                                 <p>footwear</p>
                               </button>
                               <button
@@ -313,8 +328,7 @@ export default function navbar() {
                                 }`}
                                 onClick={() => {
                                   setBag("bag");
-                                }}
-                              >
+                                }}>
                                 <p>bag</p>
                               </button>
                               <button
@@ -326,8 +340,7 @@ export default function navbar() {
                                 }`}
                                 onClick={() => {
                                   setHeadwear("headwear");
-                                }}
-                              >
+                                }}>
                                 <p>headwear</p>
                               </button>
                             </div>
@@ -364,15 +377,13 @@ export default function navbar() {
                         <button
                           type="button"
                           className={`btn btn-outline-primary ${style.btnDiscard}`}
-                          data-bs-dismiss="modal"
-                        >
+                          data-bs-dismiss="modal">
                           Discard
                         </button>
                         <button
                           type="button"
                           className={`btn btn-secondary ${style.btnApply}`}
-                          data-bs-dismiss="modal"
-                        >
+                          data-bs-dismiss="modal">
                           Apply
                         </button>
                       </div>
@@ -435,7 +446,7 @@ export default function navbar() {
                 </div>
                 <div className="nav-item dropdown-center">
                   <img
-                    src="../../images/profile.png"
+                    src={getProfilePict}
                     width="40px"
                     height="40px"
                     style={{
@@ -454,9 +465,9 @@ export default function navbar() {
                       </Link>
                     </li>
                     <li>
-                      <Link href={"/logout"}>
-                        <div className="dropdown-item">logout</div>
-                      </Link>
+                      <div className="dropdown-item" onClick={handleLogout}>
+                        logout
+                      </div>
                     </li>
                   </ul>
                 </div>
@@ -473,14 +484,12 @@ export default function navbar() {
                 <Link
                   href={"/auth/login"}
                   type="button"
-                  className={`btn btn-primary me-3 ${style.btnLogin}`}
-                >
+                  className={`btn btn-primary me-3 ${style.btnLogin}`}>
                   Login
                 </Link>
                 <Link
                   href={"/auth/register/customer"}
-                  className={`btn btn-outline-primary ${style.btnSignup}`}
-                >
+                  className={`btn btn-outline-primary ${style.btnSignup}`}>
                   Signup
                 </Link>
               </form>

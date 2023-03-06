@@ -225,7 +225,6 @@ export default function bag(props) {
 
   const handleCheckout = async () => {
     try {
-      console.log("props.token=>>>", props.token);
       for (let i = 0; i < totalSummaryData.length; i++) {
         const response = await axios.patch(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/checkout/edit`,

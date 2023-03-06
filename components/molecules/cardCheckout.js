@@ -4,14 +4,7 @@ import style from "@/styles/pages/cardCheckoutStyle.module.scss";
 import Link from "next/link";
 
 export default function cardSelectProduct(props) {
-  const {
-    img,
-    selectedProductName,
-    selectedColor,
-    selectedSize,
-    brand,
-    totalPrice,
-  } = props;
+  const { img, selectedProductName, selectedQty, brand, totalPrice } = props;
   return (
     <div>
       <div
@@ -34,8 +27,7 @@ export default function cardSelectProduct(props) {
           <div className={`col-4 mt-1 ${style.productName}`}>
             <h5>
               {selectedProductName} -{" "}
-              <span style={{ color: "#9B9B9B" }}>{selectedColor} - </span>{" "}
-              <span style={{ color: "#9B9B9B" }}>{selectedSize}</span>{" "}
+              <span style={{ color: "#9B9B9B" }}>({selectedQty} item)</span>
             </h5>
             <p>{brand}</p>
           </div>

@@ -11,8 +11,11 @@ export const checkoutSlice = createSlice({
     setDataCheckout(state, action) {
       state.data = action.payload;
     },
+    deleteDataCheckout(state) {
+      state.data = null;
+    },
   },
 });
 
-export const { setDataCheckout } = checkoutSlice.actions;
+export const { setDataCheckout, deleteDataCheckout } = checkoutSlice.actions;
 export default checkoutSlice.reducer;

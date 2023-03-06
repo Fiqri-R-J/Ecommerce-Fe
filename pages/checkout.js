@@ -8,10 +8,51 @@ import Link from "next/link";
 import Navbar from "@/components/organisms/navbar";
 import CardCheckout from "@/components/molecules/cardCheckout";
 import { useRouter } from "next/router";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { getCookies, getCookie, setCookie, deleteCookie } from "cookies-next";
 import axios from "axios";
 import profile from "./user/profile";
+import { deleteDataCheckout } from "@/store/reducer/checkout";
+//MUI
+import {
+  Card,
+  CardContent,
+  Modal,
+  Button,
+  Typography,
+  Alert,
+  Checkbox,
+} from "@mui/material";
+import LoadingButton from "@mui/lab/LoadingButton";
+import { styled } from "@mui/material/styles";
+
+const MyCard = styled(Card)({
+  margin: "auto",
+  marginTop: "10%",
+  maxWidth: 500,
+  textAlign: "center",
+  borderRadius: "20px",
+  padding: "25px",
+  borderColor: "red",
+});
+
+const MyModal = styled(Modal)({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  borderColor: "red",
+});
+
+const MyButton = styled(Button)({
+  borderRadius: "20px",
+  marginTop: "20px",
+  background: "#DB3022",
+  color: "white",
+  "&:hover": {
+    background: "#DB2522",
+    border: "none",
+  },
+});
 
 export default function bag(props) {
   const checkoutData = useSelector((state) => state);
@@ -21,13 +62,151 @@ export default function bag(props) {
   const [getCheckout, setGetCheckout] = React.useState(
     checkoutData.checkout.data.data
   );
+  // if (!checkoutData) {
+  //   const [getCheckout, setGetCheckout] = React.useState([]);
+  // } else {
+  //   const [getCheckout, setGetCheckout] = React.useState(
+  //     checkoutData?.checkout?.data?.data
+  //   );
+  // }
+
+  const [grandTotal, setgrandTotal] = React.useState("");
+  const [grandMasterTotal, setGrandMasterTotal] = React.useState(0);
+  const [showModal, setShowModal] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   React.useEffect(() => {
     setToken(props.token);
     setGetProfileData(props.profileData);
+
+    if (getCheckout) {
+      let temp = 0;
+      for (let i = 0; i < getCheckout.length; i++) {
+        temp += getCheckout[i].newTotalPrice;
+      }
+      const convertPrice = temp.toString().replace(/\d(?=(\d{3})+$)/g, "$&.");
+      setgrandTotal(convertPrice);
+
+      let grandMaster = temp + 15000;
+      const convertGrandMaster = grandMaster
+        .toString()
+        .replace(/\d(?=(\d{3})+$)/g, "$&.");
+
+      setGrandMasterTotal(convertGrandMaster);
+    }
   }, []);
-  console.log("getCheckout---", getCheckout);
-  // console.log("setGetProfileData---", getProfileData);
+  console.log("getProfileData---", getProfileData);
+
+  // const capitalize = (str) => {
+  //   return str.replace(/(^\w|\s\w)/g, function (letter) {
+  //     return letter.toUpperCase();
+  //   });
+  // };
+
+  const handleClose = () => {
+    setShowModal(false);
+  };
+
+  const handleOpen = () => {
+    setShowModal(true);
+  };
+
+  const [selectedAddressIndex, setSelectedAddressIndex] = React.useState(null);
+  const [getAddressId, setGetAddressId] = React.useState(null);
+
+  const handleCardClick = (index, addressId) => {
+    setSelectedAddressIndex(index);
+    // console.log("Selected address ID:", addressId);
+    setGetAddressId(addressId);
+  };
+
+  let isDisabled = true;
+  if (getAddressId) {
+    isDisabled = false;
+  } else {
+    isDisabled = true;
+  }
+
+  const handleChangeAddress = async () => {
+    try {
+      setIsLoading(true);
+      const response = await axios.patch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/customer/address/edit/${getAddressId}`,
+        {
+          primary_address: 1,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setIsLoading(false);
+      const profileData = await axios.get(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/customer/detail`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setIsLoading(false);
+      // console.log("NEWPROFILEDATA", profileData);
+      // setGetProfileData(profileData.data);
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
+    }
+  };
+
+  const router = useRouter();
+  //REDUX
+  const dispatch = useDispatch();
+
+  const [getPaymentMethod, setGetPaymentMethod] = React.useState(null);
+
+  const handlePaymentMethod = (paymentMethod) => {
+    setGetPaymentMethod(paymentMethod);
+  };
+
+  let isDisabledPayment = true;
+  if (getPaymentMethod) {
+    isDisabledPayment = false;
+  } else {
+    isDisabledPayment = true;
+  }
+
+  const handleCheckoutPayment = async () => {
+    try {
+      setIsLoading(true);
+
+      for (let i = 0; i < getCheckout.length; i++) {
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/payments/add`,
+          {
+            checkout_id: getCheckout[i].checkout_id,
+            payment_method: getPaymentMethod,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      }
+
+      setIsLoading(false);
+      dispatch(deleteDataCheckout());
+      setGetCheckout([]);
+      router.push(`/`);
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
+    }
+  };
+
+  // console.log("getCheckoutREDUX---", getCheckout);
+  //getCheckout[i].checkout_id
   return (
     <>
       <Head>
@@ -37,6 +216,110 @@ export default function bag(props) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={style.main}>
+        {/* MODAL */}
+        <MyModal open={showModal} onClose={handleClose}>
+          <MyCard>
+            <CardContent>
+              {getProfileData?.data?.addresses.length == 1 ? (
+                <Typography variant="h5" sx={{ mb: 2 }}>
+                  <strong>Address</strong>
+                </Typography>
+              ) : (
+                <Typography variant="h5" sx={{ mb: 2 }}>
+                  <strong>Addresses</strong>
+                </Typography>
+              )}
+
+              {getProfileData?.data?.addresses?.map((item, key) => (
+                <React.Fragment key={key}>
+                  <Card
+                    variant="outlined"
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      mb: 2,
+                      cursor: "pointer",
+                      boxShadow:
+                        selectedAddressIndex === key
+                          ? "0 2px 8px rgba(0, 0, 0, 0.1)"
+                          : "none",
+                      border:
+                        selectedAddressIndex === key
+                          ? "2px solid #DB3022"
+                          : "2px solid #e0e0e0",
+                      "&:hover": {
+                        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+                        backgroundColor:
+                          selectedAddressIndex === key
+                            ? "rgba(63, 81, 181, 0.05)"
+                            : "#fff",
+                      },
+                      "&:active": {
+                        border: "2px solid #DB3022",
+                        backgroundColor: "rgba(63, 81, 181, 0.05)",
+                      },
+                    }}
+                    onClick={() => handleCardClick(key, item?.address_id)}>
+                    <CardContent sx={{ display: "flex", alignItems: "center" }}>
+                      <Checkbox
+                        sx={{ mr: 2, display: "none" }}
+                        checked={selectedAddressIndex === key}
+                        color="primary"
+                      />
+                      <div>
+                        <Typography variant="subtitle1" sx={{ mb: 1 }}>
+                          {item?.recipient_name}
+                        </Typography>
+                        <Typography variant="body2">
+                          {item?.address}, {item?.city}, {item?.postal_code}
+                        </Typography>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </React.Fragment>
+              ))}
+
+              {!isDisabled ? (
+                isLoading ? (
+                  <LoadingButton
+                    loading={isLoading}
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                    sx={{
+                      borderRadius: "20px",
+                      marginTop: "20px",
+                      background: "#DB3022",
+                      color: "black",
+                    }}
+                    onClick={handleChangeAddress}>
+                    {isLoading ? "Loading..." : "Change Address"}
+                  </LoadingButton>
+                ) : (
+                  <MyButton
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                    onClick={handleChangeAddress}>
+                    Change Address
+                  </MyButton>
+                )
+              ) : (
+                <MyButton
+                  disabled
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                  onClick={handleChangeAddress}>
+                  Change Address
+                </MyButton>
+              )}
+
+              <div style={{ display: "flex", flexDirection: "column" }}></div>
+            </CardContent>
+          </MyCard>
+        </MyModal>
+
         <div className="container-fluid p-0">
           {/* NAVBAR */}
           <nav
@@ -49,7 +332,7 @@ export default function bag(props) {
           <section className={`container ${style.bag}`}>
             <div className={`${style.subTitle}`}>
               <h3>Checkout</h3>
-              <p>Shipping Adress</p>
+              <p>Shipping Address</p>
             </div>
             <div className={`row ${style.listProduct}`}>
               {/* SIDE LEFT */}
@@ -58,18 +341,23 @@ export default function bag(props) {
                 <div
                   className={`shadow-sm py-3 px-4 border mb-4 ${style.cardSelectAll}`}
                   style={{ width: "100%" }}>
-                  <p className={style.subTitle}>Andreas Jane</p>
-                  <p>
-                    Perumahan Sapphire Mediterania, Wiradadi, Kec. Sokaraja,
-                    Kabupaten Banyumas, Jawa Tengah, 53181 [Tokopedia Note: blok
-                    c 16] Sokaraja, Kab. Banyumas, 53181
+                  <p className={style.subTitle}>
+                    {getProfileData?.data?.addresses[0]?.recipient_name}
                   </p>
-                  <Link
-                    href={""}
+                  <p>
+                    {getProfileData?.data?.addresses[0]?.address},{" "}
+                    {getProfileData?.data?.addresses[0]?.city},{" "}
+                    {getProfileData?.data?.addresses[0]?.postal_code}
+                    {/* Perumahan Sapphire Mediterania, Wiradadi, Kec. Sokaraja,
+                    Kabupaten Banyumas, Jawa Tengah, 53181 [Tokopedia Note: blok
+                    c 16] Sokaraja, Kab. Banyumas, 53181 */}
+                  </p>
+                  <div
+                    onClick={handleOpen}
                     type="button"
                     className={`btn btn-outline-secondary rounded-pill me-3 ${style.btnAddress}`}>
                     Choose another address
-                  </Link>
+                  </div>
                 </div>
                 {/* PRODUCT */}
                 {getCheckout.map((item, key) => {
@@ -78,7 +366,7 @@ export default function bag(props) {
                       return letter.toUpperCase();
                     });
                   };
-                  const prices = price.toString();
+                  const prices = item.newTotalPrice.toString();
                   const convertPrice = prices.replace(
                     /\d(?=(\d{3})+$)/g,
                     "$&."
@@ -88,11 +376,10 @@ export default function bag(props) {
                     <React.Fragment key={key}>
                       <CardCheckout
                         img={item?.product_picture}
-                        selectedProductName
-                        selectedColor
-                        selectedSize
-                        brand
-                        totalPrice
+                        selectedProductName={item?.product_name}
+                        brand={item?.products[0]?.brand}
+                        totalPrice={convertPrice}
+                        selectedQty={item?.newQty}
                       />
                     </React.Fragment>
                   );
@@ -110,7 +397,7 @@ export default function bag(props) {
                         <p>Order</p>
                       </div>
                       <div className="col-6">
-                        <h5 className="text-end">Rp.250000</h5>
+                        <h5 className="text-end">Rp{grandTotal}</h5>
                       </div>
                     </div>
                     <div className="row">
@@ -118,7 +405,7 @@ export default function bag(props) {
                         <p>Delivery</p>
                       </div>
                       <div className="col-6">
-                        <h5 className="text-end">Rp.15000</h5>
+                        <h5 className="text-end">Rp15.000</h5>
                       </div>
                     </div>
                   </div>
@@ -128,7 +415,9 @@ export default function bag(props) {
                         <h5>Shopping summary</h5>
                       </div>
                       <div className="col-5">
-                        <h5 className={`text-end ${style.total}`}>Rp.265000</h5>
+                        <h5 className={`text-end ${style.total}`}>
+                          Rp{grandMasterTotal}
+                        </h5>
                       </div>
                     </div>
                   </div>
@@ -191,9 +480,13 @@ export default function bag(props) {
                                   <div className="col-5 text-end">
                                     <input
                                       className={`form-check-input ${style.check}`}
-                                      type="checkbox"
-                                      value=""
-                                      id="flexCheckDefault"
+                                      type="radio"
+                                      value="gopay"
+                                      id="flexRadioDefault1"
+                                      name="paymentMethod"
+                                      onChange={() =>
+                                        handlePaymentMethod("gopay")
+                                      }
                                     />
                                   </div>
                                 </div>
@@ -215,9 +508,13 @@ export default function bag(props) {
                                   <div className="col-3 text-end">
                                     <input
                                       className={`form-check-input ${style.check}`}
-                                      type="checkbox"
-                                      value=""
-                                      id="flexCheckDefault"
+                                      type="radio"
+                                      value="pos indonesia"
+                                      id="flexRadioDefault1"
+                                      name="paymentMethod"
+                                      onChange={() =>
+                                        handlePaymentMethod("pos indonesia")
+                                      }
                                     />
                                   </div>
                                 </div>
@@ -239,9 +536,13 @@ export default function bag(props) {
                                   <div className="col-5 text-end">
                                     <input
                                       className={`form-check-input ${style.check}`}
-                                      type="checkbox"
-                                      value=""
-                                      id="flexCheckDefault"
+                                      type="radio"
+                                      value="mastercard"
+                                      id="flexRadioDefault1"
+                                      name="paymentMethod"
+                                      onChange={() =>
+                                        handlePaymentMethod("mastercard")
+                                      }
                                     />
                                   </div>
                                 </div>
@@ -254,7 +555,7 @@ export default function bag(props) {
                                     <p className={style.orderDelivery}>Order</p>
                                   </div>
                                   <div className="col-6 text-end">
-                                    <h5>Rp.250000</h5>
+                                    <h5>Rp{grandTotal}</h5>
                                   </div>
                                 </div>
                                 <div className={`row ${style.delivery}`}>
@@ -264,13 +565,13 @@ export default function bag(props) {
                                     </p>
                                   </div>
                                   <div className="col-6 text-end">
-                                    <h5>Rp.15000</h5>
+                                    <h5>Rp15.000</h5>
                                   </div>
                                 </div>
                               </div>
                             </div>
 
-                            {/* FOOTER MDOAL */}
+                            {/* FOOTER MODAL */}
                             <div
                               className={`modal-footer d-block ${style.footer}`}>
                               <div className="row p-0 d-flex align-items-center">
@@ -281,16 +582,45 @@ export default function bag(props) {
                                     Shopping summary
                                   </h4>
                                   <h5 className={`${style.total}`}>
-                                    Rp.265000
+                                    Rp{grandMasterTotal}
                                   </h5>
                                 </div>
                                 <div className="col-6 text-end">
-                                  <button
-                                    type="button"
-                                    className={`btn btn-secondary ${style.btnBuy}`}
-                                    data-bs-dismiss="modal">
-                                    Buy
-                                  </button>
+                                  {!isDisabledPayment ? (
+                                    isLoading ? (
+                                      <LoadingButton
+                                        loading={isLoading}
+                                        variant="contained"
+                                        color="primary"
+                                        fullWidth
+                                        sx={{
+                                          borderRadius: "20px",
+                                          marginTop: "20px",
+                                          background: "#DB3022",
+                                          color: "black",
+                                        }}
+                                        onClick={handleCheckoutPayment}>
+                                        {isLoading ? "Loading..." : "Buy"}
+                                      </LoadingButton>
+                                    ) : (
+                                      <MyButton
+                                        variant="contained"
+                                        color="primary"
+                                        fullWidth
+                                        onClick={handleCheckoutPayment}>
+                                        Buy
+                                      </MyButton>
+                                    )
+                                  ) : (
+                                    <MyButton
+                                      disabled
+                                      variant="contained"
+                                      color="primary"
+                                      fullWidth
+                                      onClick={handleCheckoutPayment}>
+                                      Buy
+                                    </MyButton>
+                                  )}
                                 </div>
                               </div>
                             </div>

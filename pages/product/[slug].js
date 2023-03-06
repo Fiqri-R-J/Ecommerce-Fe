@@ -7,25 +7,227 @@ import Navbar from "@/components/organisms/navbar";
 import CardProductNew from "@/components/molecules/cardProductNew";
 import Footer from "@/components/organisms/footer";
 import axios from "axios";
+import { useRouter } from "next/router";
+import { getCookies, getCookie, setCookie, deleteCookie } from "cookies-next";
+//REDUX
+import { useSelector } from "react-redux";
+//MUI
+import Rating from "@mui/material/Rating";
+import Typography from "@mui/material/Typography";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormHelperText from "@mui/material/FormHelperText";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
+import Alert from "@mui/material/Alert";
+import AlertTitle from "@mui/material/AlertTitle";
+import { Card, CardContent, Modal } from "@mui/material";
+import DangerousIcon from "@mui/icons-material/Dangerous";
+import { styled } from "@mui/material/styles";
+
+// const MyFormControl = styled(FormControl)({
+//   "& .MuiSelect-outlined": {
+//     borderColor: "#DB3022",
+//     "&:focus": {
+//       borderColor: "#DB3022",
+//       boxShadow: "0 0 0 0.2rem rgba(219,48,34,.25)",
+//     },
+//   },
+// });
+
+const MyCard = styled(Card)({
+  margin: "auto",
+  marginTop: "10%",
+  maxWidth: 500,
+  textAlign: "center",
+  borderRadius: "20px",
+  padding: "25px",
+  borderColor: "red",
+});
+
+const MyModal = styled(Modal)({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  borderColor: "red",
+});
 
 export default function DetailProduct(props) {
   const productListNew = props.productListNew;
+  const products = useSelector((state) => state);
 
   const [productNew, setProductNew] = React.useState(productListNew.data);
+  const [getProducts, setGetProducts] = React.useState(
+    products.product.data.data
+  );
+  const [color, setColor] = React.useState("");
+  const [size, setSize] = React.useState("");
+  const [quantity, setQuantity] = React.useState(1);
+  const [showModal, setShowModal] = React.useState(false);
+  const [errMsg, setErrMsg] = React.useState("");
+  const [isErr, setIsErr] = React.useState(false);
+  const [getButton, setGetButton] = React.useState("");
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [getToken, setGetToken] = React.useState(null);
+
+  const router = useRouter();
+
+  React.useEffect(() => {
+    let token = props.token;
+
+    if (props.token) {
+      setGetToken(token);
+    }
+  }, []);
+
+  const handleSubmit = () => {
+    if (!size || !color) {
+      if (!size && !color) {
+        setErrMsg("Size & Color not selected");
+        setIsErr(true);
+        setShowModal(true);
+      } else if (!color) {
+        setErrMsg("Color not selected");
+        setIsErr(true);
+        setShowModal(true);
+      } else if (!size) {
+        setErrMsg("Size not selected");
+        setIsErr(true);
+        setShowModal(true);
+      }
+    } else {
+      setIsErr(false);
+
+      handleCheckout();
+    }
+  };
+
+  const handleCheckout = async () => {
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${getToken}`,
+        },
+      };
+
+      setIsLoading(true);
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/checkout/add`,
+        {
+          products_id: getProducts?.products_id,
+          color,
+          size,
+          qty: quantity,
+        },
+        config
+      );
+      setIsLoading(false);
+
+      if (getButton == "addbag") {
+        router.push("/bag/my-bag");
+      }
+      if (getButton == "buynow") {
+        router.push("/checkout");
+      }
+    } catch (error) {
+      setIsLoading(false);
+      console.log(error);
+    }
+  };
+  // console.log("color--", color, "qty---", quantity, "size---",size);
+  // console.log(props.token)
+
+  const handleClose = () => {
+    setShowModal(false);
+  };
+
+  const capitalize = (str) => {
+    return str.replace(/(^\w|\s\w)/g, function (letter) {
+      return letter.toUpperCase();
+    });
+  };
+
+  const convertNumber = (str) => {
+    return str.replace(/\d(?=(\d{3})+$)/g, "$&.");
+  };
+
+  console.log("getProducts---", getProducts);
+
+  const handleChange = (event) => {
+    setColor(event.target.value);
+  };
+
+  const handleChangeSize = (event) => {
+    setSize(event.target.value);
+  };
+
+  const decrement = () => {
+    if (quantity > 1) {
+      setQuantity(quantity - 1);
+    }
+  };
+
+  const increment = () => {
+    if (quantity > getProducts.qty) {
+      setQuantity(getProducts.qty);
+      return;
+    }
+    if (quantity == getProducts.qty) {
+      return;
+    }
+    setQuantity(quantity + 1);
+  };
+
   return (
     <>
       <Head>
-        <title>Product | Blanja</title>
+        <title>
+          {getProducts.product_name} | {getProducts.store_name} | Blanja
+        </title>
         <meta name="description" content="Generated by create next app" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={style.main}>
+        <MyModal open={showModal} onClose={handleClose}>
+          <MyCard>
+            <CardContent>
+              {/* <Typography variant="h4">Verification email sent!</Typography>
+               */}
+              <Alert
+                variant="filled"
+                severity="error"
+                sx={{ justifyContent: "center" }}>
+                <strong style={{ fontSize: "16px" }}>{errMsg}</strong>
+              </Alert>
+
+              <Typography variant="body1" sx={{ margin: "20px" }}>
+                Please complete required fields{" "}
+              </Typography>
+
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                {/* <MyButton
+                          variant="contained"
+                          onClick={handleResend}
+                          disabled={resendLoading}>
+                          {resendLoading ? "Resending..." : "Resend email"}
+                        </MyButton>
+                        <MyButton
+                          variant="contained"
+                          onClick={() =>
+                            (window.location.href = "/auth/login")
+                          }>
+                          Already received
+                        </MyButton> */}
+              </div>
+            </CardContent>
+          </MyCard>
+        </MyModal>
+
         <div className="container-fluid p-0">
           {/* NAVBAR */}
           <nav
-            className={`container-fluid sticky-sm-top shadow py-2 ${style.containerNavbar}`}
-          >
+            className={`container-fluid sticky-sm-top shadow py-2 ${style.containerNavbar}`}>
             <Navbar />
           </nav>
           {/* END OF NAVBAR */}
@@ -42,7 +244,7 @@ export default function DetailProduct(props) {
                   <a href="#">category</a>
                 </li>
                 <li class="breadcrumb-item active" aria-current="page">
-                  T-Shirt
+                  {capitalize(getProducts?.category)}
                 </li>
               </ol>
             </nav>
@@ -51,174 +253,250 @@ export default function DetailProduct(props) {
             <div className={`${style.selectProduct}`}>
               <div className="row">
                 <div className={`col-4 pt-1 ${style.imgProduct}`}>
-                  <img
-                    className={`shadow-sm rounded-3`}
-                    src="/images/imgProduct.webp"
-                    alt="imgProduct"
-                  />
+                  {getProducts.products_picture.length == 1 ? (
+                    <img
+                      className={`shadow-sm rounded-3`}
+                      src={`https://res.cloudinary.com/daouvimjz/image/upload/v1676281237/${getProducts?.products_picture[0]?.product_picture}`}
+                      alt="imgProduct"
+                    />
+                  ) : (
+                    <div id="carouselExampleIndicators" class="carousel slide">
+                      <div class="carousel-indicators">
+                        {getProducts.products_picture.map((item, key) => (
+                          <button
+                            key={key}
+                            type="button"
+                            data-bs-target="#carouselExampleIndicators"
+                            data-bs-slide-to={key}
+                            className={key === 0 ? "active" : ""}
+                            aria-current={key === 0 ? "true" : ""}
+                            aria-label={`Slide ${key + 1}`}></button>
+                        ))}
+                      </div>
+                      <div className="carousel-inner">
+                        {getProducts.products_picture.map((item, key) => (
+                          <div
+                            key={key}
+                            className={`carousel-item ${
+                              key === 0 ? "active" : ""
+                            }`}>
+                            <img
+                              src={`https://res.cloudinary.com/daouvimjz/image/upload/v1676281237/${item?.product_picture}`}
+                              className="d-block w-100"
+                              alt={item?.product_picture}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                      <button
+                        className="carousel-control-prev"
+                        type="button"
+                        data-bs-target="#carouselExampleIndicators"
+                        data-bs-slide="prev">
+                        <span
+                          className="carousel-control-prev-icon"
+                          aria-hidden="true"></span>
+                        <span className="visually-hidden">Previous</span>
+                      </button>
+                      <button
+                        className="carousel-control-next"
+                        type="button"
+                        data-bs-target="#carouselExampleIndicators"
+                        data-bs-slide="next">
+                        <span
+                          className="carousel-control-next-icon"
+                          aria-hidden="true"></span>
+                        <span className="visually-hidden">Next</span>
+                      </button>
+                    </div>
+                  )}
                 </div>
                 <div className={`col-8 ${style.sideRight}`}>
                   <div className="row">
-                    <h3 className={style.title}>Baju muslim pria</h3>
-                    <p className={style.brand}>Zalora Cloth</p>
-                    <img
-                      src="/images/Rating.webp"
-                      className={`${style.rating}`}
-                      alt="image-product"
-                    />
+                    <h3 className={style.title}>
+                      {capitalize(getProducts?.product_name)}
+                    </h3>
+                    <p className={style.brand}>
+                      {capitalize(getProducts?.brand)}
+                    </p>
+
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                      <Rating
+                        name="read-only"
+                        value={getProducts.avg_review}
+                        precision={0.01}
+                        readOnly
+                        size="small"
+                      />
+                      <Typography
+                        component="legend"
+                        style={{ marginLeft: "8px", color: "#9B9B9B" }}>
+                        <span style={{ color: "black" }}>
+                          {getProducts.avg_review}{" "}
+                        </span>
+                        ({getProducts.review.length} rating) |
+                        <span style={{ color: "black" }}>
+                          {" "}
+                          Sold {getProducts?.item_sold_count}
+                        </span>
+                      </Typography>
+                    </div>
                   </div>
                   <div className="row mt-4">
                     <div className={`col-3 ${style.price}`}>
                       <p>Price</p>
-                      <h4>$ 20.0</h4>
+                      <h4>Rp. {convertNumber(getProducts?.price)}</h4>
                     </div>
-                    <div className={`col-4 ${style.color}`}>
-                      <h5>Color</h5>
-                      <select
-                        className="form-select shadow-sm"
-                        aria-label="Default select example"
-                        // onChange={(e) => {
-                        //   fetchBySort(e.target.value);
-                        // }}
-                      >
-                        <option selected disabled>
-                          Color
-                        </option>
-                        <option value="black">Black</option>
-                        <option value="white">White</option>
-                        <option value="red">Red</option>
-                        <option value="gray">Gray</option>
-                        <option value="cream">Cream</option>
-                        <option value="blue">Blue</option>
-                      </select>
+                    <div className="col-4">
+                      <h5>
+                        Qty
+                        <span style={{ fontSize: "14px", color: "#9B9B9B" }}>
+                          &nbsp; (Available item: {getProducts.qty})
+                        </span>
+                      </h5>
+                      <nav aria-label="Page navigation example">
+                        <ul class="pagination">
+                          <li class="page-item">
+                            <a
+                              class="page-link border rounded-circle border-2 fw-bold"
+                              aria-label="Previous"
+                              style={{
+                                borderRadius: "50px",
+                                borderColor: "black",
+                              }}
+                              onClick={decrement}>
+                              <span
+                                aria-hidden="true"
+                                style={{ color: "black" }}>
+                                -
+                              </span>
+                            </a>
+                          </li>
+                          <li class="page-item">
+                            <a
+                              class="page-link border-0"
+                              style={{ color: "black" }}>
+                              {quantity}
+                            </a>
+                          </li>
+                          <li class="page-item">
+                            <a
+                              class="page-link border rounded-circle border-2 fw-bold"
+                              aria-label="Next"
+                              onClick={increment}>
+                              <span
+                                aria-hidden="true"
+                                style={{ color: "black" }}>
+                                +
+                              </span>
+                            </a>
+                          </li>
+                        </ul>
+                      </nav>
                     </div>
                   </div>
                   {/* SIZE */}
                   <div className="row" style={{ marginTop: "30px" }}>
-                    <div className="col-3">
-                      <h5>Size</h5>
-                      <nav aria-label="Page navigation example">
-                        <ul
-                          class="pagination"
-                          // style={{ marginLeft: "80px", marginTop: "10px" }}
-                        >
-                          <li class="page-item">
-                            <a
-                              class="page-link border rounded-circle border-2 fw-bold"
-                              aria-label="Previous"
-                              style={{
-                                borderRadius: "50px",
-                                borderColor: "black",
-                              }}
-                            >
-                              <span
-                                aria-hidden="true"
-                                style={{
-                                  color: "black",
-                                }}
-                              >
-                                -
-                              </span>
-                            </a>
-                          </li>
-                          <li class="page-item">
-                            <a
-                              class="page-link border-0"
-                              style={{ color: "black" }}
-                            >
-                              1
-                            </a>
-                          </li>
-                          <li class="page-item">
-                            <a
-                              class="page-link border rounded-circle border-2 fw-bold"
-                              aria-label="Next"
-                            >
-                              <span
-                                aria-hidden="true"
-                                style={{ color: "black" }}
-                              >
-                                +
-                              </span>
-                            </a>
-                          </li>
-                        </ul>
-                      </nav>
+                    <div className={`col-3 ${style.color}`}>
+                      {/* <h5>Color</h5> */}
+                      <FormControl required sx={{ m: 1, minWidth: 160 }}>
+                        <InputLabel id="demo-simple-select-success-label">
+                          Color
+                        </InputLabel>
+                        <Select
+                          labelId="demo-simple-select-standard-label"
+                          id="demo-simple-select-standard"
+                          value={color}
+                          label="Color *"
+                          onChange={handleChange}>
+                          <MenuItem value="">
+                            <em>None</em>
+                          </MenuItem>
+                          {getProducts.color.map((item, key) => (
+                            <MenuItem key={key} value={item}>
+                              {capitalize(item)}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                        {!color ? (
+                          <FormHelperText sx={{ color: "red" }}>
+                            Required
+                          </FormHelperText>
+                        ) : (
+                          <FormHelperText sx={{ color: "white" }}>
+                            -
+                          </FormHelperText>
+                        )}
+                      </FormControl>
                     </div>
-                    <div className="col-4">
-                      <h5>Jumlah</h5>
-                      <nav aria-label="Page navigation example">
-                        <ul
-                          class="pagination"
-                          // style={{ marginLeft: "80px", marginTop: "10px" }}
-                        >
-                          <li class="page-item">
-                            <a
-                              class="page-link border rounded-circle border-2 fw-bold"
-                              aria-label="Previous"
-                              style={{
-                                borderRadius: "50px",
-                                borderColor: "black",
-                              }}
-                            >
-                              <span
-                                aria-hidden="true"
-                                style={{
-                                  color: "black",
-                                }}
-                              >
-                                -
-                              </span>
-                            </a>
-                          </li>
-                          <li class="page-item">
-                            <a
-                              class="page-link border-0"
-                              style={{ color: "black" }}
-                            >
-                              1
-                            </a>
-                          </li>
-                          <li class="page-item">
-                            <a
-                              class="page-link border rounded-circle border-2 fw-bold"
-                              aria-label="Next"
-                            >
-                              <span
-                                aria-hidden="true"
-                                style={{ color: "black" }}
-                              >
-                                +
-                              </span>
-                            </a>
-                          </li>
-                        </ul>
-                      </nav>
+
+                    <div className="col-3">
+                      {/* <h5>Size</h5> */}
+                      <FormControl required sx={{ m: 1, minWidth: 160 }}>
+                        <InputLabel id="demo-simple-select-required-label">
+                          Size
+                        </InputLabel>
+                        <Select
+                          labelId="demo-simple-select-standard-label"
+                          id="demo-simple-select-standard"
+                          value={size}
+                          label="Sizes *"
+                          onChange={handleChangeSize}>
+                          <MenuItem value="">
+                            <em>None</em>
+                          </MenuItem>
+                          {getProducts.size.map((item, key) => (
+                            <MenuItem key={key} value={item}>
+                              {capitalize(item)}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                        {!size ? (
+                          <FormHelperText sx={{ color: "red" }}>
+                            Required
+                          </FormHelperText>
+                        ) : (
+                          <FormHelperText sx={{ color: "white" }}>
+                            -
+                          </FormHelperText>
+                        )}
+                      </FormControl>
                     </div>
                   </div>
                   <div className="row mt-4">
                     <div className={`col-12 ${style.btnProduct}`}>
-                      <Link
-                        href={"/bag/my-bag"}
+                      <div
+                        // href={"/bag/my-bag"}
+                        // onClick={() => {
+                        //   handleSubmit()
+                        //   setGetButton('addbag')
+                        // }}
                         type="button"
-                        className={`btn btn-outline-secondary rounded-pill me-3 ${style.btnChat}`}
-                      >
+                        className={`btn btn-outline-secondary rounded-pill me-3 ${style.btnChat}`}>
                         Chat
-                      </Link>
-                      <Link
-                        href={"/bag/my-bag"}
+                      </div>
+                      <div
+                        // href={"/bag/my-bag"}
+                        onClick={() => {
+                          handleSubmit();
+                          setGetButton("addbag");
+                        }}
                         type="button"
-                        className={`btn btn-outline-secondary rounded-pill me-3 ${style.btnAddBag}`}
-                      >
+                        className={`btn btn-outline-secondary rounded-pill me-3 ${style.btnAddBag}`}>
                         Add bag
-                      </Link>
-                      <Link
-                        href={"/checkout"}
+                      </div>
+                      <div
+                        // href={"/checkout"}
+                        onClick={() => {
+                          handleSubmit();
+                          setGetButton("buynow");
+                        }}
                         type="button"
-                        className={`btn btn-primary rounded-pill ${style.btnBuyNow}`}
-                      >
+                        className={`btn btn-primary ${
+                          isLoading ? "btn-loading" : ""
+                        } rounded-pill ${style.btnBuyNow}`}>
                         Buy Now
-                      </Link>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -227,18 +505,18 @@ export default function DetailProduct(props) {
 
             {/* PRODUCT INFORMATION */}
             <div
-              className={`mt-5 border-bottom pb-5 border-2 ${style.productInformation}`}
-            >
+              className={`mt-5 border-bottom pb-5 border-2 ${style.productInformation}`}>
               <div className={`mb-4 ${style.subTitle}`}>
                 <h4>Informasi Produk</h4>
               </div>
               <div className={`mb-4 ${style.condition}`}>
                 <h5>Condition</h5>
-                <p>New</p>
+                <p>{capitalize(getProducts?.condition)}</p>
               </div>
               <div className={`mb-5 ${style.Description}`}>
                 <h5>Description</h5>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                <p>{getProducts?.description}</p>
+                {/* <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
                 <p>
                   Donec non magna rutrum, pellentesque augue eu, sagittis velit.
                   Phasellus quis laoreet dolor. Fusce nec pharetra quam.
@@ -255,7 +533,7 @@ export default function DetailProduct(props) {
                   Interdum et malesuada fames ac ante ipsum primis in faucibus.
                   Praesent sed enim vel turpis blandit imperdiet ac ac felis.
                 </p>
-                <p>In ultricies rutrum tempus. Mauris vel molestie orci.</p>
+                <p>In ultricies rutrum tempus. Mauris vel molestie orci.</p> */}
               </div>
               <div className={`${style.productReview}`}>
                 <h3>Product review</h3>
@@ -299,10 +577,11 @@ export async function getServerSideProps(context) {
   );
 
   const convertProductNew = productNew.data;
-
+  const token = getCookie("token", context) || "";
   return {
     props: {
       productListNew: convertProductNew,
+      token,
     }, // will be passed to the page component as props
   };
 }

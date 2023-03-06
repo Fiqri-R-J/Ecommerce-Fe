@@ -1,11 +1,11 @@
 .save {
   font-size: 14px;
-        padding: 8px 30px;
-        color: white;
-        font-weight: 500;
-        border: 1px solid #DB3022;
-        background-color: #DB3022;
-        border-radius: 40px;
+  padding: 8px 30px;
+  color: white;
+  font-weight: 500;
+  border: 1px solid #db3022;
+  background-color: #db3022;
+  border-radius: 40px;
 }
 .main {
   .containerNavbar {
@@ -29,13 +29,32 @@
     }
   }
 
+  .category1 {
+    display: flex;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+  }
+
+  // .category1::-webkit-scrollbar {
+  //   width: 0.1em;
+  //   height: 5em;
+  //   display: flex;
+  //   justify-content: flex-end;
+  //   margin-top: 200px;
+  // }
+
+  // .category1::-webkit-scrollbar-thumb {
+  //   background-color: rgba(0, 0, 0, 0.2);
+  // }
+
   .category2 {
     .subTitle {
       margin-bottom: 25px;
       p {
         margin-top: -6px;
         font-size: 14px;
-        color: #9B9B9B;
+        color: #9b9b9b;
       }
     }
 
@@ -64,7 +83,7 @@
       p {
         margin-top: -6px;
         font-size: 14px;
-        color: #9B9B9B;
+        color: #9b9b9b;
       }
     }
 
@@ -89,12 +108,12 @@
         }
 
         .price {
-          color: #DB3022;
+          color: #db3022;
         }
 
         .shopName {
           font-size: 14px;
-          color: #9B9B9B;
+          color: #9b9b9b;
         }
 
         .rating {
@@ -104,10 +123,10 @@
       }
     }
   }
-  
+
   .pagination {
     .currentPage {
-      background-color: #DB3022;
+      background-color: #db3022;
     }
   }
 }

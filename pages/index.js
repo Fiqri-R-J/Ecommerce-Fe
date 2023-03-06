@@ -466,7 +466,7 @@ export default function Home(props) {
           {/* END OF PAGINATION */}
 
           {/* POPULAR */}
-          <section className={`container mt-5 mb-5 ${style.Product}`}>
+          {/* <section className={`container mt-5 mb-5 ${style.Product}`}>
             <div className={`${style.subTitle}`}>
               <h2>Popular</h2>
               <p>Find clothes that are trending recently</p>
@@ -503,7 +503,7 @@ export default function Home(props) {
                 );
               })}
             </div>
-          </section>
+          </section> */}
           {!clickCategory ? (
             <section className={`container mt-5 mb-3 ${style.Product}`}>
               <div className={`${style.subTitle}`}>
@@ -524,12 +524,17 @@ export default function Home(props) {
                   };
                   return (
                     <React.Fragment key={key}>
-                      <div className="col-3 mb-4">
+                      <div
+                        className="col-3 mb-4"
+                        onClick={() => {
+                          handleClickSlug(item?.slug);
+                        }}>
                         <CardProductPopular
                           img={item?.products_picture[0]?.product_picture}
                           productName={capitalize(item?.product_name)}
                           price={convertNumber}
                           storeName={item?.store_name}
+                          avgReview={item?.avg_review}
                         />
                       </div>
                     </React.Fragment>

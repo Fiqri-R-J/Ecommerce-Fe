@@ -6,24 +6,35 @@ import Link from "next/link";
 export default function cardSelectProduct(props) {
   const {
     img,
-    nameProduk,
+    selectedProductName,
+    selectedColor,
+    selectedSize,
     brand,
     total,
     price,
     handleOnIncrease,
     handleOnDecrease,
+    childChecked,
+    handleChildChange,
   } = props;
   return (
     <div>
       <div
         className={`shadow-sm py-4 px-4 border mt-3 ${style.product}`}
-        style={{ width: "100%" }}
-      >
+        style={{ width: "100%" }}>
         <div className="row">
           {/* PHOTO PRODUCT */}
           <div className="col-2">
             <div class="form-check d-flex align-items-center">
-              <input className="form-check-input" type="checkbox" value="" />
+              <input
+                className="form-check-input"
+                type="checkbox"
+                value=""
+                // checked={selectedAll}
+                // onClick={handleSelectAll}
+                checked={childChecked}
+                onChange={handleChildChange}
+              />
               <label className="form-check-label d-inline-block">
                 <img
                   className={`ms-3 ${style.icon}`}
@@ -35,13 +46,19 @@ export default function cardSelectProduct(props) {
           </div>
           {/* PRODUCT NAME */}
           <div className={`col-4 mt-1 ${style.productName}`}>
-            <h5>{nameProduk}</h5>
+            <h5>
+              {selectedProductName} -{" "}
+              <span style={{ color: "#9B9B9B" }}>{selectedColor} - </span>{" "}
+              <span style={{ color: "#9B9B9B" }}>{selectedSize}</span>{" "}
+            </h5>
             <p>{brand}</p>
           </div>
           {/* TOTAL */}
           <div className={`col-3`}>
             <nav aria-label="Page navigation example">
-              <ul class="pagination" style={{marginLeft: "80px", marginTop: "10px"}}>
+              <ul
+                class="pagination"
+                style={{ marginLeft: "80px", marginTop: "10px" }}>
                 <li class="page-item">
                   <a
                     class="page-link border rounded-circle border-2"
@@ -49,8 +66,7 @@ export default function cardSelectProduct(props) {
                     style={{ borderRadius: "50px", borderColor: "black" }}
                     onClick={() => {
                       handleOnDecrease();
-                    }}
-                  >
+                    }}>
                     <span aria-hidden="true" style={{ color: "black" }}>
                       -
                     </span>
@@ -67,8 +83,7 @@ export default function cardSelectProduct(props) {
                     aria-label="Next"
                     onClick={() => {
                       handleOnIncrease();
-                    }}
-                  >
+                    }}>
                     <span aria-hidden="true" style={{ color: "black" }}>
                       +
                     </span>
@@ -79,9 +94,8 @@ export default function cardSelectProduct(props) {
           </div>
           {/* TOTAL PRICE */}
           <div
-            className={`col-2 offset-1 d-flex align-items-center ${style.totalPrice}`}
-          >
-            <h5 className="text-end">Rp.{price}</h5>
+            className={`col-2 offset-1 d-flex align-items-center ${style.totalPrice}`}>
+            <h5 className="text-end">Rp{price}</h5>
           </div>
         </div>
       </div>

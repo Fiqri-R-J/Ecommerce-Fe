@@ -8,6 +8,7 @@ import CardProductNew from "@/components/molecules/cardProductNew";
 import Footer from "@/components/organisms/footer";
 import axios from "axios";
 import { useRouter } from "next/router";
+import { getCookies, getCookie, setCookie, deleteCookie } from "cookies-next";
 //REDUX
 import { useSelector } from "react-redux";
 //MUI
@@ -65,7 +66,19 @@ export default function DetailProduct(props) {
   const [showModal, setShowModal] = React.useState(false);
   const [errMsg, setErrMsg] = React.useState("");
   const [isErr, setIsErr] = React.useState(false);
+  const [getButton, setGetButton] = React.useState("");
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [getToken, setGetToken] = React.useState(null);
+
   const router = useRouter();
+
+  React.useEffect(() => {
+    let token = props.token;
+
+    if (props.token) {
+      setGetToken(token);
+    }
+  }, []);
 
   const handleSubmit = () => {
     if (!size || !color) {
@@ -84,8 +97,45 @@ export default function DetailProduct(props) {
       }
     } else {
       setIsErr(false);
+
+      handleCheckout();
     }
   };
+
+  const handleCheckout = async () => {
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${getToken}`,
+        },
+      };
+
+      setIsLoading(true);
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/checkout/add`,
+        {
+          products_id: getProducts?.products_id,
+          color,
+          size,
+          qty: quantity,
+        },
+        config
+      );
+      setIsLoading(false);
+
+      if (getButton == "addbag") {
+        router.push("/bag/my-bag");
+      }
+      if (getButton == "buynow") {
+        router.push("/checkout");
+      }
+    } catch (error) {
+      setIsLoading(false);
+      console.log(error);
+    }
+  };
+  // console.log("color--", color, "qty---", quantity, "size---",size);
+  // console.log(props.token)
 
   const handleClose = () => {
     setShowModal(false);
@@ -107,7 +157,7 @@ export default function DetailProduct(props) {
     setColor(event.target.value);
   };
 
-  const handleChangeQty = (event) => {
+  const handleChangeSize = (event) => {
     setSize(event.target.value);
   };
 
@@ -115,7 +165,6 @@ export default function DetailProduct(props) {
     if (quantity > 1) {
       setQuantity(quantity - 1);
     }
-    
   };
 
   const increment = () => {
@@ -392,7 +441,7 @@ export default function DetailProduct(props) {
                           id="demo-simple-select-standard"
                           value={size}
                           label="Sizes *"
-                          onChange={handleChangeQty}>
+                          onChange={handleChangeSize}>
                           <MenuItem value="">
                             <em>None</em>
                           </MenuItem>
@@ -418,23 +467,34 @@ export default function DetailProduct(props) {
                     <div className={`col-12 ${style.btnProduct}`}>
                       <div
                         // href={"/bag/my-bag"}
-                        onClick={() => handleSubmit()}
+                        // onClick={() => {
+                        //   handleSubmit()
+                        //   setGetButton('addbag')
+                        // }}
                         type="button"
                         className={`btn btn-outline-secondary rounded-pill me-3 ${style.btnChat}`}>
                         Chat
                       </div>
                       <div
                         // href={"/bag/my-bag"}
-                        onClick={() => handleSubmit()}
+                        onClick={() => {
+                          handleSubmit();
+                          setGetButton("addbag");
+                        }}
                         type="button"
                         className={`btn btn-outline-secondary rounded-pill me-3 ${style.btnAddBag}`}>
                         Add bag
                       </div>
                       <div
                         // href={"/checkout"}
-                        onClick={() => handleSubmit()}
+                        onClick={() => {
+                          handleSubmit();
+                          setGetButton("buynow");
+                        }}
                         type="button"
-                        className={`btn btn-primary rounded-pill ${style.btnBuyNow}`}>
+                        className={`btn btn-primary ${
+                          isLoading ? "btn-loading" : ""
+                        } rounded-pill ${style.btnBuyNow}`}>
                         Buy Now
                       </div>
                     </div>
@@ -517,10 +577,11 @@ export async function getServerSideProps(context) {
   );
 
   const convertProductNew = productNew.data;
-
+  const token = getCookie("token", context) || "";
   return {
     props: {
       productListNew: convertProductNew,
+      token,
     }, // will be passed to the page component as props
   };
 }

@@ -22,13 +22,19 @@ import {
   Typography,
   Alert,
   Checkbox,
+  TextField,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  FormControl,
+  FormLabel,
 } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { styled } from "@mui/material/styles";
 
 const MyCard = styled(Card)({
   margin: "auto",
-  marginTop: "10%",
+  // marginTop: "10%",
   maxWidth: 500,
   textAlign: "center",
   borderRadius: "20px",
@@ -54,6 +60,46 @@ const MyButton = styled(Button)({
   },
 });
 
+const ButtonCheckout = styled(Button)({
+  borderRadius: "40px",
+  width: "100%",
+  fontSize: "14px",
+  padding: "8px 30px",
+  color: "white",
+  fontWeight: 500,
+  background: "#DB3022",
+  "&:hover": {
+    background: "#DB2522",
+    border: "none",
+  },
+});
+
+const MyTextField = styled(TextField)({
+  // '& label': {
+  //   color: '#7E98DF',
+  // },
+  // '& label.Mui-focused': {
+  //   color: '#7E98DF',
+  // },
+  // '& .MuiInput-underline:before': {
+  //   borderBottomColor: '#7E98DF',
+  // },
+  //   "& .MuiInput-underline:after": {
+  //     borderBottomColor: "#7E98DF",
+  //   },
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": {
+      borderColor: "#7E98DF",
+    },
+    "&:hover fieldset": {
+      borderColor: "#7E98DF",
+    },
+    "&.Mui-focused fieldset": {
+      borderColor: "#7E98DF",
+    },
+  },
+});
+
 export default function bag(props) {
   const checkoutData = useSelector((state) => state);
 
@@ -74,6 +120,7 @@ export default function bag(props) {
   const [grandMasterTotal, setGrandMasterTotal] = React.useState(0);
   const [showModal, setShowModal] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [showModalCreate, setShowModalCreate] = React.useState(false);
 
   React.useEffect(() => {
     setToken(props.token);
@@ -109,6 +156,14 @@ export default function bag(props) {
 
   const handleOpen = () => {
     setShowModal(true);
+  };
+
+  const handleCloseCreate = () => {
+    setShowModalCreate(false);
+  };
+
+  const handleOpenCreate = () => {
+    setShowModalCreate(true);
   };
 
   const [selectedAddressIndex, setSelectedAddressIndex] = React.useState(null);
@@ -207,6 +262,163 @@ export default function bag(props) {
 
   // console.log("getCheckoutREDUX---", getCheckout);
   //getCheckout[i].checkout_id
+
+  console.log(
+    "getProfileData.addresses[0]===",
+    getProfileData?.data?.addresses[0]
+  );
+  console.log(getProfileData?.data?.addresses[0] == undefined);
+
+  const [typeOfAddress, setTypeOfAddress] = React.useState(null);
+  const [recipientName, setRecipientName] = React.useState(null);
+  const [recipientPhoneNumber, setRecipientPhoneNumber] = React.useState(null);
+  const [address, setAddress] = React.useState(null);
+  const [postalCode, setPostalCode] = React.useState(null);
+  const [city, setCity] = React.useState(null);
+  const [errMsgName, setErrMsgName] = React.useState("");
+  const [errMsgCity, setErrMsgCity] = React.useState("");
+  const [errMsgAddress, setErrMsgAddress] = React.useState("");
+  const [errMsgPhone, setErrMsgPhone] = React.useState("");
+  const [errMsgPostal, setErrMsgPostal] = React.useState("");
+  const [isErrName, setIsErrName] = React.useState(false);
+  const [isErrCity, setIsErrCity] = React.useState(false);
+  const [isErrAddress, setIsErrAddress] = React.useState(false);
+  const [isErrPhone, setIsErrPhone] = React.useState(false);
+  const [isErrPostal, setIsErrPostal] = React.useState(false);
+
+  const isDisabledCreate =
+    !typeOfAddress ||
+    !recipientName ||
+    !recipientPhoneNumber ||
+    !address ||
+    !postalCode ||
+    !city;
+  // console.log("recipientPhoneNumber===", recipientPhoneNumber);
+
+  const handleChangePhoneNumber = (event) => {
+    const newValue = event.target.value.replace(/[^0-9]/g, "");
+    if (newValue.toString().length < 12) {
+      setErrMsgPhone("Please input Valid Phone Number");
+      setIsErrPhone(true);
+      setRecipientPhoneNumber(null);
+      return;
+    }
+    setRecipientPhoneNumber(newValue);
+    setIsErrPhone(false);
+  };
+
+  const handleChangePostalCode = (event) => {
+    const newValue = event.target.value.replace(/[^0-9]/g, "");
+    if (newValue.toString().length < 5) {
+      setErrMsgPostal("Please input Valid Phone Number");
+      setIsErrPostal(true);
+      setPostalCode(null);
+      return;
+    }
+    setPostalCode(newValue);
+    setIsErrPostal(false);
+  };
+
+  const handleAddAddress = async () => {
+    try {
+      const strRegex = /^(?=.*\S)[A-Za-z ]{3,15}$/;
+      const addressRegex =
+        /^(?=.*[a-zA-Z])[\w\d!@#$%^&*()_+}{|":?><,./;'[\]\\=-\s.\/]{10,100}$/;
+
+      if (!strRegex.test(recipientName)) {
+        setErrMsgName(
+          "Name must contain only letters and spaces, and be between 3-15 characters long."
+        );
+        setIsErrName(true);
+        return;
+      }
+
+      if (!addressRegex.test(address)) {
+        setErrMsgAddress(
+          "Address must contain only letters / Alphanumeric, and be between 10-50 characters long."
+        );
+        setIsErrAddress(true);
+        return;
+      }
+
+      if (!strRegex.test(city)) {
+        setErrMsgCity(
+          "City must contain only letters and spaces, and be between 3-15 characters long."
+        );
+        setIsErrCity(true);
+        return;
+      }
+
+      setIsLoading(true);
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/customer/address/add`,
+        {
+          type_of_address: typeOfAddress,
+          recipient_name: recipientName,
+          recipient_phone_number: recipientPhoneNumber,
+          address,
+          postal_code: postalCode,
+          city,
+          primary_address: 1,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${props.token}`,
+          },
+        }
+      );
+      setIsLoading(false);
+      setIsErrName(false);
+      setIsErrAddress(false);
+      setIsErrCity(false);
+      setIsErrPhone(false);
+      setIsErrPostal(false);
+      const profileData = await axios.get(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/customer/detail`,
+        {
+          headers: {
+            Authorization: `Bearer ${props.token}`,
+          },
+        }
+      );
+      setIsLoading(false);
+      setGetProfileData(profileData.data);
+      handleCloseCreate();
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
+    }
+  };
+
+  const handleDeleteAddress = async () => {
+    try {
+      setIsLoading(true);
+      const response = await axios.delete(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/customer/address/delete/${getAddressId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${props.token}`,
+          },
+        }
+      );
+      setIsLoading(false);
+      const profileData = await axios.get(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/customer/detail`,
+        {
+          headers: {
+            Authorization: `Bearer ${props.token}`,
+          },
+        }
+      );
+      setIsLoading(false);
+      setGetProfileData(profileData.data);
+      handleClose()
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
+    }
+  };
+
   return (
     <>
       <Head>
@@ -279,7 +491,262 @@ export default function bag(props) {
                 </React.Fragment>
               ))}
 
-              {!isDisabled ? (
+              <div
+                style={{
+                  display: "flex",
+                  marginLeft: "20px",
+                  marginRight: "20px",
+                }}>
+                {!isDisabled ? (
+                  isLoading ? (
+                    <LoadingButton
+                      loading={isLoading}
+                      variant="contained"
+                      color="primary"
+                      fullWidth
+                      sx={{
+                        borderRadius: "20px",
+                        marginTop: "20px",
+                        background: "#DB3022",
+                        color: "black",
+                      }}
+                      onClick={handleChangeAddress}>
+                      {isLoading ? "Loading..." : "Change Address"}
+                    </LoadingButton>
+                  ) : (
+                    <MyButton
+                      variant="contained"
+                      color="primary"
+                      fullWidth
+                      onClick={handleChangeAddress}>
+                      Change Address
+                    </MyButton>
+                  )
+                ) : (
+                  <MyButton
+                    disabled
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                    onClick={handleChangeAddress}>
+                    Change Address
+                  </MyButton>
+                )}
+                &nbsp;
+                {!isDisabled ? (
+                  isLoading ? (
+                    <LoadingButton
+                      loading={isLoading}
+                      variant="contained"
+                      color="primary"
+                      fullWidth
+                      sx={{
+                        borderRadius: "20px",
+                        marginTop: "20px",
+                        background: "#DB3022",
+                        color: "black",
+                      }}
+                      onClick={handleDeleteAddress}>
+                      {isLoading ? "Loading..." : "Delete Address"}
+                    </LoadingButton>
+                  ) : (
+                    <MyButton
+                      variant="contained"
+                      color="primary"
+                      fullWidth
+                      onClick={handleDeleteAddress}>
+                      Delete Address
+                    </MyButton>
+                  )
+                ) : (
+                  <MyButton
+                    disabled
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                    onClick={handleDeleteAddress}>
+                    Delete Address
+                  </MyButton>
+                )}
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column" }}></div>
+            </CardContent>
+          </MyCard>
+        </MyModal>
+
+        {/* MODAL ADD ADDRESS */}
+        <MyModal open={showModalCreate} onClose={handleCloseCreate}>
+          <MyCard>
+            <CardContent>
+              <Typography variant="h5" sx={{ mb: 2 }}>
+                <strong>Add New Address</strong>
+              </Typography>
+
+              <FormControl>
+                <FormLabel id="demo-row-radio-buttons-group-label">
+                  Type of Address
+                </FormLabel>
+                <RadioGroup
+                  row
+                  aria-labelledby="demo-row-radio-buttons-group-label"
+                  name="row-radio-buttons-group">
+                  <FormControlLabel
+                    value="office"
+                    control={<Radio />}
+                    label="Office"
+                    onChange={() => setTypeOfAddress("office")}
+                  />
+                  <FormControlLabel
+                    value="home"
+                    control={<Radio />}
+                    label="Home"
+                    onChange={() => setTypeOfAddress("home")}
+                  />
+                </RadioGroup>
+              </FormControl>
+
+              {!isErrName ? (
+                <MyTextField
+                  label="Recipient Name"
+                  fullWidth
+                  margin="normal"
+                  variant="standard"
+                  placeholder="John / Doe"
+                  value={recipientName}
+                  onChange={(event) => setRecipientName(event.target.value)}
+                />
+              ) : (
+                <MyTextField
+                  error
+                  fullWidth
+                  margin="normal"
+                  id="standard-error-helper-text"
+                  label="Recipient Name"
+                  helperText={errMsgName}
+                  variant="standard"
+                  value={recipientName}
+                  onChange={(event) => setRecipientName(event.target.value)}
+                />
+              )}
+
+              {!isErrPhone ? (
+                <MyTextField
+                  label="Recipient Phone Number"
+                  fullWidth
+                  variant="standard"
+                  margin="normal"
+                  value={recipientPhoneNumber}
+                  onChange={handleChangePhoneNumber}
+                  InputProps={{
+                    inputProps: {
+                      maxLength: 15,
+                    },
+                  }}
+                />
+              ) : (
+                <MyTextField
+                  error
+                  fullWidth
+                  margin="normal"
+                  id="standard-error-helper-text"
+                  label="Recipient Phone Number"
+                  helperText={errMsgPhone}
+                  variant="standard"
+                  value={recipientPhoneNumber}
+                  onChange={handleChangePhoneNumber}
+                  InputProps={{
+                    inputProps: {
+                      maxLength: 15,
+                    },
+                  }}
+                />
+              )}
+
+              {!isErrAddress ? (
+                <MyTextField
+                  label="Address"
+                  fullWidth
+                  margin="normal"
+                  variant="standard"
+                  placeholder="jl. Mangga no 15c, Kelurahan Bringin, Kecamatan Daun"
+                  value={address}
+                  onChange={(event) => setAddress(event.target.value)}
+                />
+              ) : (
+                <MyTextField
+                  error
+                  fullWidth
+                  margin="normal"
+                  id="standard-error-helper-text"
+                  placeholder="jl. Mangga no 15c, Kelurahan Bringin, Kecamatan Daun"
+                  label="Address"
+                  helperText={errMsgAddress}
+                  variant="standard"
+                  value={address}
+                  onChange={(event) => setAddress(event.target.value)}
+                />
+              )}
+
+              {!isErrPostal ? (
+                <MyTextField
+                  label="Postal Code"
+                  fullWidth
+                  variant="standard"
+                  margin="normal"
+                  value={postalCode}
+                  onChange={handleChangePostalCode}
+                  InputProps={{
+                    inputProps: {
+                      maxLength: 5,
+                    },
+                  }}
+                />
+              ) : (
+                <MyTextField
+                  error
+                  fullWidth
+                  margin="normal"
+                  id="standard-error-helper-text"
+                  label="Postal Code"
+                  helperText={errMsgPostal}
+                  variant="standard"
+                  value={postalCode}
+                  onChange={handleChangePostalCode}
+                  InputProps={{
+                    inputProps: {
+                      maxLength: 5,
+                    },
+                  }}
+                />
+              )}
+
+              {!isErrCity ? (
+                <MyTextField
+                  label="City"
+                  fullWidth
+                  margin="normal"
+                  variant="standard"
+                  placeholder="Palangka Raya / Pontianak"
+                  value={city}
+                  onChange={(event) => setCity(event.target.value)}
+                />
+              ) : (
+                <MyTextField
+                  error
+                  fullWidth
+                  margin="normal"
+                  id="standard-error-helper-text"
+                  label="City"
+                  placeholder="Palangka Raya / Pontianak"
+                  helperText={errMsgCity}
+                  variant="standard"
+                  value={city}
+                  onChange={(event) => setCity(event.target.value)}
+                />
+              )}
+
+              {!isDisabledCreate ? (
                 isLoading ? (
                   <LoadingButton
                     loading={isLoading}
@@ -292,16 +759,16 @@ export default function bag(props) {
                       background: "#DB3022",
                       color: "black",
                     }}
-                    onClick={handleChangeAddress}>
-                    {isLoading ? "Loading..." : "Change Address"}
+                    onClick={handleAddAddress}>
+                    {isLoading ? "Loading..." : "Add Address"}
                   </LoadingButton>
                 ) : (
                   <MyButton
                     variant="contained"
                     color="primary"
                     fullWidth
-                    onClick={handleChangeAddress}>
-                    Change Address
+                    onClick={handleAddAddress}>
+                    Add Address
                   </MyButton>
                 )
               ) : (
@@ -310,8 +777,8 @@ export default function bag(props) {
                   variant="contained"
                   color="primary"
                   fullWidth
-                  onClick={handleChangeAddress}>
-                  Change Address
+                  onClick={handleAddAddress}>
+                  Add Address
                 </MyButton>
               )}
 
@@ -338,27 +805,46 @@ export default function bag(props) {
               {/* SIDE LEFT */}
               <div className="col-8">
                 {/* SELECT ALL PRODUCT */}
-                <div
-                  className={`shadow-sm py-3 px-4 border mb-4 ${style.cardSelectAll}`}
-                  style={{ width: "100%" }}>
-                  <p className={style.subTitle}>
-                    {getProfileData?.data?.addresses[0]?.recipient_name}
-                  </p>
-                  <p>
-                    {getProfileData?.data?.addresses[0]?.address},{" "}
-                    {getProfileData?.data?.addresses[0]?.city},{" "}
-                    {getProfileData?.data?.addresses[0]?.postal_code}
-                    {/* Perumahan Sapphire Mediterania, Wiradadi, Kec. Sokaraja,
-                    Kabupaten Banyumas, Jawa Tengah, 53181 [Tokopedia Note: blok
-                    c 16] Sokaraja, Kab. Banyumas, 53181 */}
-                  </p>
+                {getProfileData?.data?.addresses[0] == undefined ? (
                   <div
-                    onClick={handleOpen}
-                    type="button"
-                    className={`btn btn-outline-secondary rounded-pill me-3 ${style.btnAddress}`}>
-                    Choose another address
+                    className={`shadow-sm py-3 px-4 border mb-4 ${style.cardSelectAll}`}
+                    style={{ width: "100%" }}>
+                    <p className={style.subTitle}></p>
+
+                    <div
+                      onClick={handleOpenCreate}
+                      type="button"
+                      className={`btn btn-outline-secondary rounded-pill me-3 ${style.btnAddress}`}>
+                      Add new address
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div
+                    className={`shadow-sm py-3 px-4 border mb-4 ${style.cardSelectAll}`}
+                    style={{ width: "100%" }}>
+                    <p className={style.subTitle}>
+                      {getProfileData?.data?.addresses[0]?.recipient_name}
+                    </p>
+                    <p>
+                      {getProfileData?.data?.addresses[0]?.address},{" "}
+                      {getProfileData?.data?.addresses[0]?.city},{" "}
+                      {getProfileData?.data?.addresses[0]?.postal_code}
+                    </p>
+                    <div
+                      onClick={handleOpen}
+                      type="button"
+                      className={`btn btn-outline-secondary rounded-pill me-3 ${style.btnAddress}`}>
+                      Choose another address
+                    </div>
+                    <div
+                      onClick={handleOpenCreate}
+                      type="button"
+                      className={`btn btn-outline-secondary rounded-pill me-3 ${style.btnAddress}`}>
+                      Add new address
+                    </div>
+                  </div>
+                )}
+
                 {/* PRODUCT */}
                 {getCheckout.map((item, key) => {
                   const capitalize = (str) => {
@@ -421,16 +907,28 @@ export default function bag(props) {
                       </div>
                     </div>
                   </div>
+
                   <div className="row mt-2">
                     <div className="col-12">
-                      <Link
-                        href={""}
-                        type="button"
-                        className={`btn btn-primary ${style.btnBuy}`}
-                        data-bs-toggle="modal"
-                        data-bs-target="#modalCheckout">
-                        Select payment
-                      </Link>
+                      {getProfileData?.data?.addresses[0] == undefined ? (
+                        <ButtonCheckout
+                          disabled
+                          variant="contained"
+                          color="primary"
+                          fullWidth>
+                          Select payment
+                        </ButtonCheckout>
+                      ) : (
+                        <Link
+                          href={""}
+                          type="button"
+                          className={`btn btn-primary ${style.btnBuy}`}
+                          data-bs-toggle="modal"
+                          data-bs-target="#modalCheckout">
+                          Select payment
+                        </Link>
+                      )}
+
                       <div
                         className="modal fade"
                         id="modalCheckout"

@@ -77,7 +77,8 @@ export default function navbar() {
     localStorage.removeItem("token");
     dispatch(deleteDataCheckout());
     dispatch(deleteAuthData());
-    window.location.reload();
+    // window.location.reload();
+    router.push("/");
   };
 
   const handleLogin = () => {

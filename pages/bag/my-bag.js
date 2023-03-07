@@ -199,8 +199,9 @@ export default function bag(props) {
   };
 
   console.log("getCheckout", getCheckout);
+
   // console.log("updatedCheckoutItems", updatedCheckoutItems);
-  // console.log("checkedItems======", checkedItems);
+  console.log("checkedItems======", checkedItems);
 
   let totalSummaryData = [];
   // let isDisabled = true;

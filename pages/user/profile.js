@@ -112,6 +112,7 @@ export default function profile(props) {
                               type="radio"
                               name="flexRadioDefault"
                               id="flexRadioDefault1"
+                              value="Laki-Laki"
                               checked
                             />
                             <label
@@ -129,12 +130,14 @@ export default function profile(props) {
                               type="radio"
                               name="flexRadioDefault"
                               id="flexRadioDefault2"
+                              value="Perempuan"
+                              checked
                             />
                             <label
                               className="form-check-label"
                               for="flexRadioDefault2"
                             >
-                              perempuan
+                              Perempuan
                             </label>
                           </div>
                         </div>
@@ -164,6 +167,7 @@ export default function profile(props) {
                     <div className="col-3">
                       <div className="imgStore">
                         <img
+                          className="rounded-circle"
                           src={
                             profiles?.profilePicture.includes("https")
                               ? "https://res.cloudinary.com/daouvimjz/image/upload/v1676279237/ecommerce/blank-profile_yiwpyy.png"
@@ -174,12 +178,11 @@ export default function profile(props) {
                             width: "100px",
                             height: "100px",
                             objectFit: "cover",
-                            borderRadius: "50%",
                           }}
                         />
                         <button
                           type="button"
-                          class="btn badge rounded-pill text-bg-secondary mt-3"
+                          className="btn badge rounded-pill text-bg-secondary mt-3"
                         >
                           Select Image
                         </button>

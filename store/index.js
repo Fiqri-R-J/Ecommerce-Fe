@@ -2,6 +2,7 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 
 import auth from "./reducer/auth";
 import product from "./reducer/product";
+import checkout from "./reducer/checkout";
 
 import { persistStore, persistReducer } from "redux-persist";
 
@@ -17,12 +18,13 @@ import storageSession from "redux-persist/lib/storage/session";
 const reducers = combineReducers({
   auth,
   product,
+  checkout,
 });
 
 const persistConfig = {
   key: "root",
   storage: storageSession,
-  whitelist: ["auth", "product"],
+  whitelist: ["auth", "product", "checkout"],
 };
 
 const persistedReducer = persistReducer(persistConfig, reducers);

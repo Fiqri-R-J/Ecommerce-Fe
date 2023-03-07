@@ -32,6 +32,8 @@ export default function RegSeller() {
 
       setCookie("token", connect?.data?.data?.accessToken);
       setCookie("profile", JSON.stringify(connect?.data?.data));
+      localStorage.setItem("token", connect?.data?.data?.accessToken);
+      localStorage.setItem("profile", JSON.stringify(connect?.data?.data));
 
       router.push("/");
     } catch (error) {
@@ -91,8 +93,7 @@ export default function RegSeller() {
                           border: "0",
                           borderRadius: "15px",
                           marginBottom: "-15px",
-                        }}
-                      >
+                        }}>
                         {error}
                       </div>
                     ) : null}
@@ -110,8 +111,7 @@ export default function RegSeller() {
                           border: "0",
                           borderRadius: "15px",
                           padding: "13px 0 5px 0",
-                        }}
-                      >
+                        }}>
                         <p className="text-center">login successful</p>
                       </div>
                     ) : null}
@@ -147,8 +147,7 @@ export default function RegSeller() {
                     className="btn btn-warning"
                     type="button"
                     onClick={handleSubmit}
-                    disabled={isLoading}
-                  >
+                    disabled={isLoading}>
                     {isLoading ? "Loading..." : "Login"}
                   </button>
                 </div>
@@ -157,8 +156,7 @@ export default function RegSeller() {
                     Dont have a Tokopedia account?{" "}
                     <Link
                       href={"/auth/register/customer"}
-                      className={`${style.linkLogin}`}
-                    >
+                      className={`${style.linkLogin}`}>
                       Register
                     </Link>
                   </p>

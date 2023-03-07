@@ -9,11 +9,30 @@ import { useRouter } from "next/router";
 import { getCookies, getCookie, setCookie, deleteCookie } from "cookies-next";
 import { AiOutlineBell, AiOutlineShoppingCart } from "react-icons/ai";
 import { BsEnvelope } from "react-icons/bs";
+import { useSelector, useDispatch } from "react-redux";
+import { deleteDataCheckout } from "@/store/reducer/checkout";
+import { deleteAuthData } from "@/store/reducer/auth";
+//import cookieParser from "cookie-parser";
 
-export default function navbar() {
+export default function navbar({
+  setSearchAndFilter,
+  setNavbar,
+  setEvent,
+  setEventSearch,
+  setColors,
+  setSizes,
+  setCategories,
+  setBrands,
+  setDataNull,
+}) {
+  const router = useRouter();
+  //REDUX
+  const dispatch = useDispatch();
+
   const [isAuth, setIsAuth] = React.useState(false);
   const [getData, setGetData] = React.useState(null);
-  const [getToken, setGetToken] = React.useState(null);
+  const [getToken, setGetToken] = React.useState("");
+  const [getProfilePict, setGetProfilePict] = React.useState(null);
   const [size, setSize] = React.useState(null);
   const [category, setCategory] = React.useState(null);
   const [keyword, setKeyword] = React.useState("");
@@ -39,24 +58,47 @@ export default function navbar() {
   }, []);
 
   React.useEffect(() => {
-    let token = getCookie("token");
-    let profile = getCookie("profile");
+    const token = localStorage.getItem("token");
+    setGetToken(token);
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/customer/detail`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setIsAuth(true);
+        setGetData(response.data.data);
 
-    if (token && profile) {
-      const convertData = JSON.parse(profile);
+        let temp = response.data.data.profile_picture.includes("https");
+        if (temp) {
+          setGetProfilePict(response.data.data.profile_picture);
+        } else {
+          let temps = `https://res.cloudinary.com/daouvimjz/image/upload/v1676281237/${response.data.data.profile_picture}`;
+          setGetProfilePict(temps);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
 
-      setGetData(convertData);
-      setGetToken(token);
-      setIsAuth(true);
-    }
+    fetchUserData();
   }, []);
 
-  const profPict = getData?.photo_profile;
+  // console.log("getData", getData);
 
   const handleLogout = () => {
     deleteCookie("profile");
     deleteCookie("token");
-    window.location.reload();
+    localStorage.removeItem("profile");
+    localStorage.removeItem("token");
+    dispatch(deleteDataCheckout());
+    dispatch(deleteAuthData());
+    // window.location.reload();
+    router.push("/");
   };
 
   const handleLogin = () => {
@@ -69,29 +111,64 @@ export default function navbar() {
 
   // FEATURE SEARCH PRODUCT
   const fetchByKeyword = () => {
-    axios
-      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/products/${keyword}`)
-      .then(({ data }) => {
-        setKeyword("");
-        product(data?.data);
-        // setTotalPage(0);
-      })
-      .catch(() => setProduct([]));
-    // .finally(() => setIsLoading(false));
+    if (keyword && keyword !== "") {
+      axios
+        .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/products/${keyword}`)
+        .then(({ data }) => {
+          setSearchAndFilter(data?.data);
+          setNavbar(true);
+          setDataNull(false);
+          setKeyword("");
+          // setColors("");
+          // setSizes("");
+          // setCategories("");
+          // setBrands("");
+          // setTotalPage(0);
+        })
+        .catch((err) => {
+          setSearchAndFilter([]);
+          setDataNull(true);
+          setNavbar(true);
+          setKeyword("");
+          // setColors("");
+          // setSizes("");
+          // setCategories("");
+          // setBrands("");
+          // console.log(err)
+        });
+      // .finally(() => setIsLoading(false));
+    } else {
+      setNavbar(false);
+    }
   };
 
-  // FEATURE SEARCH PRODUCT
+  // FEATURE FILTER PRODUCT
   const productByCategory = () => {
     axios
       .get(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/products/?page=1&limit=12&sizeFilter=${filterSize}&colorFilter=${filterColor}&categoryFilter=${filterCategory}&brandFilter=${filterBrand}`
       )
       .then(({ data }) => {
-        setProduct(data?.data);
+        if (data?.data.length >= 1) {
+          setSearchAndFilter(data?.data);
+          setNavbar(true);
+          setDataNull(false);
+          setEventSearch("");
+          // setFilterColor("");
+          // setSize("")
+          // setCategory("")
+          // setFilterBrand("")
+        } else {
+          setDataNull(true);
+        }
+        console.log(data?.data.length);
         // setTotalPage(0);
       })
       .catch((err) => {
-        setProduct([]);
+        setSearchAndFilter([]);
+        setDataNull(true);
+        setNavbar(true);
+        setEventSearch("");
         // console.log(err);
       });
     // .finally(() => setIsLoading(false));
@@ -128,16 +205,16 @@ export default function navbar() {
                 <input
                   type="text"
                   className={`form-control ${style.search}`}
-                  id="exampleInputEmail1"
-                  aria-describedby="emailHelp"
                   placeholder="Search"
                   value={keyword}
                   onChange={(e) => {
                     setKeyword(e.target.value);
+                    setEventSearch(e.target.value);
                   }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       fetchByKeyword();
+                      setEvent("Search");
                     }
                   }}
                 />
@@ -193,6 +270,7 @@ export default function navbar() {
                               aria-label="Default select example"
                               onChange={(e) => {
                                 setFilterColor(e.target.value);
+                                setColors(e.target.value);
                               }}
                             >
                               <option selected disabled>
@@ -222,6 +300,7 @@ export default function navbar() {
                                 onClick={() => {
                                   setSize("xs");
                                   setFilterSize("XS");
+                                  setSizes("XS");
                                 }}
                               >
                                 <p>XS</p>
@@ -234,6 +313,7 @@ export default function navbar() {
                                 onClick={() => {
                                   setSize("s");
                                   setFilterSize("S");
+                                  setSizes("S");
                                 }}
                               >
                                 S
@@ -246,6 +326,7 @@ export default function navbar() {
                                 onClick={() => {
                                   setSize("m");
                                   setFilterSize("M");
+                                  setSizes("M");
                                 }}
                               >
                                 M
@@ -258,6 +339,7 @@ export default function navbar() {
                                 onClick={() => {
                                   setSize("l");
                                   setFilterSize("L");
+                                  setSizes("L");
                                 }}
                               >
                                 L
@@ -272,6 +354,7 @@ export default function navbar() {
                                 onClick={() => {
                                   setSize("xl");
                                   setFilterSize("XL");
+                                  setSizes("XL");
                                 }}
                               >
                                 <p style={{ marginLeft: "-1px" }}>XL</p>
@@ -296,6 +379,7 @@ export default function navbar() {
                                 onClick={() => {
                                   setCategory("T-shirt");
                                   setFilterCategory("tshirt");
+                                  setCategories("T-Shirt");
                                 }}
                               >
                                 <p>T-shirt</p>
@@ -310,6 +394,7 @@ export default function navbar() {
                                 onClick={() => {
                                   setCategory("Shirt");
                                   setFilterCategory("shirt");
+                                  setCategories("Shirt");
                                 }}
                               >
                                 <p>Shirt</p>
@@ -324,6 +409,7 @@ export default function navbar() {
                                 onClick={() => {
                                   setCategory("Shorts");
                                   setFilterCategory("shorts");
+                                  setCategories("Shorts");
                                 }}
                               >
                                 <p>Shorts</p>
@@ -338,6 +424,7 @@ export default function navbar() {
                                 onClick={() => {
                                   setCategory("outwear");
                                   setFilterCategory("outwear");
+                                  setCategories("Outwear");
                                 }}
                               >
                                 <p>Outwear</p>
@@ -352,6 +439,7 @@ export default function navbar() {
                                 onClick={() => {
                                   setCategory("pants");
                                   setFilterCategory("pants");
+                                  setCategories("Pants");
                                 }}
                               >
                                 <p>pants</p>
@@ -366,6 +454,7 @@ export default function navbar() {
                                 onClick={() => {
                                   setCategory("footwear");
                                   setFilterCategory("footwear");
+                                  setCategories("Footwear");
                                 }}
                               >
                                 <p>footwear</p>
@@ -380,6 +469,7 @@ export default function navbar() {
                                 onClick={() => {
                                   setCategory("bag");
                                   setFilterCategory("bag");
+                                  setCategories("Bag");
                                 }}
                               >
                                 <p>bag</p>
@@ -394,6 +484,7 @@ export default function navbar() {
                                 onClick={() => {
                                   setCategory("headwear");
                                   setFilterCategory("headwear");
+                                  setCategories("Headwear");
                                 }}
                               >
                                 <p>headwear</p>
@@ -411,6 +502,7 @@ export default function navbar() {
                                 aria-label="Default select example"
                                 onChange={(e) => {
                                   setFilterBrand(e.target.value);
+                                  setBrands(e.target.value);
                                 }}
                               >
                                 <option selected disabled>
@@ -432,8 +524,8 @@ export default function navbar() {
                           type="button"
                           className={`btn btn-outline-primary ${style.btnDiscard}`}
                           onClick={() => {
-                            setSize(null);
-                            setCategory(null);
+                            setSize("");
+                            setCategory("");
                           }}
                         >
                           Discard
@@ -441,8 +533,10 @@ export default function navbar() {
                         <button
                           type="button"
                           className={`btn btn-secondary ${style.btnApply}`}
+                          data-bs-dismiss="modal"
                           onClick={() => {
                             productByCategory();
+                            setEvent("Filter");
                           }}
                         >
                           Apply
@@ -507,7 +601,7 @@ export default function navbar() {
                 </div>
                 <div className="nav-item dropdown-center">
                   <img
-                    src="../../images/profile.png"
+                    src={getProfilePict}
                     width="40px"
                     height="40px"
                     style={{
@@ -526,22 +620,15 @@ export default function navbar() {
                       </Link>
                     </li>
                     <li>
-                      <Link href={"/logout"}>
-                        <div className="dropdown-item">logout</div>
-                      </Link>
+                      <div className="dropdown-item" onClick={handleLogout}>
+                        logout
+                      </div>
                     </li>
                   </ul>
                 </div>
               </form>
             ) : (
               <form className={`d-flex ${style.auth}`} role="search">
-                <Link href={"/bag/my-bag"}>
-                  <img
-                    className={style.shopping}
-                    src="/images/shopping.webp"
-                    alt="icon-navbar"
-                  />
-                </Link>
                 <Link
                   href={"/auth/login"}
                   type="button"

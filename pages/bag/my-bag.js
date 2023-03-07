@@ -130,6 +130,8 @@ export default function bag(props) {
 
   const [isChecked, setIsChecked] = React.useState(false);
   const [checkedItems, setCheckedItems] = React.useState([]);
+  let isDisabled = true;
+  const [isDisable, setIsDisable] = React.useState(false);
 
   const handleMasterCheckboxChange = (event) => {
     const { checked } = event.target;
@@ -137,8 +139,10 @@ export default function bag(props) {
     if (checked) {
       const items = getCheckout.map((item) => item.checkout_id);
       setCheckedItems(items);
+      setIsDisable(false);
     } else {
       setCheckedItems([]);
+      setIsDisable(true);
     }
   };
 
@@ -146,8 +150,10 @@ export default function bag(props) {
     const { checked } = event.target;
     if (checked) {
       setCheckedItems((prevItems) => [...prevItems, id]);
+      setIsDisable(false);
     } else {
       setCheckedItems((prevItems) => prevItems.filter((item) => item !== id));
+      setIsDisable(true);
     }
   };
 
@@ -197,7 +203,7 @@ export default function bag(props) {
   // console.log("checkedItems======", checkedItems);
 
   let totalSummaryData = [];
-  let isDisabled = true;
+  // let isDisabled = true;
 
   for (let i = 0; i < updatedCheckoutItems.length; i++) {
     if (updatedCheckoutItems[i].checkout_id == checkedItems[i]) {
@@ -424,7 +430,7 @@ export default function bag(props) {
                         </Link>
                       </div>
                     )} */}
-                    {!isDisabled ? (
+                    {!isDisable ? (
                       isLoading ? (
                         <LoadingButton
                           loading={isLoading}

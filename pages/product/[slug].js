@@ -487,8 +487,8 @@ export default function DetailProduct(props) {
                       <div
                         // href={"/bag/my-bag"}
                         onClick={() => {
-                          handleSubmit();
                           setGetButton("addbag");
+                          handleSubmit();
                         }}
                         type="button"
                         className={`btn btn-outline-secondary rounded-pill me-3 ${style.btnAddBag}`}>
@@ -497,8 +497,8 @@ export default function DetailProduct(props) {
                       <div
                         // href={"/checkout"}
                         onClick={() => {
-                          handleSubmit();
                           setGetButton("buynow");
+                          handleSubmit();
                         }}
                         type="button"
                         className={`btn btn-primary ${

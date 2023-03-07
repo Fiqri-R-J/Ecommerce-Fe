@@ -105,9 +105,10 @@ export default function bag(props) {
 
   const [getProfileData, setGetProfileData] = React.useState(null);
   const [token, setToken] = React.useState(null);
-  const [getCheckout, setGetCheckout] = React.useState(
-    checkoutData.checkout.data.data
-  );
+  // const [getCheckout, setGetCheckout] = React.useState(
+  //   checkoutData.checkout.data.data
+  // );
+  const [getCheckout, setGetCheckout] = React.useState([]);
   // if (!checkoutData) {
   //   const [getCheckout, setGetCheckout] = React.useState([]);
   // } else {
@@ -125,13 +126,16 @@ export default function bag(props) {
   React.useEffect(() => {
     setToken(props.token);
     setGetProfileData(props.profileData);
+    setGetCheckout(checkoutData.checkout.data.data);
 
-    if (getCheckout) {
+    if (checkoutData?.checkout?.data?.data) {
       let temp = 0;
-      for (let i = 0; i < getCheckout.length; i++) {
-        temp += getCheckout[i].newTotalPrice;
+      for (let i = 0; i < checkoutData?.checkout?.data?.data.length; i++) {
+        temp += checkoutData?.checkout?.data?.data[i]?.newTotalPrice;
       }
+      console.log("TEMP", temp);
       const convertPrice = temp.toString().replace(/\d(?=(\d{3})+$)/g, "$&.");
+      console.log("convertPrice", convertPrice);
       setgrandTotal(convertPrice);
 
       let grandMaster = temp + 15000;
@@ -142,7 +146,12 @@ export default function bag(props) {
       setGrandMasterTotal(convertGrandMaster);
     }
   }, []);
-  console.log("getProfileData---", getProfileData);
+  console.log("getCheckout---", getCheckout);
+  console.log("getCheckout.length---", getCheckout.length);
+  console.log("grandTotal---", grandTotal);
+  console.log("grandMasterTotal---", grandMasterTotal);
+  console.log("getCheckout[i].newTotalPrice", getCheckout[0]?.newTotalPrice);
+  console.log("getCheckout[i].newTotalPrice", getCheckout[0]);
 
   // const capitalize = (str) => {
   //   return str.replace(/(^\w|\s\w)/g, function (letter) {
@@ -412,7 +421,7 @@ export default function bag(props) {
       );
       setIsLoading(false);
       setGetProfileData(profileData.data);
-      handleClose()
+      handleClose();
     } catch (error) {
       console.log(error);
       setIsLoading(false);

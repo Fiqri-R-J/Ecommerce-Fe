@@ -12,8 +12,7 @@ import { BsEnvelope } from "react-icons/bs";
 import { useSelector, useDispatch } from "react-redux";
 import { deleteDataCheckout } from "@/store/reducer/checkout";
 import { deleteAuthData } from "@/store/reducer/auth";
-import cookieParser from "cookie-parser";
-import axios from "axios";
+//import cookieParser from "cookie-parser";
 
 export default function navbar({
   setSearchAndFilter,
@@ -630,13 +629,6 @@ export default function navbar({
               </form>
             ) : (
               <form className={`d-flex ${style.auth}`} role="search">
-                <Link href={"/bag/my-bag"}>
-                  <img
-                    className={style.shopping}
-                    src="/images/shopping.webp"
-                    alt="icon-navbar"
-                  />
-                </Link>
                 <Link
                   href={"/auth/login"}
                   type="button"

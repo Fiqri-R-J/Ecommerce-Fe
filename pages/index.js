@@ -534,12 +534,18 @@ export default function Home(props) {
 
                       return (
                         <React.Fragment key={key}>
-                          <div className="col-3 mb-4">
+                          <div
+                            className="col-3 mb-4"
+                            onClick={() => {
+                              handleClickSlug(item?.slug);
+                            }}
+                          >
                             <CardProductNew
                               img={item?.products_picture[0]?.product_picture}
                               productName={capitalize(item?.product_name)}
                               price={convertNumber}
                               storeName={item?.store_name}
+                              avgReview={item?.avg_review}
                             />
                           </div>
                         </React.Fragment>

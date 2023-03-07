@@ -4,6 +4,7 @@
 import React from "react";
 import style from "../../styles/pages/navbarStyle.module.scss";
 import Link from "next/link";
+import axios from "axios";
 import { useRouter } from "next/router";
 import { getCookies, getCookie, setCookie, deleteCookie } from "cookies-next";
 import { AiOutlineBell, AiOutlineShoppingCart } from "react-icons/ai";
@@ -14,7 +15,17 @@ import { deleteAuthData } from "@/store/reducer/auth";
 import cookieParser from "cookie-parser";
 import axios from "axios";
 
-export default function navbar() {
+export default function navbar({
+  setSearchAndFilter,
+  setNavbar,
+  setEvent,
+  setEventSearch,
+  setColors,
+  setSizes,
+  setCategories,
+  setBrands,
+  setDataNull,
+}) {
   const router = useRouter();
   //REDUX
   const dispatch = useDispatch();
@@ -23,19 +34,29 @@ export default function navbar() {
   const [getData, setGetData] = React.useState(null);
   const [getToken, setGetToken] = React.useState("");
   const [getProfilePict, setGetProfilePict] = React.useState(null);
-  const [xs, setXs] = React.useState(null);
-  const [s, setS] = React.useState(null);
-  const [m, setM] = React.useState(null);
-  const [l, setL] = React.useState(null);
-  const [xl, setXl] = React.useState(null);
-  const [tshirt, setTshirt] = React.useState(null);
-  const [shirt, setShirt] = React.useState(null);
-  const [shorts, setShorts] = React.useState(null);
-  const [outwear, setOutwear] = React.useState(null);
-  const [pants, setPants] = React.useState(null);
-  const [footwear, setFootwear] = React.useState(null);
-  const [bag, setBag] = React.useState(null);
-  const [headwear, setHeadwear] = React.useState(null);
+  const [size, setSize] = React.useState(null);
+  const [category, setCategory] = React.useState(null);
+  const [keyword, setKeyword] = React.useState("");
+  const [product, setProduct] = React.useState([]);
+  const [filterColor, setFilterColor] = React.useState("");
+  const [filterSize, setFilterSize] = React.useState("");
+  const [filterCategory, setFilterCategory] = React.useState("");
+  const [filterBrand, setFilterBrand] = React.useState("");
+  const [allBrand, setAllBrand] = React.useState([]);
+
+  // GET ALL BRAND
+  React.useEffect(() => {
+    axios
+      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/products/?allBrand=true`)
+      .then(({ data }) => {
+        const brand = JSON.parse(data?.data);
+        setAllBrand(brand);
+        // console.log(data?.data)
+      })
+      .catch(() => {
+        // setProduct([]);
+      });
+  }, []);
 
   React.useEffect(() => {
     const token = localStorage.getItem("token");
@@ -88,6 +109,72 @@ export default function navbar() {
   const handleSignup = () => {
     router.push("/auth/register");
   };
+
+  // FEATURE SEARCH PRODUCT
+  const fetchByKeyword = () => {
+    if (keyword && keyword !== "") {
+      axios
+        .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/products/${keyword}`)
+        .then(({ data }) => {
+          setSearchAndFilter(data?.data);
+          setNavbar(true);
+          setDataNull(false);
+          setKeyword("");
+          // setColors("");
+          // setSizes("");
+          // setCategories("");
+          // setBrands("");
+          // setTotalPage(0);
+        })
+        .catch((err) => {
+          setSearchAndFilter([]);
+          setDataNull(true);
+          setNavbar(true);
+          setKeyword("");
+          // setColors("");
+          // setSizes("");
+          // setCategories("");
+          // setBrands("");
+          // console.log(err)
+        });
+      // .finally(() => setIsLoading(false));
+    } else {
+      setNavbar(false);
+    }
+  };
+
+  // FEATURE FILTER PRODUCT
+  const productByCategory = () => {
+    axios
+      .get(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/products/?page=1&limit=12&sizeFilter=${filterSize}&colorFilter=${filterColor}&categoryFilter=${filterCategory}&brandFilter=${filterBrand}`
+      )
+      .then(({ data }) => {
+        if (data?.data.length >= 1) {
+          setSearchAndFilter(data?.data);
+          setNavbar(true);
+          setDataNull(false);
+          setEventSearch("");
+          // setFilterColor("");
+          // setSize("")
+          // setCategory("")
+          // setFilterBrand("")
+        } else {
+          setDataNull(true);
+        }
+        console.log(data?.data.length);
+        // setTotalPage(0);
+      })
+      .catch((err) => {
+        setSearchAndFilter([]);
+        setDataNull(true);
+        setNavbar(true);
+        setEventSearch("");
+        // console.log(err);
+      });
+    // .finally(() => setIsLoading(false));
+  };
+
   return (
     <div className={`container ${style.main}`}>
       <nav className={`${style.navbar}`}>
@@ -105,21 +192,32 @@ export default function navbar() {
             data-bs-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent"
             aria-expanded="false"
-            aria-label="Toggle navigation">
+            aria-label="Toggle navigation"
+          >
             <span className="navbar-toggler-icon"></span>
           </button>
           <div
             className="collapse navbar-collapse ms-5"
-            id="navbarSupportedContent">
+            id="navbarSupportedContent"
+          >
             <ul className="navbar-nav me-auto">
               {/* SEARCH */}
               <li className="nav-item mt-2">
                 <input
                   type="text"
                   className={`form-control ${style.search}`}
-                  id="exampleInputEmail1"
-                  aria-describedby="emailHelp"
                   placeholder="Search"
+                  value={keyword}
+                  onChange={(e) => {
+                    setKeyword(e.target.value);
+                    setEventSearch(e.target.value);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      fetchByKeyword();
+                      setEvent("Search");
+                    }
+                  }}
                 />
               </li>
               {/* SORT */}
@@ -129,7 +227,8 @@ export default function navbar() {
                   className="mt-1 ms-1"
                   data-bs-toggle="modal"
                   data-bs-target="#staticBackdrop"
-                  style={{ backgroundColor: "white", border: "none" }}>
+                  style={{ backgroundColor: "white", border: "none" }}
+                >
                   <img
                     className={style.sort}
                     src="/images/Search Field.png"
@@ -143,7 +242,8 @@ export default function navbar() {
                   data-bs-keyboard="false"
                   tabindex="-1"
                   aria-labelledby="staticBackdropLabel"
-                  aria-hidden="true">
+                  aria-hidden="true"
+                >
                   <div className="modal-dialog modal-dialog-scrollable shadow-lg">
                     <div className={`modal-content ${style.modal}`}>
                       <div className="modal-header">
@@ -151,10 +251,12 @@ export default function navbar() {
                           type="button"
                           className="btn-close me-2"
                           data-bs-dismiss="modal"
-                          aria-label="Close"></button>
+                          aria-label="Close"
+                        ></button>
                         <h1
                           className={`modal-title ${style.titleModal}`}
-                          id="staticBackdropLabel">
+                          id="staticBackdropLabel"
+                        >
                           Filter
                         </h1>
                       </div>
@@ -167,9 +269,10 @@ export default function navbar() {
                             <select
                               className="form-select"
                               aria-label="Default select example"
-                              // onChange={(e) => {
-                              //   fetchBySort(e.target.value);
-                              // }}
+                              onChange={(e) => {
+                                setFilterColor(e.target.value);
+                                setColors(e.target.value);
+                              }}
                             >
                               <option selected disabled>
                                 Color
@@ -191,51 +294,70 @@ export default function navbar() {
                               <button
                                 type="button"
                                 className={`btn rounded-3 ${
-                                  xs === "xs" ? `${style.paymentSelected}` : ""
+                                  size === "xs"
+                                    ? `${style.paymentSelected}`
+                                    : ""
                                 }`}
                                 onClick={() => {
-                                  setXs("xs");
-                                }}>
+                                  setSize("xs");
+                                  setFilterSize("XS");
+                                  setSizes("XS");
+                                }}
+                              >
                                 <p>XS</p>
                               </button>
                               <button
                                 type="button"
                                 className={`btn rounded-3 ${
-                                  s === "s" ? `${style.paymentSelected}` : ""
+                                  size === "s" ? `${style.paymentSelected}` : ""
                                 }`}
                                 onClick={() => {
-                                  setS("s");
-                                }}>
+                                  setSize("s");
+                                  setFilterSize("S");
+                                  setSizes("S");
+                                }}
+                              >
                                 S
                               </button>
                               <button
                                 type="button"
                                 className={`btn rounded-3 ${
-                                  m === "m" ? `${style.paymentSelected}` : ""
+                                  size === "m" ? `${style.paymentSelected}` : ""
                                 }`}
                                 onClick={() => {
-                                  setM("m");
-                                }}>
+                                  setSize("m");
+                                  setFilterSize("M");
+                                  setSizes("M");
+                                }}
+                              >
                                 M
                               </button>
                               <button
                                 type="button"
                                 className={`btn rounded-3 ${
-                                  l === "l" ? `${style.paymentSelected}` : ""
+                                  size === "l" ? `${style.paymentSelected}` : ""
                                 }`}
                                 onClick={() => {
-                                  setL("l");
-                                }}>
+                                  setSize("l");
+                                  setFilterSize("L");
+                                  setSizes("L");
+                                }}
+                              >
                                 L
                               </button>
                               <button
                                 type="button"
                                 className={`btn rounded-3 ${
-                                  xl === "xl" ? `${style.paymentSelected}` : ""
+                                  size === "xl"
+                                    ? `${style.paymentSelected}`
+                                    : ""
                                 }`}
                                 onClick={() => {
-                                  setXl("xl");
-                                }}>
+                                  setSize("xl");
+                                  setFilterSize("XL");
+                                  setSizes("XL");
+                                }}
+                              >
                                 <p style={{ marginLeft: "-1px" }}>XL</p>
                               </button>
                             </div>
@@ -251,97 +373,121 @@ export default function navbar() {
                               <button
                                 type="button"
                                 className={`btn rounded-3 ${
-                                  tshirt === "T-shirt"
+                                  category === "T-shirt"
                                     ? `${style.paymentSelected}`
                                     : ""
                                 }`}
                                 onClick={() => {
-                                  setTshirt("T-shirt");
-                                }}>
+                                  setCategory("T-shirt");
+                                  setFilterCategory("tshirt");
+                                  setCategories("T-Shirt");
+                                }}
+                              >
                                 <p>T-shirt</p>
                               </button>
                               <button
                                 type="button"
                                 className={`btn rounded-3 ${
-                                  shirt === "Shirt"
+                                  category === "Shirt"
                                     ? `${style.paymentSelected}`
                                     : ""
                                 }`}
                                 onClick={() => {
-                                  setShirt("Shirt");
-                                }}>
+                                  setCategory("Shirt");
+                                  setFilterCategory("shirt");
+                                  setCategories("Shirt");
+                                }}
+                              >
                                 <p>Shirt</p>
                               </button>
                               <button
                                 type="button"
                                 className={`btn rounded-3 ${
-                                  shorts === "Shorts"
+                                  category === "Shorts"
                                     ? `${style.paymentSelected}`
                                     : ""
                                 }`}
                                 onClick={() => {
-                                  setShorts("Shorts");
-                                }}>
+                                  setCategory("Shorts");
+                                  setFilterCategory("shorts");
+                                  setCategories("Shorts");
+                                }}
+                              >
                                 <p>Shorts</p>
                               </button>
                               <button
                                 type="button"
                                 className={`btn rounded-3 ${
-                                  outwear === "outwear"
+                                  category === "outwear"
                                     ? `${style.paymentSelected}`
                                     : ""
                                 }`}
                                 onClick={() => {
-                                  setOutwear("outwear");
-                                }}>
+                                  setCategory("outwear");
+                                  setFilterCategory("outwear");
+                                  setCategories("Outwear");
+                                }}
+                              >
                                 <p>Outwear</p>
                               </button>
                               <button
                                 type="button"
                                 className={`btn rounded-3 ${
-                                  pants === "pants"
+                                  category === "pants"
                                     ? `${style.paymentSelected}`
                                     : ""
                                 }`}
                                 onClick={() => {
-                                  setPants("pants");
-                                }}>
+                                  setCategory("pants");
+                                  setFilterCategory("pants");
+                                  setCategories("Pants");
+                                }}
+                              >
                                 <p>pants</p>
                               </button>
                               <button
                                 type="button"
                                 className={`btn rounded-3 ${
-                                  footwear === "footwear"
+                                  category === "footwear"
                                     ? `${style.paymentSelected}`
                                     : ""
                                 }`}
                                 onClick={() => {
-                                  setFootwear("footwear");
-                                }}>
+                                  setCategory("footwear");
+                                  setFilterCategory("footwear");
+                                  setCategories("Footwear");
+                                }}
+                              >
                                 <p>footwear</p>
                               </button>
                               <button
                                 type="button"
                                 className={`btn rounded-3 ${
-                                  bag === "bag"
+                                  category === "bag"
                                     ? `${style.paymentSelected}`
                                     : ""
                                 }`}
                                 onClick={() => {
-                                  setBag("bag");
-                                }}>
+                                  setCategory("bag");
+                                  setFilterCategory("bag");
+                                  setCategories("Bag");
+                                }}
+                              >
                                 <p>bag</p>
                               </button>
                               <button
                                 type="button"
                                 className={`btn rounded-3 ${
-                                  headwear === "headwear"
+                                  category === "headwear"
                                     ? `${style.paymentSelected}`
                                     : ""
                                 }`}
                                 onClick={() => {
-                                  setHeadwear("headwear");
-                                }}>
+                                  setCategory("headwear");
+                                  setFilterCategory("headwear");
+                                  setCategories("Headwear");
+                                }}
+                              >
                                 <p>headwear</p>
                               </button>
                             </div>
@@ -353,21 +499,21 @@ export default function navbar() {
                             <h5 className={`${style.titleBrand}`}>Brand</h5>
                             <div className={`${style.optionBrand}`}>
                               <select
-                                className="form-select"
+                                className="form-select btn-group dropup"
                                 aria-label="Default select example"
-                                // onChange={(e) => {
-                                //   fetchBySort(e.target.value);
-                                // }}
+                                onChange={(e) => {
+                                  setFilterBrand(e.target.value);
+                                  setBrands(e.target.value);
+                                }}
                               >
                                 <option selected disabled>
                                   Brand
                                 </option>
-                                <option value="name_asc">
-                                  Adidas Originals
-                                </option>
-                                <option value="name_desc">Jack & Jones</option>
-                                <option value="release_asc">s.Oliver</option>
-                                <option value="release_desc">Gucci</option>
+                                {allBrand.map((item, key) => (
+                                  <option value={item} key={key}>
+                                    {item}
+                                  </option>
+                                ))}
                               </select>
                             </div>
                           </div>
@@ -378,13 +524,22 @@ export default function navbar() {
                         <button
                           type="button"
                           className={`btn btn-outline-primary ${style.btnDiscard}`}
-                          data-bs-dismiss="modal">
+                          onClick={() => {
+                            setSize("");
+                            setCategory("");
+                          }}
+                        >
                           Discard
                         </button>
                         <button
                           type="button"
                           className={`btn btn-secondary ${style.btnApply}`}
-                          data-bs-dismiss="modal">
+                          data-bs-dismiss="modal"
+                          onClick={() => {
+                            productByCategory();
+                            setEvent("Filter");
+                          }}
+                        >
                           Apply
                         </button>
                       </div>
@@ -485,12 +640,14 @@ export default function navbar() {
                 <Link
                   href={"/auth/login"}
                   type="button"
-                  className={`btn btn-primary me-3 ${style.btnLogin}`}>
+                  className={`btn btn-primary me-3 ${style.btnLogin}`}
+                >
                   Login
                 </Link>
                 <Link
                   href={"/auth/register/customer"}
-                  className={`btn btn-outline-primary ${style.btnSignup}`}>
+                  className={`btn btn-outline-primary ${style.btnSignup}`}
+                >
                   Signup
                 </Link>
               </form>

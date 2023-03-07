@@ -31,6 +31,16 @@ export default function Home(props) {
   );
   const [clickCategory, setClickCategory] = React.useState(false);
 
+  const [navbar, setNavbar] = React.useState(false);
+  const [searchAndFilter, setSearchAndFilter] = React.useState([]);
+  const [event, setEvent] = React.useState("");
+  const [eventSearch, setEventSearch] = React.useState("");
+  const [color, setColors] = React.useState("");
+  const [size, setSizes] = React.useState("");
+  const [category, setCategories] = React.useState("");
+  const [brand, setBrands] = React.useState("");
+  const [dataNull, setDataNull] = React.useState(false);
+
   // SORT BY CATEGORY
   const fetchBySort = (sortValue) => {
     if (sortValue) {
@@ -128,371 +138,465 @@ export default function Home(props) {
           <nav
             className={`container-fluid sticky-sm-top shadow py-2 ${style.containerNavbar}`}
           >
-            <Navbar />
+            <Navbar
+              setSearchAndFilter={setSearchAndFilter}
+              setNavbar={setNavbar}
+              setEvent={setEvent}
+              setEventSearch={setEventSearch}
+              setColors={setColors}
+              setSizes={setSizes}
+              setCategories={setCategories}
+              setBrands={setBrands}
+              setDataNull={setDataNull}
+            />
           </nav>
           {/* END OF NAVBAR */}
 
-          {/* PROMOTION */}
-          <section className={`container mt-5 ${style.category1}`}>
-            <div className={style.item}>
-              <img
-                className={style.icon}
-                src="/images/Card-Promotion2.webp"
-                alt="icon-navbar"
-                onClick={() => {
-                  fetchByColor("black");
-                  setSubTitle("Black Edition");
-                  setClickCategory(true);
-                }}
-                onChange={(e) => {
-                  fetchByColor(e.target.value);
-                }}
-              />
-            </div>
-            <div className={style.item}>
-              <img
-                className={style.icon}
-                src="/images/Card-Promotion.webp"
-                alt="icon-navbar"
-                onClick={() => {
-                  setProductNew(productListPopular.data);
-                  setSubTitle("Trends In 2020");
-                  setClickCategory(true);
-                }}
-                onChange={(e) => {
-                  fetchByColor(e.target.value);
-                }}
-              />
-            </div>
-            <div className={style.item}>
-              <img
-                className={`rounded-2 ${style.icon}`}
-                src="/images/white-edition.webp"
-                alt="icon-navbar"
-                style={{ width: "457px" }}
-                onClick={() => {
-                  fetchByColor("white");
-                  setSubTitle("White Edition");
-                  setClickCategory(true);
-                }}
-                onChange={(e) => {
-                  fetchByColor(e.target.value);
-                }}
-              />
-            </div>
-          </section>
-          {/* END OF PROMOTION */}
+          {navbar ? (
+            <>
+              {/* CONTENT PRODUCT */}
+              <section className={`container py-5 ${style.content}`}>
+                {/* BREADCRUMB */}
+                <nav aria-label="breadcrumb" className={`${style.breadcrumb}`}>
+                  <ol class="breadcrumb">
+                    <li
+                      class="breadcrumb-item"
+                      onClick={() => {
+                        setNavbar(false);
+                      }}
+                      style={{ cursor: "pointer" }}
+                    >
+                      Home
+                    </li>
+                    <li class="breadcrumb-item">{`${event}`}</li>
+                    {event === "Search" ? (
+                      <li class="breadcrumb-item">{`${eventSearch}`}</li>
+                    ) : null}
+                    {/* {category.length > 0 ? (
+                      <li class="breadcrumb-item">{`${category}`}</li>
+                    ) : null}
+                    {size.length > 0 ? (
+                      <li class="breadcrumb-item">{`${size}`}</li>
+                    ) : null}
+                    {color.length > 0 ? (
+                      <li class="breadcrumb-item">{`${color}`}</li>
+                    ) : null}
+                    {brand.length > 0 ? (
+                      <li class="breadcrumb-item">{`Brand ${brand}`}</li>
+                    ) : null} */}
+                    {/* <li class="breadcrumb-item active" aria-current="page">
+                      {`${color}, ${size}, ${category}, ${brand}`}
+                    </li> */}
+                  </ol>
+                </nav>
 
-          {/* CATEGORY */}
-          <section className={`container mt-5 ${style.category2}`}>
-            <div className={`${style.subTitle}`}>
-              <h2>Category</h2>
-              <p>What are you currently looking for</p>
-            </div>
-            <div className={`${style.content}`}>
-              <div className={style.item}>
-                <img
-                  className={style.icon}
-                  src="/images/all-product.webp"
-                  alt="category-all-product"
-                  style={{ width: "206px" }}
-                  onClick={() => {
-                    setProductNew(productListNew.data);
-                    setSubTitle("");
-                    setClickCategory(false);
-                  }}
-                  onChange={(e) => {
-                    fetchBySort(e.target.value);
-                  }}
-                />
-              </div>
-              <div className={style.item}>
-                <img
-                  className={style.icon}
-                  src="/images/t-shirt.webp"
-                  alt="category-t-shirt"
-                  onClick={() => {
-                    fetchBySort("tshirt");
-                    setSubTitle("T-Shirt");
-                    setClickCategory(true);
-                  }}
-                  onChange={(e) => {
-                    fetchBySort(e.target.value);
-                  }}
-                />
-              </div>
-              <div className={style.item}>
-                <img
-                  className={style.icon}
-                  src="/images/shirt.webp"
-                  alt="category-shirt"
-                  style={{ width: "206px" }}
-                  onClick={() => {
-                    fetchBySort("shirt");
-                    setSubTitle("Shirt");
-                    setClickCategory(true);
-                  }}
-                  onChange={(e) => {
-                    fetchBySort(e.target.value);
-                  }}
-                />
-              </div>
-              <div className={style.item}>
-                <img
-                  className={style.icon}
-                  src="/images/shorts.webp"
-                  alt="category-shorts"
-                  onClick={() => {
-                    fetchBySort("shorts");
-                    setSubTitle("Shorts");
-                    setClickCategory(true);
-                  }}
-                  onChange={(e) => {
-                    fetchBySort(e.target.value);
-                  }}
-                />
-              </div>
-              <div className={style.item}>
-                <img
-                  className={style.icon}
-                  src="/images/pants.webp"
-                  alt="category-pants"
-                  onClick={() => {
-                    fetchBySort("pants");
-                    setSubTitle("Pants");
-                    setClickCategory(true);
-                  }}
-                  onChange={(e) => {
-                    fetchBySort(e.target.value);
-                  }}
-                />
-              </div>
-              <div className={style.item}>
-                <img
-                  className={style.icon}
-                  src="/images/headwear.webp"
-                  alt="category-headwear"
-                  style={{ width: "206px" }}
-                  onClick={() => {
-                    fetchBySort("headwear");
-                    setSubTitle("Headwear");
-                    setClickCategory(true);
-                  }}
-                  onChange={(e) => {
-                    fetchBySort(e.target.value);
-                  }}
-                />
-              </div>
-              <div className={style.item}>
-                <img
-                  className={style.icon}
-                  src="/images/outwear.webp"
-                  alt="category-outwear"
-                  style={{ width: "206px" }}
-                  onClick={() => {
-                    fetchBySort("outwear");
-                    setSubTitle("Outwear");
-                    setClickCategory(true);
-                  }}
-                  onChange={(e) => {
-                    fetchBySort(e.target.value);
-                  }}
-                />
-              </div>
-              <div className={style.item}>
-                <img
-                  className={style.icon}
-                  src="/images/footwear.webp"
-                  alt="category-footwear"
-                  style={{ width: "206px" }}
-                  onClick={() => {
-                    fetchBySort("footwear");
-                    setSubTitle("Footwear");
-                    setClickCategory(true);
-                  }}
-                  onChange={(e) => {
-                    fetchBySort(e.target.value);
-                  }}
-                />
-              </div>
-              <div className={style.item}>
-                <img
-                  className={style.icon}
-                  src="/images/bag.png"
-                  alt="category-bag"
-                  onClick={() => {
-                    fetchBySort("bag");
-                    setSubTitle("Bag");
-                    setClickCategory(true);
-                  }}
-                  onChange={(e) => {
-                    fetchBySort(e.target.value);
-                  }}
-                />
-              </div>
-            </div>
-          </section>
-          {/* END OF CATEGORY */}
+                {/* FILTERS RESULTS */}
+                <div className={`row pt-4 ${style.content}`}>
+                  {dataNull ? (
+                    <>
+                      <div style={{ marginBottom: "7px" }}>
+                        <h2 className="text-center">Product not found</h2>
+                      </div>
+                      <p
+                        className="text-center"
+                        style={{ color: "#9B9B9B", fontSize: "14px" }}
+                      >
+                        The product you are {event} is empty
+                      </p>
+                    </>
+                  ) : (
+                    searchAndFilter?.map((item, key) => {
+                      const convertNumber = item?.price.replace(
+                        /\d(?=(\d{3})+$)/g,
+                        "$&."
+                      );
 
-          {/* NEW PRODUCT */}
-          <section className={`container mt-5 mb-3 ${style.Product}`}>
-            {subTitle === "" ? (
-              <div className={`${style.subTitle}`}>
-                <h2>New</h2>
-                <p>You’ve never seen it before!</p>
-              </div>
-            ) : (
-              <div className={`${style.subTitle}`}>
-                <h2>{subTitle}</h2>
-                <p>Category of your choice</p>
-              </div>
-            )}
+                      const capitalize = (str) => {
+                        return str.replace(/(^\w|\s\w)/g, function (letter) {
+                          return letter.toUpperCase();
+                        });
+                      };
 
-            <div className={`row ${style.content}`}>
-              {/* <div className="col-3">
-                <CardProduct />
-              </div> */}
-              {dataNotFound ? (
-                <div style={{ marginBottom: "100px" }}>
-                  <h2 className="text-center">Data not found</h2>
-                  <p
-                    className="text-center"
-                    style={{ color: "#9B9B9B", fontSize: "14px" }}
-                  >
-                    Product with category {subTitle} is empty
-                  </p>
+                      return (
+                        <React.Fragment key={key}>
+                          <div className="col-3 mb-4">
+                            <CardProductNew
+                              img={item?.products_picture[0]?.product_picture}
+                              productName={capitalize(item?.product_name)}
+                              price={convertNumber}
+                              storeName={item?.store_name}
+                            />
+                          </div>
+                        </React.Fragment>
+                      );
+                    })
+                  )}
                 </div>
-              ) : (
-                productNew?.map((item, key) => {
-                  const convertNumber = item?.price.replace(
-                    /\d(?=(\d{3})+$)/g,
-                    "$&."
-                  );
+              </section>
+              {/* END OF CONTENT PRODUCT */}
+            </>
+          ) : (
+            <>
+              {/* PROMOTION */}
+              <section className={`container mt-5 ${style.category1}`}>
+                <div className={style.item}>
+                  <img
+                    className={style.icon}
+                    src="/images/Card-Promotion2.webp"
+                    alt="icon-navbar"
+                    onClick={() => {
+                      fetchByColor("black");
+                      setSubTitle("Black Edition");
+                      setClickCategory(true);
+                    }}
+                    onChange={(e) => {
+                      fetchByColor(e.target.value);
+                    }}
+                  />
+                </div>
+                <div className={style.item}>
+                  <img
+                    className={style.icon}
+                    src="/images/Card-Promotion.webp"
+                    alt="icon-navbar"
+                    onClick={() => {
+                      setProductNew(productListPopular.data);
+                      setSubTitle("Trends In 2020");
+                      setClickCategory(true);
+                    }}
+                    onChange={(e) => {
+                      fetchByColor(e.target.value);
+                    }}
+                  />
+                </div>
+                <div className={style.item}>
+                  <img
+                    className={`rounded-2 ${style.icon}`}
+                    src="/images/white-edition.webp"
+                    alt="icon-navbar"
+                    style={{ width: "457px" }}
+                    onClick={() => {
+                      fetchByColor("white");
+                      setSubTitle("White Edition");
+                      setClickCategory(true);
+                    }}
+                    onChange={(e) => {
+                      fetchByColor(e.target.value);
+                    }}
+                  />
+                </div>
+              </section>
+              {/* END OF PROMOTION */}
 
-                  const capitalize = (str) => {
-                    return str.replace(/(^\w|\s\w)/g, function (letter) {
-                      return letter.toUpperCase();
-                    });
-                  };
+              {/* CATEGORY */}
+              <section className={`container mt-5 ${style.category2}`}>
+                <div className={`${style.subTitle}`}>
+                  <h2>Category</h2>
+                  <p>What are you currently looking for</p>
+                </div>
+                <div className={`${style.content}`}>
+                  <div className={style.item}>
+                    <img
+                      className={style.icon}
+                      src="/images/all-product.webp"
+                      alt="category-all-product"
+                      style={{ width: "206px" }}
+                      onClick={() => {
+                        setProductNew(productListNew.data);
+                        setSubTitle("");
+                        setClickCategory(false);
+                      }}
+                      onChange={(e) => {
+                        fetchBySort(e.target.value);
+                      }}
+                    />
+                  </div>
+                  <div className={style.item}>
+                    <img
+                      className={style.icon}
+                      src="/images/t-shirt.webp"
+                      alt="category-t-shirt"
+                      onClick={() => {
+                        fetchBySort("tshirt");
+                        setSubTitle("T-Shirt");
+                        setClickCategory(true);
+                      }}
+                      onChange={(e) => {
+                        fetchBySort(e.target.value);
+                      }}
+                    />
+                  </div>
+                  <div className={style.item}>
+                    <img
+                      className={style.icon}
+                      src="/images/shirt.webp"
+                      alt="category-shirt"
+                      style={{ width: "206px" }}
+                      onClick={() => {
+                        fetchBySort("shirt");
+                        setSubTitle("Shirt");
+                        setClickCategory(true);
+                      }}
+                      onChange={(e) => {
+                        fetchBySort(e.target.value);
+                      }}
+                    />
+                  </div>
+                  <div className={style.item}>
+                    <img
+                      className={style.icon}
+                      src="/images/shorts.webp"
+                      alt="category-shorts"
+                      onClick={() => {
+                        fetchBySort("shorts");
+                        setSubTitle("Shorts");
+                        setClickCategory(true);
+                      }}
+                      onChange={(e) => {
+                        fetchBySort(e.target.value);
+                      }}
+                    />
+                  </div>
+                  <div className={style.item}>
+                    <img
+                      className={style.icon}
+                      src="/images/pants.webp"
+                      alt="category-pants"
+                      onClick={() => {
+                        fetchBySort("pants");
+                        setSubTitle("Pants");
+                        setClickCategory(true);
+                      }}
+                      onChange={(e) => {
+                        fetchBySort(e.target.value);
+                      }}
+                    />
+                  </div>
+                  <div className={style.item}>
+                    <img
+                      className={style.icon}
+                      src="/images/headwear.webp"
+                      alt="category-headwear"
+                      style={{ width: "206px" }}
+                      onClick={() => {
+                        fetchBySort("headwear");
+                        setSubTitle("Headwear");
+                        setClickCategory(true);
+                      }}
+                      onChange={(e) => {
+                        fetchBySort(e.target.value);
+                      }}
+                    />
+                  </div>
+                  <div className={style.item}>
+                    <img
+                      className={style.icon}
+                      src="/images/outwear.webp"
+                      alt="category-outwear"
+                      style={{ width: "206px" }}
+                      onClick={() => {
+                        fetchBySort("outwear");
+                        setSubTitle("Outwear");
+                        setClickCategory(true);
+                      }}
+                      onChange={(e) => {
+                        fetchBySort(e.target.value);
+                      }}
+                    />
+                  </div>
+                  <div className={style.item}>
+                    <img
+                      className={style.icon}
+                      src="/images/footwear.webp"
+                      alt="category-footwear"
+                      style={{ width: "206px" }}
+                      onClick={() => {
+                        fetchBySort("footwear");
+                        setSubTitle("Footwear");
+                        setClickCategory(true);
+                      }}
+                      onChange={(e) => {
+                        fetchBySort(e.target.value);
+                      }}
+                    />
+                  </div>
+                  <div className={style.item}>
+                    <img
+                      className={style.icon}
+                      src="/images/bag.png"
+                      alt="category-bag"
+                      onClick={() => {
+                        fetchBySort("bag");
+                        setSubTitle("Bag");
+                        setClickCategory(true);
+                      }}
+                      onChange={(e) => {
+                        fetchBySort(e.target.value);
+                      }}
+                    />
+                  </div>
+                </div>
+              </section>
+              {/* END OF CATEGORY */}
 
-                  return (
-                    <React.Fragment key={key}>
-                      <div className="col-3 mb-4">
-                        <CardProductNew
-                          img={item?.products_picture[0]?.product_picture}
-                          productName={capitalize(item?.product_name)}
-                          price={convertNumber}
-                          storeName={item?.store_name}
-                        />
-                      </div>
-                    </React.Fragment>
-                  );
-                })
-              )}
-            </div>
-          </section>
-          {/* END OF NEW PRODUCT */}
+              {/* NEW PRODUCT */}
+              <section className={`container mt-5 mb-3 ${style.Product}`}>
+                {subTitle === "" ? (
+                  <div className={`${style.subTitle}`}>
+                    <h2>New</h2>
+                    <p>You’ve never seen it before!</p>
+                  </div>
+                ) : (
+                  <div className={`${style.subTitle}`}>
+                    <h2>{subTitle}</h2>
+                    <p>Category of your choice</p>
+                  </div>
+                )}
 
-          {/* PAGINATION */}
-          {!clickCategory ? (
-            <section
-              className={`container pagination justify-content-center ${style.pagination}`}
-            >
-              <nav aria-label="Page navigation example">
-                <ul className="pagination">
-                  {[...new Array(totalPage)].map((item, key) => {
-                    let position = ++key;
-                    return (
-                      <li className="page-item" key={key}>
-                        <a
-                          className={`page-link ${
-                            currentPage === position
-                              ? `active border border-danger me-2 rounded-2 ${style.currentPage}`
-                              : `me-2 rounded-2 text-black border border-danger ${style.unActivePagination}`
-                          }`}
-                          onClick={() => {
-                            paginationNewProduct(position);
-                          }}
-                        >
-                          {position}
-                        </a>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </nav>
-            </section>
-          ) : null}
-          {/* END OF PAGINATION */}
+                <div className={`row ${style.content}`}>
+                  {dataNotFound ? (
+                    <div style={{ marginBottom: "100px" }}>
+                      <h2 className="text-center">Product not found</h2>
+                      <p
+                        className="text-center"
+                        style={{ color: "#9B9B9B", fontSize: "14px" }}
+                      >
+                        Product with category {subTitle} is empty
+                      </p>
+                    </div>
+                  ) : (
+                    productNew?.map((item, key) => {
+                      const convertNumber = item?.price.replace(
+                        /\d(?=(\d{3})+$)/g,
+                        "$&."
+                      );
 
-          {/* POPULAR */}
-          {!clickCategory ? (
-            <section className={`container mt-5 mb-3 ${style.Product}`}>
-              <div className={`${style.subTitle}`}>
-                <h2>Popular</h2>
-                <p>Find clothes that are trending recently</p>
-              </div>
-              <div className={`row ${style.content}`}>
-                {productPopular?.map((item, key) => {
-                  const convertNumber = item?.price.replace(
-                    /\d(?=(\d{3})+$)/g,
-                    "$&."
-                  );
+                      const capitalize = (str) => {
+                        return str.replace(/(^\w|\s\w)/g, function (letter) {
+                          return letter.toUpperCase();
+                        });
+                      };
 
-                  const capitalize = (str) => {
-                    return str.replace(/(^\w|\s\w)/g, function (letter) {
-                      return letter.toUpperCase();
-                    });
-                  };
-                  return (
-                    <React.Fragment key={key}>
-                      <div className="col-3 mb-4">
-                        <CardProductPopular
-                          img={item?.products_picture[0]?.product_picture}
-                          productName={capitalize(item?.product_name)}
-                          price={convertNumber}
-                          storeName={item?.store_name}
-                        />
-                      </div>
-                    </React.Fragment>
-                  );
-                })}
-              </div>
-            </section>
-          ) : null}
-          {/* END OF POPULAR */}
+                      return (
+                        <React.Fragment key={key}>
+                          <div className="col-3 mb-4">
+                            <CardProductNew
+                              img={item?.products_picture[0]?.product_picture}
+                              productName={capitalize(item?.product_name)}
+                              price={convertNumber}
+                              storeName={item?.store_name}
+                            />
+                          </div>
+                        </React.Fragment>
+                      );
+                    })
+                  )}
+                </div>
+              </section>
+              {/* END OF NEW PRODUCT */}
 
-          {/* PAGINATION */}
-          {!clickCategory ? (
-            <section
-              className={`container pagination justify-content-center mb-5 ${style.pagination}`}
-            >
-              <nav aria-label="Page navigation example">
-                <ul className="pagination">
-                  {[...new Array(totalPagePopular)].map((item, key) => {
-                    let position = ++key;
-                    return (
-                      <li className="page-item" key={key}>
-                        <a
-                          className={`page-link ${
-                            currentPagePopular === position
-                              ? `active border border-danger me-2 rounded-2 ${style.currentPage}`
-                              : `me-2 rounded-2 text-black border border-danger ${style.unActivePagination}`
-                          }`}
-                          onClick={() => {
-                            paginationPopularProduct(position);
-                          }}
-                        >
-                          {position}
-                        </a>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </nav>
-            </section>
-          ) : null}
-          {/* END OF PAGINATION */}
+              {/* PAGINATION */}
+              {!clickCategory ? (
+                <section
+                  className={`container pagination justify-content-center ${style.pagination}`}
+                >
+                  <nav aria-label="Page navigation example">
+                    <ul className="pagination">
+                      {[...new Array(totalPage)].map((item, key) => {
+                        let position = ++key;
+                        return (
+                          <li className="page-item" key={key}>
+                            <a
+                              className={`page-link ${
+                                currentPage === position
+                                  ? `active border border-danger me-2 rounded-2 ${style.currentPage}`
+                                  : `me-2 rounded-2 text-black border border-danger ${style.unActivePagination}`
+                              }`}
+                              onClick={() => {
+                                paginationNewProduct(position);
+                              }}
+                            >
+                              {position}
+                            </a>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </nav>
+                </section>
+              ) : null}
+              {/* END OF PAGINATION */}
+
+              {/* POPULAR */}
+              {!clickCategory ? (
+                <section className={`container mt-5 mb-3 ${style.Product}`}>
+                  <div className={`${style.subTitle}`}>
+                    <h2>Popular</h2>
+                    <p>Find clothes that are trending recently</p>
+                  </div>
+                  <div className={`row ${style.content}`}>
+                    {productPopular?.map((item, key) => {
+                      const convertNumber = item?.price.replace(
+                        /\d(?=(\d{3})+$)/g,
+                        "$&."
+                      );
+
+                      const capitalize = (str) => {
+                        return str.replace(/(^\w|\s\w)/g, function (letter) {
+                          return letter.toUpperCase();
+                        });
+                      };
+                      return (
+                        <React.Fragment key={key}>
+                          <div className="col-3 mb-4">
+                            <CardProductPopular
+                              img={item?.products_picture[0]?.product_picture}
+                              productName={capitalize(item?.product_name)}
+                              price={convertNumber}
+                              storeName={item?.store_name}
+                            />
+                          </div>
+                        </React.Fragment>
+                      );
+                    })}
+                  </div>
+                </section>
+              ) : null}
+              {/* END OF POPULAR */}
+
+              {/* PAGINATION */}
+              {!clickCategory ? (
+                <section
+                  className={`container pagination justify-content-center mb-5 ${style.pagination}`}
+                >
+                  <nav aria-label="Page navigation example">
+                    <ul className="pagination">
+                      {[...new Array(totalPagePopular)].map((item, key) => {
+                        let position = ++key;
+                        return (
+                          <li className="page-item" key={key}>
+                            <a
+                              className={`page-link ${
+                                currentPagePopular === position
+                                  ? `active border border-danger me-2 rounded-2 ${style.currentPage}`
+                                  : `me-2 rounded-2 text-black border border-danger ${style.unActivePagination}`
+                              }`}
+                              onClick={() => {
+                                paginationPopularProduct(position);
+                              }}
+                            >
+                              {position}
+                            </a>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </nav>
+                </section>
+              ) : null}
+              {/* END OF PAGINATION */}
+            </>
+          )}
 
           {/* FOOTER */}
           <Footer />

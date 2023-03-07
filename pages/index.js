@@ -10,6 +10,10 @@ import CardProductNew from "@/components/molecules/cardProductNew";
 import CardProductPopular from "@/components/molecules/cardProductPopular";
 import Footer from "@/components/organisms/footer";
 import axios from "axios";
+import { useRouter } from "next/router";
+//REDUX
+import * as productRedux from "@/store/reducer/product";
+import { useDispatch } from "react-redux";
 
 export default function Home(props) {
   const productListNew = props.productListNew;
@@ -30,6 +34,24 @@ export default function Home(props) {
     Math.ceil(productListPopular.total / 4)
   );
   const [clickCategory, setClickCategory] = React.useState(false);
+
+  const router = useRouter();
+  //REDUX
+  const dispatch = useDispatch();
+
+  const handleClickSlug = (slug) => {
+    axios
+      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/products/${slug}`)
+      .then(({ data }) => {
+        console.log("response", data);
+        dispatch(
+          productRedux.setData({
+            data: data?.data[0],
+          })
+        );
+        router.push(`/product/${slug}`);
+      });
+  };
 
   const [navbar, setNavbar] = React.useState(false);
   const [searchAndFilter, setSearchAndFilter] = React.useState([]);
@@ -78,6 +100,11 @@ export default function Home(props) {
         setDataNotFound(true);
       });
     // .finally(() => setIsLoading(false));
+    const capitalize = (str) => {
+      return str.replace(/(^\w|\s\w)/g, function (letter) {
+        return letter.toUpperCase();
+      });
+    };
   };
 
   // PAGINATION FOR NEW PRODUCT
@@ -219,12 +246,18 @@ export default function Home(props) {
 
                       return (
                         <React.Fragment key={key}>
-                          <div className="col-3 mb-4">
+                          <div
+                            className="col-3 mb-4"
+                            onClick={() => {
+                              handleClickSlug(item?.slug);
+                            }}
+                          >
                             <CardProductNew
                               img={item?.products_picture[0]?.product_picture}
                               productName={capitalize(item?.product_name)}
                               price={convertNumber}
                               storeName={item?.store_name}
+                              avgReview={item?.avg_review}
                             />
                           </div>
                         </React.Fragment>
@@ -285,6 +318,17 @@ export default function Home(props) {
                     }}
                   />
                 </div>
+                <style>
+                  {`
+    ::-webkit-scrollbar {
+      width: 0.1em;
+      height: 0.5em;
+    }
+    ::-webkit-scrollbar-thumb {
+      background-color: rgba(0, 0, 0, 0.2);
+    }
+  `}
+                </style>
               </section>
               {/* END OF PROMOTION */}
 
@@ -436,6 +480,17 @@ export default function Home(props) {
                     />
                   </div>
                 </div>
+                <style>
+                  {`
+    ::-webkit-scrollbar {
+      width: 0.1em;
+      height: 0.5em;
+    }
+    ::-webkit-scrollbar-thumb {
+      background-color: rgba(0, 0, 0, 0.2);
+    }
+  `}
+                </style>
               </section>
               {/* END OF CATEGORY */}
 
@@ -548,12 +603,18 @@ export default function Home(props) {
                       };
                       return (
                         <React.Fragment key={key}>
-                          <div className="col-3 mb-4">
+                          <div
+                            className="col-3 mb-4"
+                            onClick={() => {
+                              handleClickSlug(item?.slug);
+                            }}
+                          >
                             <CardProductPopular
                               img={item?.products_picture[0]?.product_picture}
                               productName={capitalize(item?.product_name)}
                               price={convertNumber}
                               storeName={item?.store_name}
+                              avgReview={item?.avg_review}
                             />
                           </div>
                         </React.Fragment>

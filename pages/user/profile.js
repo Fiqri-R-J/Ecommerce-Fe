@@ -112,6 +112,7 @@ export default function profile(props) {
                               type="radio"
                               name="flexRadioDefault"
                               id="flexRadioDefault1"
+                              value="Laki-Laki"
                               checked
                             />
                             <label
@@ -129,12 +130,14 @@ export default function profile(props) {
                               type="radio"
                               name="flexRadioDefault"
                               id="flexRadioDefault2"
+                              value="Perempuan"
+                              checked
                             />
                             <label
                               className="form-check-label"
                               for="flexRadioDefault2"
                             >
-                              perempuan
+                              Perempuan
                             </label>
                           </div>
                         </div>

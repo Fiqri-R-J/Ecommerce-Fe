@@ -9,6 +9,11 @@ import { useRouter } from "next/router";
 import { getCookies, getCookie, setCookie, deleteCookie } from "cookies-next";
 import { AiOutlineBell, AiOutlineShoppingCart } from "react-icons/ai";
 import { BsEnvelope } from "react-icons/bs";
+import { useSelector, useDispatch } from "react-redux";
+import { deleteDataCheckout } from "@/store/reducer/checkout";
+import { deleteAuthData } from "@/store/reducer/auth";
+import cookieParser from "cookie-parser";
+import axios from "axios";
 
 export default function navbar({
   setSearchAndFilter,
@@ -21,9 +26,14 @@ export default function navbar({
   setBrands,
   setDataNull,
 }) {
+  const router = useRouter();
+  //REDUX
+  const dispatch = useDispatch();
+
   const [isAuth, setIsAuth] = React.useState(false);
   const [getData, setGetData] = React.useState(null);
-  const [getToken, setGetToken] = React.useState(null);
+  const [getToken, setGetToken] = React.useState("");
+  const [getProfilePict, setGetProfilePict] = React.useState(null);
   const [size, setSize] = React.useState(null);
   const [category, setCategory] = React.useState(null);
   const [keyword, setKeyword] = React.useState("");
@@ -49,24 +59,47 @@ export default function navbar({
   }, []);
 
   React.useEffect(() => {
-    let token = getCookie("token");
-    let profile = getCookie("profile");
+    const token = localStorage.getItem("token");
+    setGetToken(token);
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/customer/detail`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setIsAuth(true);
+        setGetData(response.data.data);
 
-    if (token && profile) {
-      const convertData = JSON.parse(profile);
+        let temp = response.data.data.profile_picture.includes("https");
+        if (temp) {
+          setGetProfilePict(response.data.data.profile_picture);
+        } else {
+          let temps = `https://res.cloudinary.com/daouvimjz/image/upload/v1676281237/${response.data.data.profile_picture}`;
+          setGetProfilePict(temps);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
 
-      setGetData(convertData);
-      setGetToken(token);
-      setIsAuth(true);
-    }
+    fetchUserData();
   }, []);
 
-  const profPict = getData?.photo_profile;
+  // console.log("getData", getData);
 
   const handleLogout = () => {
     deleteCookie("profile");
     deleteCookie("token");
-    window.location.reload();
+    localStorage.removeItem("profile");
+    localStorage.removeItem("token");
+    dispatch(deleteDataCheckout());
+    dispatch(deleteAuthData());
+    // window.location.reload();
+    router.push("/");
   };
 
   const handleLogin = () => {
@@ -569,7 +602,7 @@ export default function navbar({
                 </div>
                 <div className="nav-item dropdown-center">
                   <img
-                    src="../../images/profile.png"
+                    src={getProfilePict}
                     width="40px"
                     height="40px"
                     style={{
@@ -588,9 +621,9 @@ export default function navbar({
                       </Link>
                     </li>
                     <li>
-                      <Link href={"/logout"}>
-                        <div className="dropdown-item">logout</div>
-                      </Link>
+                      <div className="dropdown-item" onClick={handleLogout}>
+                        logout
+                      </div>
                     </li>
                   </ul>
                 </div>

@@ -95,6 +95,27 @@ export default function DetailProduct(props) {
 
   const handleCheckout = async () => {
     try {
+      if (!size || !color) {
+        if (!size && !color) {
+          setErrMsg("Size & Color not selected");
+          setIsErr(true);
+          setShowModal(true);
+          return
+        } else if (!color) {
+          setErrMsg("Color not selected");
+          setIsErr(true);
+          setShowModal(true);
+          return
+        } else if (!size) {
+          setErrMsg("Size not selected");
+          setIsErr(true);
+          setShowModal(true);
+          return
+        }
+      } else {
+        setIsErr(false);
+      }
+
       const config = {
         headers: {
           Authorization: `Bearer ${getToken}`,
@@ -488,7 +509,7 @@ export default function DetailProduct(props) {
                         // href={"/bag/my-bag"}
                         onClick={() => {
                           setGetButton("addbag");
-                          handleSubmit();
+                          handleCheckout();
                         }}
                         type="button"
                         className={`btn btn-outline-secondary rounded-pill me-3 ${style.btnAddBag}`}>
@@ -498,7 +519,7 @@ export default function DetailProduct(props) {
                         // href={"/checkout"}
                         onClick={() => {
                           setGetButton("buynow");
-                          handleSubmit();
+                          handleCheckout();
                         }}
                         type="button"
                         className={`btn btn-primary ${

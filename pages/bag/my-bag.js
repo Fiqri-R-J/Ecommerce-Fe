@@ -139,10 +139,12 @@ export default function bag(props) {
     if (checked) {
       const items = getCheckout.map((item) => item.checkout_id);
       setCheckedItems(items);
-      setIsDisable(false);
+      // setIsDisable(false);
+      isDisabled = false;
     } else {
       setCheckedItems([]);
-      setIsDisable(true);
+      // setIsDisable(true);
+      isDisabled = true;
     }
   };
 
@@ -150,10 +152,12 @@ export default function bag(props) {
     const { checked } = event.target;
     if (checked) {
       setCheckedItems((prevItems) => [...prevItems, id]);
-      setIsDisable(false);
+      // setIsDisable(false);
+      isDisabled = false;
     } else {
       setCheckedItems((prevItems) => prevItems.filter((item) => item !== id));
-      setIsDisable(true);
+      // setIsDisable(true);
+      isDisabled = true;
     }
   };
 
@@ -198,26 +202,41 @@ export default function bag(props) {
     }
   };
 
-  console.log("getCheckout", getCheckout);
+  // console.log("getCheckout", getCheckout);
 
-  // console.log("updatedCheckoutItems", updatedCheckoutItems);
+  console.log("updatedCheckoutItems", updatedCheckoutItems);
   console.log("checkedItems======", checkedItems);
 
   let totalSummaryData = [];
   // let isDisabled = true;
 
+  // for (let i = 0; i < updatedCheckoutItems.length; i++) {
+  //   if (updatedCheckoutItems[i].checkout_id == checkedItems[i]) {
+  //     console.log('MASUK LOOP')
+  //     totalSummaryData.push(updatedCheckoutItems[i]);
+  //     isDisabled = false;
+  //   }
+  // }
+
   for (let i = 0; i < updatedCheckoutItems.length; i++) {
-    if (updatedCheckoutItems[i].checkout_id == checkedItems[i]) {
+    if (checkedItems.includes(updatedCheckoutItems[i].checkout_id)) {
+      console.log("MASUK LOOP");
       totalSummaryData.push(updatedCheckoutItems[i]);
       isDisabled = false;
     }
+  }
+
+  if (checkedItems.length) {
+    isDisabled = false;
+  } else {
+    isDisabled = true;
   }
 
   let totalSummaryPrice = 0;
   let totalSummaryQty = 0;
   let totalSummaryPriceConverted = "";
 
-  if (totalSummaryData.length > 0) {
+  if (totalSummaryData.length) {
     for (let i = 0; i < totalSummaryData.length; i++) {
       totalSummaryPrice += totalSummaryData[i].newTotalPrice;
       totalSummaryQty += totalSummaryData[i].newQty;
@@ -225,6 +244,17 @@ export default function bag(props) {
     const convert = totalSummaryPrice.toString();
     totalSummaryPriceConverted = convert.replace(/\d(?=(\d{3})+$)/g, "$&.");
   }
+
+  React.useEffect(() => {
+    if (totalSummaryData.length > 0) {
+      for (let i = 0; i < totalSummaryData.length; i++) {
+        totalSummaryPrice += totalSummaryData[i].newTotalPrice;
+        totalSummaryQty += totalSummaryData[i].newQty;
+      }
+      const convert = totalSummaryPrice.toString();
+      totalSummaryPriceConverted = convert.replace(/\d(?=(\d{3})+$)/g, "$&.");
+    }
+  }, [checkedItems]);
 
   const router = useRouter();
   //REDUX
@@ -411,27 +441,7 @@ export default function bag(props) {
                     </div>
                   </div>
                   <div className="row">
-                    {/* {totalSummaryData.length === 0 ? (
-                      <div className="col-12">
-                        <Link
-                          href={"/checkout"}
-                          type="button"
-                          className={`btn btn-primary ${style.btnBuy}`}
-                          disabled={true}>
-                          Buy
-                        </Link>
-                      </div>
-                    ) : (
-                      <div className="col-12">
-                        <Link
-                          href={"/checkout"}
-                          type="button"
-                          className={`btn btn-primary ${style.btnBuy}`}>
-                          Buy
-                        </Link>
-                      </div>
-                    )} */}
-                    {!isDisable ? (
+                    {!isDisabled ? (
                       isLoading ? (
                         <LoadingButton
                           loading={isLoading}

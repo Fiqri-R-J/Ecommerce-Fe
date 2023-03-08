@@ -4,6 +4,10 @@ import React from "react";
 import Sidebar from "../../components/organisms/userSidebar";
 import style from "../../styles/pages/homeStyle.module.scss";
 import { getCookies, getCookie, setCookie, deleteCookie } from "cookies-next";
+//MUI
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 export const getServerSideProps = async (context) => {
   const token = getCookie("token", context) || "";
@@ -30,8 +34,7 @@ export default function profile(props) {
   return (
     <div>
       <nav
-        className={`container-fluid sticky-sm-top shadow py-2 ${style.containerNavbar}`}
-      >
+        className={`container-fluid sticky-sm-top shadow py-2 ${style.containerNavbar}`}>
         <Navbar />
       </nav>
       <div className="profile mt-5">
@@ -89,8 +92,7 @@ export default function profile(props) {
                         <div class="col">
                           <label
                             for="inputPhoneNumber"
-                            className="visually-hidden"
-                          >
+                            className="visually-hidden">
                             Phone Number
                           </label>
                           <input
@@ -117,8 +119,7 @@ export default function profile(props) {
                             />
                             <label
                               className="form-check-label"
-                              for="flexRadioDefault1"
-                            >
+                              for="flexRadioDefault1">
                               Laki-Laki
                             </label>
                           </div>
@@ -135,19 +136,22 @@ export default function profile(props) {
                             />
                             <label
                               className="form-check-label"
-                              for="flexRadioDefault2"
-                            >
+                              for="flexRadioDefault2">
                               Perempuan
                             </label>
                           </div>
                         </div>
                       </form>
+
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DatePicker format="YYYY/MM/DD" />
+                      </LocalizationProvider>
+
                       <div className="col-6 offset-4">
                         <Link
                           href={""}
                           type="button"
-                          className={`btn btn-primary me-3 ${style.save}`}
-                        >
+                          className={`btn btn-primary me-3 ${style.save}`}>
                           Save
                         </Link>
                       </div>
@@ -161,8 +165,7 @@ export default function profile(props) {
                           left: "50%",
                           marginLeft: "-3px",
                           top: "0",
-                        }}
-                      ></div>
+                        }}></div>
                     </div>
                     <div className="col-3">
                       <div className="imgStore">
@@ -182,8 +185,7 @@ export default function profile(props) {
                         />
                         <button
                           type="button"
-                          className="btn badge rounded-pill text-bg-secondary mt-3"
-                        >
+                          className="btn badge rounded-pill text-bg-secondary mt-3">
                           Select Image
                         </button>
                       </div>

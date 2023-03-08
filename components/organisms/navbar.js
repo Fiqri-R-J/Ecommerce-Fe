@@ -535,13 +535,6 @@ export default function navbar() {
               </form>
             ) : (
               <form className={`d-flex ${style.auth}`} role="search">
-                <Link href={"/bag/my-bag"}>
-                  <img
-                    className={style.shopping}
-                    src="/images/shopping.webp"
-                    alt="icon-navbar"
-                  />
-                </Link>
                 <Link
                   href={"/auth/login"}
                   type="button"

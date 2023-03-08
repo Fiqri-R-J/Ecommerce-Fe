@@ -12,16 +12,21 @@ import { getCookies, getCookie, setCookie, deleteCookie } from "cookies-next";
 //REDUX
 import { useSelector } from "react-redux";
 //MUI
-import Rating from "@mui/material/Rating";
-import Typography from "@mui/material/Typography";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormHelperText from "@mui/material/FormHelperText";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
-import Alert from "@mui/material/Alert";
-import AlertTitle from "@mui/material/AlertTitle";
-import { Card, CardContent, Modal } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  Modal,
+  Button,
+  Typography,
+  Alert,
+  FormControl,
+  Select,
+  FormHelperText,
+  MenuItem,
+  InputLabel,
+  Rating,
+} from "@mui/material";
+import LoadingButton from "@mui/lab/LoadingButton";
 import DangerousIcon from "@mui/icons-material/Dangerous";
 import { styled } from "@mui/material/styles";
 
@@ -40,6 +45,17 @@ const MyModal = styled(Modal)({
   alignItems: "center",
   justifyContent: "center",
   borderColor: "red",
+});
+
+const MyButton = styled(Button)({
+  borderRadius: "20px",
+  marginRight: "20px",
+  background: "#DB3022",
+  color: "white",
+  "&:hover": {
+    background: "#DB2522",
+    border: "none",
+  },
 });
 
 export default function DetailProduct(props) {
@@ -100,17 +116,17 @@ export default function DetailProduct(props) {
           setErrMsg("Size & Color not selected");
           setIsErr(true);
           setShowModal(true);
-          return
+          return;
         } else if (!color) {
           setErrMsg("Color not selected");
           setIsErr(true);
           setShowModal(true);
-          return
+          return;
         } else if (!size) {
           setErrMsg("Size not selected");
           setIsErr(true);
           setShowModal(true);
-          return
+          return;
         }
       } else {
         setIsErr(false);
@@ -505,28 +521,64 @@ export default function DetailProduct(props) {
                         className={`btn btn-outline-secondary rounded-pill me-3 ${style.btnChat}`}>
                         Chat
                       </div>
-                      <div
-                        // href={"/bag/my-bag"}
-                        onClick={() => {
-                          setGetButton("addbag");
-                          handleCheckout();
-                        }}
-                        type="button"
-                        className={`btn btn-outline-secondary rounded-pill me-3 ${style.btnAddBag}`}>
-                        Add bag
-                      </div>
-                      <div
-                        // href={"/checkout"}
-                        onClick={() => {
-                          setGetButton("buynow");
-                          handleCheckout();
-                        }}
-                        type="button"
-                        className={`btn btn-primary ${
-                          isLoading ? "btn-loading" : ""
-                        } rounded-pill ${style.btnBuyNow}`}>
-                        Buy Now
-                      </div>
+
+                      {isLoading ? (
+                        <LoadingButton
+                          loading={isLoading}
+                          variant="contained"
+                          color="primary"
+                          sx={{
+                            borderRadius: "20px",
+                            marginRight: "20px",
+                            background: "#DB3022",
+                            color: "black",
+                          }}
+                          onClick={() => {
+                            setGetButton("addbag");
+                            handleCheckout();
+                          }}>
+                          {isLoading ? "Loading..." : "Add to Cart"}
+                        </LoadingButton>
+                      ) : (
+                        <MyButton
+                          variant="contained"
+                          color="primary"
+                          onClick={() => {
+                            setGetButton("addbag");
+                            handleCheckout();
+                          }}>
+                          Add to Cart
+                        </MyButton>
+                      )}
+
+                      {isLoading ? (
+                        <LoadingButton
+                          loading={isLoading}
+                          variant="contained"
+                          color="primary"
+                          sx={{
+                            borderRadius: "20px",
+
+                            background: "#DB3022",
+                            color: "black",
+                          }}
+                          onClick={() => {
+                            setGetButton("buynow");
+                            handleCheckout();
+                          }}>
+                          {isLoading ? "Loading..." : "Buy Now"}
+                        </LoadingButton>
+                      ) : (
+                        <MyButton
+                          variant="contained"
+                          color="primary"
+                          onClick={() => {
+                            setGetButton("buynow");
+                            handleCheckout();
+                          }}>
+                          Buy Now
+                        </MyButton>
+                      )}
                     </div>
                   </div>
                 </div>

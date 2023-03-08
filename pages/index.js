@@ -1,10 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import React, { Component } from "react";
 import Head from "next/head";
-import Image from "next/image";
-import { Inter } from "@next/font/google";
 import style from "@/styles/pages/homeStyle.module.scss";
-import Link from "next/link";
 import Navbar from "@/components/organisms/navbar";
 import CardProductNew from "@/components/molecules/cardProductNew";
 import CardProductPopular from "@/components/molecules/cardProductPopular";
@@ -34,11 +31,13 @@ export default function Home(props) {
     Math.ceil(productListPopular.total / 4)
   );
   const [clickCategory, setClickCategory] = React.useState(false);
+  const [productAll, setProductAll] = React.useState(false)
 
   const router = useRouter();
   //REDUX
   const dispatch = useDispatch();
 
+  // HANDLE CLICK SLUG
   const handleClickSlug = (slug) => {
     axios
       .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/products/${slug}`)
@@ -65,9 +64,6 @@ export default function Home(props) {
 
   // SORT BY CATEGORY
   const fetchBySort = (sortValue) => {
-    if (sortValue) {
-    }
-
     axios
       .get(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/products?sort=DESC&categoryFilter=${sortValue}`
@@ -85,9 +81,6 @@ export default function Home(props) {
 
   // SORT BY CATEGORY COLOR
   const fetchByColor = (sortValue) => {
-    if (sortValue) {
-    }
-
     axios
       .get(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/products?sort=DESC&colorFilter=${sortValue}`
@@ -180,6 +173,7 @@ export default function Home(props) {
           {/* END OF NAVBAR */}
 
           {navbar ? (
+            // FEATURE SEARCH AND FILTER ACTIVE
             <>
               {/* CONTENT PRODUCT */}
               <section className={`container py-5 ${style.content}`}>
@@ -269,6 +263,7 @@ export default function Home(props) {
               {/* END OF CONTENT PRODUCT */}
             </>
           ) : (
+            // FEATURE SEARCH AND FILTER NON ACTIVE
             <>
               {/* PROMOTION */}
               <section className={`container mt-5 ${style.category1}`}>
@@ -349,6 +344,7 @@ export default function Home(props) {
                         setProductNew(productListNew.data);
                         setSubTitle("");
                         setClickCategory(false);
+                        setProductAll(true);
                       }}
                       onChange={(e) => {
                         fetchBySort(e.target.value);
@@ -364,6 +360,7 @@ export default function Home(props) {
                         fetchBySort("tshirt");
                         setSubTitle("T-Shirt");
                         setClickCategory(true);
+                        setProductAll(false);
                       }}
                       onChange={(e) => {
                         fetchBySort(e.target.value);
@@ -380,6 +377,7 @@ export default function Home(props) {
                         fetchBySort("shirt");
                         setSubTitle("Shirt");
                         setClickCategory(true);
+                        setProductAll(false);
                       }}
                       onChange={(e) => {
                         fetchBySort(e.target.value);
@@ -395,6 +393,7 @@ export default function Home(props) {
                         fetchBySort("shorts");
                         setSubTitle("Shorts");
                         setClickCategory(true);
+                        setProductAll(false);
                       }}
                       onChange={(e) => {
                         fetchBySort(e.target.value);
@@ -410,6 +409,7 @@ export default function Home(props) {
                         fetchBySort("pants");
                         setSubTitle("Pants");
                         setClickCategory(true);
+                        setProductAll(false);
                       }}
                       onChange={(e) => {
                         fetchBySort(e.target.value);
@@ -426,6 +426,7 @@ export default function Home(props) {
                         fetchBySort("headwear");
                         setSubTitle("Headwear");
                         setClickCategory(true);
+                        setProductAll(false);
                       }}
                       onChange={(e) => {
                         fetchBySort(e.target.value);
@@ -442,6 +443,7 @@ export default function Home(props) {
                         fetchBySort("outwear");
                         setSubTitle("Outwear");
                         setClickCategory(true);
+                        setProductAll(false);
                       }}
                       onChange={(e) => {
                         fetchBySort(e.target.value);
@@ -458,6 +460,7 @@ export default function Home(props) {
                         fetchBySort("footwear");
                         setSubTitle("Footwear");
                         setClickCategory(true);
+                        setProductAll(false);
                       }}
                       onChange={(e) => {
                         fetchBySort(e.target.value);
@@ -473,6 +476,7 @@ export default function Home(props) {
                         fetchBySort("bag");
                         setSubTitle("Bag");
                         setClickCategory(true);
+                        setProductAll(false);
                       }}
                       onChange={(e) => {
                         fetchBySort(e.target.value);
@@ -509,7 +513,7 @@ export default function Home(props) {
                 )}
 
                 <div className={`row ${style.content}`}>
-                  {dataNotFound ? (
+                  {dataNotFound && !productAll ? (
                     <div style={{ marginBottom: "100px" }}>
                       <h2 className="text-center">Product not found</h2>
                       <p
@@ -559,7 +563,8 @@ export default function Home(props) {
               {/* PAGINATION */}
               {!clickCategory ? (
                 <section
-                  className={`container pagination justify-content-center ${style.pagination}`}
+                  className={`container pagination justify-content-center border-bottom pb-4 ${style.pagination}`}
+                  // style={{ borderBottom: "2px solid #9b9b9b" }}
                 >
                   <nav aria-label="Page navigation example">
                     <ul className="pagination">
@@ -590,7 +595,7 @@ export default function Home(props) {
 
               {/* POPULAR */}
               {!clickCategory ? (
-                <section className={`container mt-5 mb-3 ${style.Product}`}>
+                <section className={`container mt-4 mb-3 ${style.Product}`}>
                   <div className={`${style.subTitle}`}>
                     <h2>Popular</h2>
                     <p>Find clothes that are trending recently</p>

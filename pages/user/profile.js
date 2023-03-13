@@ -6,9 +6,11 @@ import style from "../../styles/pages/homeStyle.module.scss";
 import { getCookies, getCookie, setCookie, deleteCookie } from "cookies-next";
 import axios from "axios";
 import dayjs from "dayjs";
+import moment from "moment";
 
 //MUI
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+// import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import {
@@ -77,7 +79,7 @@ export default function profile(props) {
 
   const [profiles, setProfiles] = React.useState(props.profile);
   const [isLoading, setIsLoading] = React.useState(false);
-  const [selectedDate, setSelectedDate] = React.useState("");
+  const [selectedDate, setSelectedDate] = React.useState(null);
   const [selectedDate2, setSelectedDate2] = React.useState(null);
   const [gender, setGender] = React.useState(null);
 
@@ -96,6 +98,7 @@ export default function profile(props) {
   const [getDate, setGetDate] = React.useState(null);
   let tanggal = null;
   const handleChangeDate = (newSelectedDate) => {
+    console.log("newSelectedDate---", newSelectedDate);
     // let dataString = newSelectedDate.toString();
     // const dateArray = dataString.split(" ");
     // const year = dateArray[3];
@@ -104,9 +107,13 @@ export default function profile(props) {
     // const newFormattedDate = `${year}-${month}-${day}`;
     // console.log("newFormattedDate", newFormattedDate); // output: 2023-Mar-07
 
-    setSelectedDate(newSelectedDate);
-  };
+    setSelectedDate(moment(newSelectedDate).format("YYYY-MM-DD")); // output object
 
+    // setSelectedDate(newFormattedDate); // kalau STATE dimasukan hasil dari konversi maka dapet error seperti yg kukasih
+  };
+  if (selectedDate) {
+    console.log("selectedDate--->", moment(selectedDate).format("YYYY-MM-DD"));
+  }
   React.useEffect(() => {
     // setGetDate
     let x = profiles?.date_of_birth;
@@ -135,16 +142,16 @@ export default function profile(props) {
     setGetDate(fix);
   }, []);
 
-  let dataString = selectedDate.toString();
-  const dateArray = dataString.split(" ");
-  const year = dateArray[3];
-  const month = dateArray[2];
-  const day = dateArray[1];
-  const newFormattedDate = `${year}-${month}-${day}`;
-  console.log(newFormattedDate); // output: 2023-Mar-07
-  tanggal = newFormattedDate;
+  // let dataString = selectedDate.toString();
+  // const dateArray = dataString.split(" ");
+  // const year = dateArray[3];
+  // const month = dateArray[2];
+  // const day = dateArray[1];
+  // const newFormattedDate = `${year}-${month}-${day}`;
+  // console.log(newFormattedDate); // output: 2023-Mar-07
+  // tanggal = newFormattedDate;
 
-  console.log("TANGGAL====", tanggal);
+  // console.log("TANGGAL====", tanggal);
   const handleChangePhoneNumber = (event) => {
     const newValue = event.target.value.replace(/[^0-9]/g, "");
     if (newValue.toString().length < 12) {
@@ -223,8 +230,8 @@ export default function profile(props) {
           username: fullname,
           profile_picture: selectedFile,
           gender,
-          date_of_birth: tanggal == null ? getDate : tanggal,
-          // date_of_birth: selectedDate,
+          // date_of_birth: tanggal == null ? getDate : tanggal,
+          date_of_birth: selectedDate,
         },
         {
           headers: {
@@ -443,11 +450,11 @@ export default function profile(props) {
                         />
                       )}
 
-                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <LocalizationProvider dateAdapter={AdapterMoment}>
                         <DatePicker
                           format="DD/MM/YYYY"
                           label="Date of Birth"
-                          value={selectedDate}
+                          // value={selectedDate}
                           sx={{
                             "& label": {
                               color: "black",

@@ -21,6 +21,7 @@ export const getServerSideProps = async (context) => {
 export default function sidebar(props) {
   const [getData, setGetData] = React.useState(null);
   const [getToken, setGetToken] = React.useState("");
+  const [getProfilePict, setGetProfilePict] = React.useState(null);
 
   React.useEffect(() => {
     const token = localStorage.getItem("token");
@@ -37,6 +38,13 @@ export default function sidebar(props) {
         );
 
         setGetData(response.data.data);
+        let temp = response.data.data.profile_picture.includes("https");
+        if (temp) {
+          setGetProfilePict(response.data.data.profile_picture);
+        } else {
+          let temps = `https://res.cloudinary.com/daouvimjz/image/upload/v1676281237/${response.data.data.profile_picture}`;
+          setGetProfilePict(temps);
+        }
       } catch (error) {
         console.log(error);
       }
@@ -45,17 +53,18 @@ export default function sidebar(props) {
     fetchUserData();
   }, []);
 
-  console.log("getData----", getData);
+  // console.log("getData----", getData);
+  // console.log("getProfilePict---", getProfilePict);
   return (
     <div>
       <div className="sidebarInfo d-flex align-items-center">
         <img
-          src="../../images/profile.png"
+          src={getProfilePict}
           className={`${style.profile}`}
           alt="profile"
         />
         <div className="info ms-4">
-          <h6>Johanes Mikael</h6>
+          <h6>{getData?.username}</h6>
           <Link
             href="/"
             className="link-secondary"
